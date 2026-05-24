@@ -1,0 +1,8 @@
+node_modules/
+unpackage/
+.hbuilderx/
+.DS_Store
+.env
+.env.*
+*.local
+uniCloud-aliyun/cloudfunctions/*/node_modules/

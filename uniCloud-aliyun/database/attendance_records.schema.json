@@ -1,0 +1,19 @@
+{
+  "bsonType": "object",
+  "required": ["studentId", "courseId", "date", "status"],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": { "description": "Attendance record id" },
+    "studentId": { "bsonType": "string" },
+    "courseId": { "bsonType": "string" },
+    "date": { "bsonType": "string" },
+    "status": { "bsonType": "string", "enum": ["present", "absent", "late", "on_leave"] },
+    "createdAt": { "bsonType": "number" },
+    "updatedAt": { "bsonType": "number" }
+  }
+}

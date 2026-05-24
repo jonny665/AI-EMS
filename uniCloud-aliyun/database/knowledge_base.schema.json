@@ -1,0 +1,17 @@
+{
+  "bsonType": "object",
+  "required": ["title", "keywords", "answer"],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": { "description": "Knowledge item id" },
+    "title": { "bsonType": "string" },
+    "keywords": { "bsonType": "array" },
+    "answer": { "bsonType": "string" },
+    "sourceType": { "bsonType": "string" }
+  }
+}

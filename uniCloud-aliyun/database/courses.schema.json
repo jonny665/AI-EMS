@@ -1,0 +1,18 @@
+{
+  "bsonType": "object",
+  "required": ["code", "name", "teacherId"],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": { "description": "Course id" },
+    "code": { "bsonType": "string" },
+    "name": { "bsonType": "string" },
+    "teacherId": { "bsonType": "string" },
+    "schedule": { "bsonType": "string" },
+    "credits": { "bsonType": "int" }
+  }
+}

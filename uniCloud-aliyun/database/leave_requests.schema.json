@@ -1,0 +1,24 @@
+{
+  "bsonType": "object",
+  "required": ["studentId", "courseId", "date", "reason", "status"],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": { "description": "Leave request id" },
+    "studentId": { "bsonType": "string" },
+    "studentName": { "bsonType": "string" },
+    "courseId": { "bsonType": "string" },
+    "courseName": { "bsonType": "string" },
+    "date": { "bsonType": "string" },
+    "reason": { "bsonType": "string" },
+    "status": { "bsonType": "string", "enum": ["pending", "approved", "rejected"] },
+    "reviewerId": { "bsonType": "string" },
+    "reviewerName": { "bsonType": "string" },
+    "createdAt": { "bsonType": "number" },
+    "reviewedAt": { "bsonType": "number" }
+  }
+}

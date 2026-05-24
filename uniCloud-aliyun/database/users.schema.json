@@ -1,0 +1,19 @@
+{
+  "bsonType": "object",
+  "required": ["username", "password", "role", "displayName"],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": { "description": "User id" },
+    "username": { "bsonType": "string" },
+    "password": { "bsonType": "string", "description": "Demo-only password. Replace with hashed auth in production." },
+    "role": { "bsonType": "string", "enum": ["student", "teacher", "admin"] },
+    "displayName": { "bsonType": "string" },
+    "major": { "bsonType": "string" },
+    "department": { "bsonType": "string" }
+  }
+}
