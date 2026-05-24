@@ -1,0 +1,69 @@
+{
+  "bsonType": "object",
+  "required": [
+    "title",
+    "source_type",
+    "visibility_roles",
+    "status",
+    "created_at",
+    "updated_at"
+  ],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "knowledge_documents primary key"
+    },
+    "title": {
+      "bsonType": "string"
+    },
+    "source_type": {
+      "bsonType": "string",
+      "enum": [
+        "policy",
+        "procedure",
+        "faq",
+        "course_material",
+        "course_evaluation_summary",
+        "system_notice"
+      ]
+    },
+    "source_id": {
+      "bsonType": "string",
+      "description": "Related business document id."
+    },
+    "file_url": {
+      "bsonType": "string"
+    },
+    "content_hash": {
+      "bsonType": "string"
+    },
+    "visibility_roles": {
+      "bsonType": "array",
+      "description": "Role codes allowed to retrieve this document."
+    },
+    "status": {
+      "bsonType": "string",
+      "enum": [
+        "draft",
+        "verified",
+        "archived"
+      ],
+      "defaultValue": "verified"
+    },
+    "owner_user_id": {
+      "bsonType": "string",
+      "description": "References users._id"
+    },
+    "created_at": {
+      "bsonType": "number"
+    },
+    "updated_at": {
+      "bsonType": "number"
+    }
+  }
+}

@@ -1,6 +1,15 @@
 {
   "bsonType": "object",
-  "required": ["code", "name", "teacherId"],
+  "required": [
+    "course_code",
+    "name",
+    "department_id",
+    "credits",
+    "course_type",
+    "status",
+    "created_at",
+    "updated_at"
+  ],
   "permission": {
     "read": false,
     "create": false,
@@ -8,11 +17,53 @@
     "delete": false
   },
   "properties": {
-    "_id": { "description": "Course id" },
-    "code": { "bsonType": "string" },
-    "name": { "bsonType": "string" },
-    "teacherId": { "bsonType": "string" },
-    "schedule": { "bsonType": "string" },
-    "credits": { "bsonType": "int" }
+    "_id": {
+      "description": "courses primary key"
+    },
+    "course_code": {
+      "bsonType": "string",
+      "description": "Immutable course code."
+    },
+    "name": {
+      "bsonType": "string"
+    },
+    "department_id": {
+      "bsonType": "string",
+      "description": "References departments._id"
+    },
+    "credits": {
+      "bsonType": "number"
+    },
+    "course_type": {
+      "bsonType": "string",
+      "enum": [
+        "general",
+        "major_required",
+        "major_elective",
+        "public_elective",
+        "practice"
+      ]
+    },
+    "difficulty_level": {
+      "bsonType": "int",
+      "description": "1 to 5."
+    },
+    "description": {
+      "bsonType": "string"
+    },
+    "status": {
+      "bsonType": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "defaultValue": "active"
+    },
+    "created_at": {
+      "bsonType": "number"
+    },
+    "updated_at": {
+      "bsonType": "number"
+    }
   }
 }

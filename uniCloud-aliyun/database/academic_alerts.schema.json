@@ -1,0 +1,77 @@
+{
+  "bsonType": "object",
+  "required": [
+    "student_id",
+    "alert_type",
+    "severity",
+    "trigger_rule",
+    "message",
+    "status",
+    "created_at"
+  ],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "academic_alerts primary key"
+    },
+    "student_id": {
+      "bsonType": "string",
+      "description": "References students._id"
+    },
+    "course_offering_id": {
+      "bsonType": "string",
+      "description": "References course_offerings._id"
+    },
+    "alert_type": {
+      "bsonType": "string",
+      "enum": [
+        "absence",
+        "lateness",
+        "low_gpa",
+        "credit_gap",
+        "grade_drop",
+        "combined_risk"
+      ]
+    },
+    "severity": {
+      "bsonType": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "trigger_rule": {
+      "bsonType": "object"
+    },
+    "message": {
+      "bsonType": "string"
+    },
+    "assigned_to_user_id": {
+      "bsonType": "string",
+      "description": "References users._id"
+    },
+    "status": {
+      "bsonType": "string",
+      "enum": [
+        "open",
+        "acknowledged",
+        "resolved",
+        "ignored"
+      ],
+      "defaultValue": "open"
+    },
+    "created_at": {
+      "bsonType": "number"
+    },
+    "resolved_at": {
+      "bsonType": "number"
+    }
+  }
+}

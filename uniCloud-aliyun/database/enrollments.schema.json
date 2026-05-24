@@ -1,0 +1,54 @@
+{
+  "bsonType": "object",
+  "required": [
+    "student_id",
+    "course_offering_id",
+    "status",
+    "selected_at",
+    "created_at",
+    "updated_at"
+  ],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "enrollments primary key"
+    },
+    "student_id": {
+      "bsonType": "string",
+      "description": "References students._id"
+    },
+    "course_offering_id": {
+      "bsonType": "string",
+      "description": "References course_offerings._id"
+    },
+    "status": {
+      "bsonType": "string",
+      "enum": [
+        "selected",
+        "enrolled",
+        "waitlisted",
+        "dropped",
+        "completed",
+        "failed"
+      ],
+      "defaultValue": "selected"
+    },
+    "selected_at": {
+      "bsonType": "number"
+    },
+    "dropped_at": {
+      "bsonType": "number"
+    },
+    "created_at": {
+      "bsonType": "number"
+    },
+    "updated_at": {
+      "bsonType": "number"
+    }
+  }
+}

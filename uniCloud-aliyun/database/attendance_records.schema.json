@@ -1,6 +1,15 @@
 {
   "bsonType": "object",
-  "required": ["studentId", "courseId", "date", "status"],
+  "required": [
+    "student_id",
+    "course_offering_id",
+    "class_session_id",
+    "attendance_date",
+    "status",
+    "source",
+    "created_at",
+    "updated_at"
+  ],
   "permission": {
     "read": false,
     "create": false,
@@ -8,12 +17,70 @@
     "delete": false
   },
   "properties": {
-    "_id": { "description": "Attendance record id" },
-    "studentId": { "bsonType": "string" },
-    "courseId": { "bsonType": "string" },
-    "date": { "bsonType": "string" },
-    "status": { "bsonType": "string", "enum": ["present", "absent", "late", "on_leave"] },
-    "createdAt": { "bsonType": "number" },
-    "updatedAt": { "bsonType": "number" }
+    "_id": {
+      "description": "attendance_records primary key"
+    },
+    "student_id": {
+      "bsonType": "string",
+      "description": "References students._id"
+    },
+    "course_offering_id": {
+      "bsonType": "string",
+      "description": "References course_offerings._id"
+    },
+    "class_session_id": {
+      "bsonType": "string",
+      "description": "References class_sessions._id"
+    },
+    "attendance_date": {
+      "bsonType": "string",
+      "description": "ISO date."
+    },
+    "status": {
+      "bsonType": "string",
+      "enum": [
+        "present",
+        "late",
+        "absent",
+        "on_leave",
+        "excused"
+      ],
+      "defaultValue": "absent"
+    },
+    "checkin_at": {
+      "bsonType": "number"
+    },
+    "checkin_latitude": {
+      "bsonType": "number"
+    },
+    "checkin_longitude": {
+      "bsonType": "number"
+    },
+    "distance_to_classroom_m": {
+      "bsonType": "number"
+    },
+    "source": {
+      "bsonType": "string",
+      "enum": [
+        "location",
+        "teacher_manual",
+        "leave_auto",
+        "system_import"
+      ],
+      "defaultValue": "location"
+    },
+    "leave_request_id": {
+      "bsonType": "string",
+      "description": "References leave_requests._id"
+    },
+    "remark": {
+      "bsonType": "string"
+    },
+    "created_at": {
+      "bsonType": "number"
+    },
+    "updated_at": {
+      "bsonType": "number"
+    }
   }
 }

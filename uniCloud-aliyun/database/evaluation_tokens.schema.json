@@ -1,0 +1,47 @@
+{
+  "bsonType": "object",
+  "required": [
+    "token_hash",
+    "course_offering_id",
+    "expires_at",
+    "status",
+    "created_at"
+  ],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "evaluation_tokens primary key"
+    },
+    "token_hash": {
+      "bsonType": "string"
+    },
+    "course_offering_id": {
+      "bsonType": "string",
+      "description": "References course_offerings._id"
+    },
+    "expires_at": {
+      "bsonType": "number"
+    },
+    "used_at": {
+      "bsonType": "number"
+    },
+    "status": {
+      "bsonType": "string",
+      "enum": [
+        "unused",
+        "used",
+        "expired",
+        "revoked"
+      ],
+      "defaultValue": "unused"
+    },
+    "created_at": {
+      "bsonType": "number"
+    }
+  }
+}
