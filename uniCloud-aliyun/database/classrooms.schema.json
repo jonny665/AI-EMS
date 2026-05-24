@@ -1,0 +1,49 @@
+{
+  "bsonType": "object",
+  "required": [
+    "building",
+    "room_no",
+    "geofence_radius_m",
+    "created_at",
+    "updated_at"
+  ],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "classrooms primary key"
+    },
+    "building": {
+      "bsonType": "string"
+    },
+    "room_no": {
+      "bsonType": "string"
+    },
+    "name": {
+      "bsonType": "string"
+    },
+    "capacity": {
+      "bsonType": "int"
+    },
+    "latitude": {
+      "bsonType": "number"
+    },
+    "longitude": {
+      "bsonType": "number"
+    },
+    "geofence_radius_m": {
+      "bsonType": "int",
+      "defaultValue": 50
+    },
+    "created_at": {
+      "bsonType": "number"
+    },
+    "updated_at": {
+      "bsonType": "number"
+    }
+  }
+}

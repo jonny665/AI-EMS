@@ -1,0 +1,35 @@
+{
+  "bsonType": "object",
+  "required": [
+    "student_id",
+    "tag_id",
+    "weight",
+    "created_at"
+  ],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "student_interest_tags primary key"
+    },
+    "student_id": {
+      "bsonType": "string",
+      "description": "References students._id"
+    },
+    "tag_id": {
+      "bsonType": "string",
+      "description": "References interest_tags._id"
+    },
+    "weight": {
+      "bsonType": "number",
+      "defaultValue": 1
+    },
+    "created_at": {
+      "bsonType": "number"
+    }
+  }
+}

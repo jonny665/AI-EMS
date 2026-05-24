@@ -1,11 +1,10 @@
 {
   "bsonType": "object",
   "required": [
-    "student_id",
-    "reason_type",
-    "reason_detail",
-    "start_at",
-    "end_at",
+    "requester_user_id",
+    "target_type",
+    "target_id",
+    "changes",
     "status",
     "created_at",
     "updated_at"
@@ -18,32 +17,26 @@
   },
   "properties": {
     "_id": {
-      "description": "leave_requests primary key"
+      "description": "profile_change_requests primary key"
     },
-    "student_id": {
+    "requester_user_id": {
       "bsonType": "string",
-      "description": "References students._id"
+      "description": "References users._id"
     },
-    "reason_type": {
+    "target_type": {
       "bsonType": "string",
       "enum": [
-        "sick",
-        "personal",
-        "official",
-        "other"
+        "student",
+        "teacher"
       ]
     },
-    "reason_detail": {
-      "bsonType": "string"
+    "target_id": {
+      "bsonType": "string",
+      "description": "students._id or teachers._id."
     },
-    "start_at": {
-      "bsonType": "number"
-    },
-    "end_at": {
-      "bsonType": "number"
-    },
-    "attachment_urls": {
-      "bsonType": "array"
+    "changes": {
+      "bsonType": "object",
+      "description": "Field-level old and new values."
     },
     "status": {
       "bsonType": "string",
@@ -51,7 +44,6 @@
         "pending",
         "approved",
         "rejected",
-        "cancel_requested",
         "cancelled"
       ],
       "defaultValue": "pending"
