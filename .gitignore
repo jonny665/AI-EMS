@@ -6,3 +6,14 @@ unpackage/
 .env.*
 *.local
 uniCloud-aliyun/cloudfunctions/*/node_modules/
+
+# Claude Code internal state
+.claude/
+
+# Playwright MCP browser artifacts
+.playwright-mcp/
+
+# Task documents (PDFs, screenshots, temporary files)
+*.pdf
+*.docx
+*.png
