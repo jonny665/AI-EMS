@@ -19,41 +19,25 @@
         </picker>
       </view>
       <view class="field">
-        <text class="label">Leave Type</text>
-        <picker :range="reasonTypeLabels" :value="reasonTypeIndex" @change="changeReasonType">
-          <view class="picker-value">{{ reasonTypeLabels[reasonTypeIndex] }}</view>
-        </picker>
-      </view>
-      <view class="field">
         <text class="label">Date</text>
         <input v-model="date" placeholder="2026-05-25" />
       </view>
       <view class="field">
-        <text class="label">Reason Detail</text>
-        <textarea v-model="reasonDetail" placeholder="Explain the leave reason briefly." />
+        <text class="label">Reason</text>
+        <textarea v-model="reason" placeholder="Explain the leave reason briefly." />
       </view>
       <button class="primary-btn full-btn" @click="submitLeave">Submit</button>
-    </view>
-
-    <view v-if="session.role !== 'student'" class="section">
-      <text class="section-title">Review Comment</text>
-      <textarea v-model="reviewComment" placeholder="Optional note for the student." />
     </view>
 
     <view class="section">
       <text class="section-title">{{ session.role === 'student' ? 'My Leave Requests' : 'Pending Review' }}</text>
       <view v-if="!leaveRequests.length" class="muted">No leave requests available.</view>
       <view v-for="item in leaveRequests" :key="item._id" class="card">
-        <text class="value">{{ item.studentName || session.displayName }} · {{ item.courseName || item.course_name }}</text>
-        <text class="muted">{{ item.date || item.leaveDate }} · {{ item.reasonType || item.reason_type || 'other' }} · {{ item.status }}</text>
-        <text class="muted">{{ item.reasonDetail || item.reason_detail || item.reason }}</text>
-        <text v-if="item.reviewComment || item.review_comment" class="muted">Review: {{ item.reviewComment || item.review_comment }}</text>
+        <text class="value">{{ item.studentName || session.displayName }} · {{ item.courseName }}</text>
+        <text class="muted">{{ item.date }} · {{ item.status }} · {{ item.reason }}</text>
         <view v-if="session.role !== 'student' && item.status === 'pending'" class="btn-row">
           <button class="primary-btn" @click="review(item, 'approved')">Approve</button>
           <button class="danger-btn" @click="review(item, 'rejected')">Reject</button>
-        </view>
-        <view v-if="session.role === 'student' && ['pending', 'approved'].includes(item.status)" class="btn-row">
-          <button class="secondary-btn" @click="cancelLeave(item)">Cancel</button>
         </view>
       </view>
     </view>
@@ -71,24 +55,13 @@ export default {
       courses: [],
       leaveRequests: [],
       courseIndex: 0,
-      reasonTypeIndex: 0,
-      date: new Date().toISOString().slice(0, 10),
-      reasonDetail: '',
-      reviewComment: '',
-      reasonTypes: [
-        { value: 'sick', label: 'Sick Leave' },
-        { value: 'personal', label: 'Personal Leave' },
-        { value: 'official', label: 'Official Duty' },
-        { value: 'other', label: 'Other' }
-      ]
+      date: '2026-05-25',
+      reason: ''
     }
   },
   computed: {
     courseNames() {
       return this.courses.map(item => `${item.code} ${item.name}`)
-    },
-    reasonTypeLabels() {
-      return this.reasonTypes.map(item => item.label)
     }
   },
   onShow() {
@@ -106,31 +79,21 @@ export default {
     },
     async submitLeave() {
       const course = this.courses[this.courseIndex]
-      const reasonDetail = this.reasonDetail.trim()
-      if (!course || !reasonDetail) {
+      if (!course || !this.reason.trim()) {
         uni.showToast({ title: 'Course and reason are required.', icon: 'none' })
         return
       }
-      const reasonType = this.reasonTypes[this.reasonTypeIndex] || this.reasonTypes[3]
       const result = await callAiemsFunction('submit-leave', {
         session: getSession(),
         courseId: course._id,
-        courseOfferingId: course._id,
-        courseName: `${course.code || course.course_code} ${course.name}`.trim(),
         date: this.date,
-        leaveDate: this.date,
-        reasonType: reasonType.value,
-        reasonDetail,
-        reason: reasonDetail
+        reason: this.reason.trim()
       })
       if (result.ok) {
-        this.reasonDetail = ''
+        this.reason = ''
         uni.showToast({ title: 'Submitted', icon: 'success' })
         this.load()
       }
-    },
-    changeReasonType(event) {
-      this.reasonTypeIndex = Number(event.detail.value)
     },
     changeCourse(event) {
       this.courseIndex = Number(event.detail.value)
@@ -139,21 +102,10 @@ export default {
       const result = await callAiemsFunction('review-leave', {
         session: getSession(),
         leaveId: item._id,
-        decision,
-        reviewComment: this.reviewComment.trim()
+        decision
       })
       if (result.ok) {
         uni.showToast({ title: decision === 'approved' ? 'Approved' : 'Rejected', icon: 'success' })
-        this.load()
-      }
-    },
-    async cancelLeave(item) {
-      const result = await callAiemsFunction('cancel-leave', {
-        session: getSession(),
-        leaveId: item._id
-      })
-      if (result.ok) {
-        uni.showToast({ title: 'Cancelled', icon: 'success' })
         this.load()
       }
     },
