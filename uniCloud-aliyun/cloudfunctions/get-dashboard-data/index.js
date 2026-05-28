@@ -15,10 +15,10 @@ exports.main = async (event) => {
   const leaves = (await readCollection("leave_requests", [])).map(
     normalizeLeave,
   );
-  const evaluations = await readCollection(
+  const evaluations = (await readCollection(
     "course_evaluations",
     demoEvaluations(),
-  );
+  )).map(normalizeEvaluation);
 
   const leaveRequests =
     role === "student"
@@ -67,7 +67,7 @@ function buildEvaluationSummary(courses, evaluations) {
     const average = courseEvaluations.length
       ? Math.round(
           (courseEvaluations.reduce(
-            (sum, item) => sum + Number(item.rating),
+            (sum, item) => sum + Number(item.rating || 0),
             0,
           ) /
             courseEvaluations.length) *
@@ -82,6 +82,22 @@ function buildEvaluationSummary(courses, evaluations) {
       feedback: courseEvaluations.map((item) => item.feedback),
     };
   });
+}
+
+function normalizeEvaluation(item) {
+  const scores = item.scores && typeof item.scores === "object" ? item.scores : {};
+  const overall = Number(
+    item.rating || scores.overall || item.average_rating || 0,
+  );
+
+  return {
+    ...item,
+    courseId: item.courseId || item.course_id,
+    rating: overall,
+    feedback: item.feedback || item.feedback_text || item.content || "",
+    scores,
+    courseName: item.courseName || item.course_name || item.courseId || item.course_id,
+  };
 }
 
 function normalizeCourse(course) {
