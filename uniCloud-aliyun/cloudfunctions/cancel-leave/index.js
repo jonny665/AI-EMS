@@ -5,23 +5,14 @@ const db = uniCloud.database()
 exports.main = async (event) => {
   const session = event.session || {}
 
-  if (!['teacher', 'admin'].includes(session.role)) {
+  if (session.role !== 'student') {
     return {
       ok: false,
-      message: 'Only teachers or administrators can review leave requests.'
-    }
-  }
-
-  const decision = String(event.decision || '').trim()
-  if (!['approved', 'rejected'].includes(decision)) {
-    return {
-      ok: false,
-      message: 'Decision must be "approved" or "rejected".'
+      message: 'Only students can cancel their leave requests.'
     }
   }
 
   const leaveId = String(event.leaveId || '').trim()
-  const reviewComment = String(event.reviewComment || event.comment || '').trim()
   if (!leaveId) {
     return { ok: false, message: 'Leave request id is required.' }
   }
@@ -32,135 +23,94 @@ exports.main = async (event) => {
     return { ok: false, message: 'Leave request not found.' }
   }
 
-  if (leave.status !== 'pending') {
-    return { ok: false, message: 'Leave request has already been processed.' }
+  if ((leave.student_id || leave.studentId) !== session.userId) {
+    return { ok: false, message: 'You can only cancel your own leave request.' }
+  }
+
+  if (leave.status === 'cancelled') {
+    return { ok: true, leave: formatLeaveView(leave) }
+  }
+
+  if (!['pending', 'approved'].includes(leave.status)) {
+    return { ok: false, message: 'This leave request can no longer be cancelled.' }
   }
 
   const now = Date.now()
   const normalizedLeave = normalizeLeave(leave)
   const before = formatLeaveView(normalizedLeave)
-  const leaveUpdate = {
-    status: decision,
-    reviewer_user_id: session.userId,
-    reviewerUserId: session.userId,
-    reviewer_name: session.displayName || '',
-    reviewerName: session.displayName || '',
-    review_comment: reviewComment,
-    reviewComment: reviewComment,
-    reviewed_at: now,
-    reviewedAt: now,
+
+  await db.collection('leave_requests').doc(leaveId).update({
+    status: 'cancelled',
     updated_at: now,
     updatedAt: now
+  })
+
+  let restoreResult = null
+  if (leave.status === 'approved') {
+    restoreResult = await restoreAttendance(normalizedLeave, now)
   }
 
-  await db.collection('leave_requests').doc(leaveId).update(leaveUpdate)
-
-  let syncResult = null
-  if (decision === 'approved') {
-    syncResult = await syncAttendance(normalizedLeave, now)
-  }
-
-  await writeAudit('leave.review', session, leaveId, before, { ...before, ...leaveUpdate })
+  await writeAudit('leave.cancel', session, leaveId, before, { ...before, status: 'cancelled', updated_at: now, updatedAt: now })
 
   return {
     ok: true,
-    leave: formatLeaveView({ ...normalizedLeave, ...leaveUpdate, _id: leaveId }),
-    sync: syncResult
+    leave: formatLeaveView({ ...normalizedLeave, status: 'cancelled', updated_at: now, updatedAt: now, _id: leaveId }),
+    restore: restoreResult
   }
 }
 
-async function syncAttendance(leave, now) {
-  const classSessionId = await resolveClassSessionId(leave)
-  const attendanceResult = await db.collection('attendance_records').where({
-    student_id: leave.student_id,
-    course_offering_id: leave.course_offering_id,
-    attendance_date: leave.leave_date
-  }).limit(1).get()
-  const existingAttendance = attendanceResult.data && attendanceResult.data[0]
-  const previousStatus = existingAttendance ? existingAttendance.status : 'absent'
-  const previousSource = existingAttendance ? (existingAttendance.source || 'system_import') : 'system_import'
-
-  let attendanceRecordId = existingAttendance ? existingAttendance._id : ''
-  if (existingAttendance) {
-    await db.collection('attendance_records').doc(existingAttendance._id).update({
-      studentId: leave.student_id,
-      student_id: leave.student_id,
-      courseId: leave.course_offering_id,
-      course_offering_id: leave.course_offering_id,
-      date: leave.leave_date,
-      attendance_date: leave.leave_date,
-      status: 'on_leave',
-      source: 'leave_auto',
-      leave_request_id: leave._id,
-      leaveRequestId: leave._id,
-      updated_at: now,
-      updatedAt: now
-    })
-  } else {
-    const createdAttendance = await db.collection('attendance_records').add({
-      student_id: leave.student_id,
-      studentId: leave.student_id,
-      course_offering_id: leave.course_offering_id,
-      courseId: leave.course_offering_id,
-      class_session_id: classSessionId,
-      attendance_date: leave.leave_date,
-      date: leave.leave_date,
-      status: 'on_leave',
-      source: 'leave_auto',
-      leave_request_id: leave._id,
-      leaveRequestId: leave._id,
-      created_at: now,
-      createdAt: now,
-      updated_at: now,
-      updatedAt: now
-    })
-    attendanceRecordId = createdAttendance.id
-  }
-
+async function restoreAttendance(leave, now) {
   const sessionResult = await db.collection('leave_request_sessions').where({
-    leave_request_id: leave._id,
-    class_session_id: classSessionId
-  }).limit(1).get()
-  const existingSession = sessionResult.data && sessionResult.data[0]
-  const sessionDoc = {
-    leave_request_id: leave._id,
-    class_session_id: classSessionId,
-    attendance_record_id: attendanceRecordId,
-    previous_status: previousStatus,
-    previous_source: previousSource,
-    created_at: now,
-    updated_at: now
-  }
+    leave_request_id: leave._id
+  }).get()
+  const sessions = sessionResult.data || []
+  const restored = []
 
-  if (existingSession) {
-    await db.collection('leave_request_sessions').doc(existingSession._id).update(sessionDoc)
-  } else {
-    await db.collection('leave_request_sessions').add(sessionDoc)
-  }
-
-  return {
-    attendanceRecordId,
-    classSessionId,
-    previousStatus,
-    previousSource
-  }
-}
-
-async function resolveClassSessionId(leave) {
-  try {
-    const sessionResult = await db.collection('class_sessions').where({
-      course_offering_id: leave.course_offering_id,
-      session_date: leave.leave_date
-    }).limit(1).get()
-    const classSession = sessionResult.data && sessionResult.data[0]
-    if (classSession) {
-      return classSession._id
+  for (const link of sessions) {
+    let attendance = null
+    if (link.attendance_record_id) {
+      const attendanceResult = await db.collection('attendance_records').doc(link.attendance_record_id).get()
+      attendance = attendanceResult.data && attendanceResult.data[0]
     }
-  } catch (error) {
-    console.warn('[review-leave] class session lookup skipped.', error)
+
+    if (!attendance) {
+      const attendanceResult = await db.collection('attendance_records').where({
+        student_id: leave.student_id,
+        course_offering_id: leave.course_offering_id,
+        attendance_date: leave.leave_date
+      }).limit(1).get()
+      attendance = attendanceResult.data && attendanceResult.data[0]
+    }
+
+    if (!attendance) {
+      continue
+    }
+
+    const previousStatus = link.previous_status || 'absent'
+    const previousSource = link.previous_source || 'system_import'
+    await db.collection('attendance_records').doc(attendance._id).update({
+      studentId: leave.student_id,
+      student_id: leave.student_id,
+      courseId: leave.course_offering_id,
+      course_offering_id: leave.course_offering_id,
+      date: leave.leave_date,
+      attendance_date: leave.leave_date,
+      status: previousStatus,
+      source: previousSource,
+      leave_request_id: '',
+      leaveRequestId: '',
+      updated_at: now,
+      updatedAt: now
+    })
+
+    restored.push({
+      attendanceId: attendance._id,
+      previousStatus,
+      previousSource
+    })
   }
 
-  return `${leave.course_offering_id}_${leave.leave_date}`
+  return { restored }
 }
 
 function normalizeLeave(leave) {
@@ -235,6 +185,6 @@ async function writeAudit(action, session, targetId, before, after) {
       created_at: Date.now()
     })
   } catch (error) {
-    console.warn('[review-leave] audit write skipped.', error)
+    console.warn('[cancel-leave] audit write skipped.', error)
   }
 }
