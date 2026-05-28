@@ -2,6 +2,8 @@
   "bsonType": "object",
   "required": [
     "student_id",
+    "course_offering_id",
+    "leave_date",
     "reason_type",
     "reason_detail",
     "start_at",
@@ -24,6 +26,41 @@
       "bsonType": "string",
       "description": "References students._id"
     },
+    "studentId": {
+      "bsonType": "string"
+    },
+    "student_name": {
+      "bsonType": "string"
+    },
+    "studentName": {
+      "bsonType": "string"
+    },
+    "course_offering_id": {
+      "bsonType": "string",
+      "description": "References course_offerings._id or a PoC course identifier."
+    },
+    "courseOfferingId": {
+      "bsonType": "string"
+    },
+    "course_id": {
+      "bsonType": "string"
+    },
+    "courseId": {
+      "bsonType": "string"
+    },
+    "course_name": {
+      "bsonType": "string"
+    },
+    "courseName": {
+      "bsonType": "string"
+    },
+    "leave_date": {
+      "bsonType": "string",
+      "description": "ISO date string used by the PoC leave flow."
+    },
+    "date": {
+      "bsonType": "string"
+    },
     "reason_type": {
       "bsonType": "string",
       "enum": [
@@ -36,10 +73,22 @@
     "reason_detail": {
       "bsonType": "string"
     },
+    "reasonType": {
+      "bsonType": "string"
+    },
+    "reasonDetail": {
+      "bsonType": "string"
+    },
     "start_at": {
       "bsonType": "number"
     },
+    "startAt": {
+      "bsonType": "number"
+    },
     "end_at": {
+      "bsonType": "number"
+    },
+    "endAt": {
       "bsonType": "number"
     },
     "attachment_urls": {
@@ -60,16 +109,37 @@
       "bsonType": "string",
       "description": "References users._id"
     },
+    "reviewerUserId": {
+      "bsonType": "string"
+    },
+    "reviewer_name": {
+      "bsonType": "string"
+    },
+    "reviewerName": {
+      "bsonType": "string"
+    },
     "review_comment": {
+      "bsonType": "string"
+    },
+    "reviewComment": {
       "bsonType": "string"
     },
     "reviewed_at": {
       "bsonType": "number"
     },
+    "reviewedAt": {
+      "bsonType": "number"
+    },
     "created_at": {
       "bsonType": "number"
     },
+    "createdAt": {
+      "bsonType": "number"
+    },
     "updated_at": {
+      "bsonType": "number"
+    },
+    "updatedAt": {
       "bsonType": "number"
     }
   }
