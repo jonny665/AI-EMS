@@ -6,13 +6,13 @@ exports.main = async (event) => {
   const session = event.session || {}
   const role = session.role
 
-  const courses = await readCollection('courses', demoCourses())
-  const attendance = await readCollection('attendance_records', demoAttendance())
-  const leaves = await readCollection('leave_requests', [])
+  const courses = (await readCollection('courses', demoCourses())).map(normalizeCourse)
+  const attendance = (await readCollection('attendance_records', demoAttendance())).map(normalizeAttendance)
+  const leaves = (await readCollection('leave_requests', [])).map(normalizeLeave)
   const evaluations = await readCollection('course_evaluations', demoEvaluations())
 
   const leaveRequests = role === 'student'
-    ? leaves.filter(item => item.studentId === session.userId)
+    ? leaves.filter(item => getStudentId(item) === session.userId)
     : leaves.filter(item => item.status === 'pending')
 
   return {
@@ -20,7 +20,7 @@ exports.main = async (event) => {
     data: {
       user: session,
       courses,
-      attendance: role === 'student' ? attendance.filter(item => item.studentId === session.userId) : attendance,
+      attendance: role === 'student' ? attendance.filter(item => getStudentId(item) === session.userId) : attendance,
       leaveRequests,
       evaluationSummary: buildEvaluationSummary(courses, evaluations),
       metrics: {
@@ -50,12 +50,67 @@ function buildEvaluationSummary(courses, evaluations) {
       : 0
     return {
       courseId: course._id,
-      courseName: `${course.code} ${course.name}`,
+      courseName: formatCourseLabel(course),
       count: courseEvaluations.length,
       average,
       feedback: courseEvaluations.map(item => item.feedback)
     }
   })
+}
+
+function normalizeCourse(course) {
+  const code = course.code || course.course_code || course.courseCode || ''
+  const name = course.name || course.course_name || course.title || ''
+  return {
+    ...course,
+    code,
+    course_code: course.course_code || code,
+    name,
+    course_name: course.course_name || name
+  }
+}
+
+function normalizeAttendance(attendance) {
+  return {
+    ...attendance,
+    studentId: attendance.studentId || attendance.student_id,
+    student_id: attendance.student_id || attendance.studentId,
+    courseId: attendance.courseId || attendance.course_offering_id,
+    course_offering_id: attendance.course_offering_id || attendance.courseId,
+    date: attendance.date || attendance.attendance_date,
+    attendance_date: attendance.attendance_date || attendance.date
+  }
+}
+
+function normalizeLeave(leave) {
+  return {
+    ...leave,
+    studentId: leave.studentId || leave.student_id,
+    student_id: leave.student_id || leave.studentId,
+    studentName: leave.studentName || leave.student_name,
+    student_name: leave.student_name || leave.studentName,
+    courseName: leave.courseName || leave.course_name,
+    course_name: leave.course_name || leave.courseName,
+    leaveDate: leave.leaveDate || leave.leave_date,
+    leave_date: leave.leave_date || leave.leaveDate,
+    date: leave.date || leave.leave_date || leave.leaveDate,
+    reasonType: leave.reasonType || leave.reason_type,
+    reason_type: leave.reason_type || leave.reasonType,
+    reasonDetail: leave.reasonDetail || leave.reason_detail,
+    reason_detail: leave.reason_detail || leave.reasonDetail,
+    reason: leave.reason || leave.reason_detail || leave.reasonDetail,
+    status: leave.status || 'pending'
+  }
+}
+
+function getStudentId(item) {
+  return item.studentId || item.student_id || ''
+}
+
+function formatCourseLabel(course) {
+  const code = course.code || course.course_code || ''
+  const name = course.name || course.course_name || course.title || ''
+  return [code, name].filter(Boolean).join(' ').trim() || name || code || 'Unnamed course'
 }
 
 function demoCourses() {

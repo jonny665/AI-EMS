@@ -1,10 +1,6 @@
 {
   "bsonType": "object",
-  "required": [
-    "leave_request_id",
-    "class_session_id",
-    "created_at"
-  ],
+  "required": ["leave_request_id", "class_session_id", "created_at"],
   "permission": {
     "read": false,
     "create": false,
