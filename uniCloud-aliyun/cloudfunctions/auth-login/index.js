@@ -1,56 +1,153 @@
-'use strict'
+"use strict";
 
-const db = uniCloud.database()
+const crypto = require("crypto");
+const db = uniCloud.database();
 
-const demoUsers = [
-  { _id: 'u_student_001', username: 'student001', password: 'demo123', role: 'student', displayName: 'Alice Chen', major: 'Software Engineering' },
-  { _id: 'u_teacher_001', username: 'teacher001', password: 'demo123', role: 'teacher', displayName: 'Dr. Zhang', department: 'Computer Science' },
-  { _id: 'u_admin_001', username: 'admin001', password: 'demo123', role: 'admin', displayName: 'Academic Admin', department: 'Academic Office' }
-]
+exports.main = async (event = {}) => {
+  const username = String(event.username || "").trim();
+  const password = String(event.password || "");
 
-exports.main = async (event) => {
-  const username = String(event.username || '').trim()
-  const password = String(event.password || '')
-
-  let user = null
-  try {
-    const result = await db.collection('users').where({ username, password }).limit(1).get()
-    user = result.data && result.data[0]
-  } catch (error) {
-    console.warn('[auth-login] users collection unavailable, using demo fallback.', error)
+  if (!username || !password) {
+    return { ok: false, message: "Username and password are required." };
   }
 
-  if (!user) {
-    user = demoUsers.find(item => item.username === username && item.password === password)
+  const userResult = await db.collection("users").where({ username }).limit(1).get();
+  const user = userResult.data && userResult.data[0];
+  if (!user || user.status !== "active") {
+    return { ok: false, message: "Invalid account or password." };
   }
 
-  if (!user) {
-    return { ok: false, message: 'Invalid demo account or password.' }
+  if (!verifyPassword(password, user.password_hash)) {
+    return { ok: false, message: "Invalid account or password." };
   }
 
-  await writeAudit('login', user._id, user.role, { username })
+  const roles = await loadRoles(user.role_ids);
+  const role = resolvePrimaryRole(roles);
+  if (!role) {
+    return { ok: false, message: "This account has no valid role." };
+  }
+
+  const now = Date.now();
+  await db.collection("users").doc(user._id).update({ last_login_at: now, updated_at: now });
+  await writeAudit("login", user._id, role, { username });
 
   return {
     ok: true,
     user: {
       userId: user._id,
       username: user.username,
-      role: user.role,
-      displayName: user.displayName
+      role,
+      roleCodes: roles.map((item) => item.code),
+      displayName: user.display_name || user.displayName || user.username,
+      mustChangePassword: Boolean(user.must_change_password),
+    },
+  };
+};
+
+async function loadRoles(roleIds = []) {
+  if (!Array.isArray(roleIds) || !roleIds.length) {
+    return [];
+  }
+
+  const roles = [];
+  for (const roleId of roleIds) {
+    try {
+      const result = await db.collection("roles").doc(roleId).get();
+      const role = result.data && result.data[0];
+      if (role && role.code) {
+        roles.push(role);
+      }
+    } catch (error) {
+      console.warn("[auth-login] role lookup skipped.", error);
     }
   }
+  return roles;
+}
+
+function resolvePrimaryRole(roles) {
+  const codes = roles.map((item) => item.code);
+  const priority = ["admin", "academic_staff", "teacher", "counselor", "student", "guardian"];
+  const code = priority.find((item) => codes.includes(item));
+
+  if (code === "academic_staff") {
+    return "admin";
+  }
+  if (code === "counselor") {
+    return "teacher";
+  }
+  return code || "";
+}
+
+function verifyPassword(password, verifier) {
+  const value = String(verifier || "");
+  if (!value) {
+    return false;
+  }
+
+  if (/^[a-f0-9]{64}$/i.test(value)) {
+    return timingSafeCompare(sha256Hex(password), value.toLowerCase());
+  }
+
+  if (value.startsWith("sha256$")) {
+    return timingSafeCompare(sha256Hex(password), value.slice("sha256$".length).toLowerCase());
+  }
+
+  if (value.startsWith("pbkdf2_sha256$")) {
+    return verifyPbkdf2Sha256(password, value);
+  }
+
+  return false;
+}
+
+function verifyPbkdf2Sha256(password, verifier) {
+  const parts = verifier.split("$");
+  if (parts.length !== 4) {
+    return false;
+  }
+
+  const iterations = Number(parts[1]);
+  if (!Number.isInteger(iterations) || iterations < 10000) {
+    return false;
+  }
+
+  try {
+    const salt = decodeBase64(parts[2]);
+    const expected = decodeBase64(parts[3]);
+    const actual = crypto.pbkdf2Sync(password, salt, iterations, expected.length, "sha256");
+    return expected.length === actual.length && crypto.timingSafeEqual(expected, actual);
+  } catch (error) {
+    console.warn("[auth-login] password verification failed.", error);
+    return false;
+  }
+}
+
+function decodeBase64(value) {
+  const normalized = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
+  const padding = normalized.length % 4 ? "=".repeat(4 - (normalized.length % 4)) : "";
+  return Buffer.from(normalized + padding, "base64");
+}
+
+function sha256Hex(value) {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+function timingSafeCompare(left, right) {
+  const a = Buffer.from(String(left));
+  const b = Buffer.from(String(right));
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
 async function writeAudit(action, userId, role, detail) {
   try {
-    await db.collection('audit_logs').add({
+    await db.collection("audit_logs").add({
       action,
-      userId,
-      role,
-      detail,
-      createdAt: Date.now()
-    })
+      actor_user_id: userId,
+      target_collection: "users",
+      target_id: userId,
+      after: { role, detail },
+      created_at: Date.now(),
+    });
   } catch (error) {
-    console.warn('[auth-login] audit write skipped.', error)
+    console.warn("[auth-login] audit write skipped.", error);
   }
 }

@@ -25,6 +25,12 @@
       }
     },
     {
+      "path": "pages/admin/management",
+      "style": {
+        "navigationBarTitleText": "Admin Management"
+      }
+    },
+    {
       "path": "pages/leave/leave",
       "style": {
         "navigationBarTitleText": "Leave Workflow"
@@ -33,13 +39,23 @@
     {
       "path": "pages/evaluation/evaluation",
       "style": {
-        "navigationBarTitleText": "Course Evaluation"
+        "navigationBarTitleText": "Course Evaluation",
+        "navigationBarBackgroundColor": "#409eff",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/materials/materials",
+      "style": {
+        "navigationBarTitleText": "Course Materials"
       }
     },
     {
       "path": "pages/assistant/assistant",
       "style": {
-        "navigationBarTitleText": "AI Assistant"
+        "navigationBarTitleText": "AI Assistant",
+        "navigationBarBackgroundColor": "#141414",
+        "navigationBarTextStyle": "white"
       }
     },
     {

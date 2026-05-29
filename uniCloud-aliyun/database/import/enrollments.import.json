@@ -1,0 +1,5 @@
+{"_id":"enroll_s1_sd","student_id":"student_001","course_offering_id":"offering_sd_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s1_pm","student_id":"student_001","course_offering_id":"offering_pm_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s2_sd","student_id":"student_002","course_offering_id":"offering_sd_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s2_pm","student_id":"student_002","course_offering_id":"offering_pm_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s3_sd","student_id":"student_003","course_offering_id":"offering_sd_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}

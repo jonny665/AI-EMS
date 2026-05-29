@@ -1,10 +1,6 @@
 {
   "bsonType": "object",
-  "required": [
-    "leave_request_id",
-    "class_session_id",
-    "created_at"
-  ],
+  "required": ["leave_request_id", "class_session_id", "created_at"],
   "permission": {
     "read": false,
     "create": false,
@@ -27,7 +23,16 @@
       "bsonType": "string",
       "description": "References attendance_records._id"
     },
+    "previous_status": {
+      "bsonType": "string"
+    },
+    "previous_source": {
+      "bsonType": "string"
+    },
     "created_at": {
+      "bsonType": "number"
+    },
+    "updated_at": {
       "bsonType": "number"
     }
   }
