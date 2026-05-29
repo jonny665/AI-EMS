@@ -1,84 +1,254 @@
-'use strict'
+"use strict";
 
-const db = uniCloud.database()
+const db = uniCloud.database();
+const HISTORY_RETENTION_MS = 60 * 24 * 60 * 60 * 1000;
 
-const fallbackAnswer = '当前知识库没有足够信息，请联系教务人员确认。'
-
-exports.main = async (event) => {
-  const session = event.session || {}
-  if (!['student', 'teacher', 'admin'].includes(session.role)) {
-    return { ok: false, message: 'Login is required.' }
+exports.main = async (event = {}) => {
+  const session = event.session || {};
+  if (!["student", "teacher", "admin"].includes(session.role) || !session.userId) {
+    return { ok: false, message: "Login is required." };
   }
 
-  const query = String(event.query || '').trim()
-  if (!query) return { ok: false, message: 'Question is required.' }
+  const query = String(event.query || event.question || "").trim();
+  if (!query) {
+    return { ok: false, message: "Question is required." };
+  }
 
-  const knowledge = await readKnowledge()
-  const normalizedQuery = query.toLowerCase()
-  const hit = knowledge.find(item => {
-    const keywords = Array.isArray(item.keywords) ? item.keywords : []
-    return keywords.some(keyword => normalizedQuery.includes(String(keyword).toLowerCase()))
-  })
+  const startedAt = Date.now();
+  await purgeExpiredAiHistory(startedAt);
+  const conversation = await resolveConversation(session, event, query, startedAt);
+  const historyText = Array.isArray(event.history)
+    ? event.history
+        .slice(-10)
+        .map((item) => item && item.content)
+        .filter(Boolean)
+        .join(" ")
+    : "";
+  const retrievalText = `${historyText} ${query}`.trim();
+  const keywords = buildQueryKeywords(retrievalText);
+  const rows = await readKnowledgeBase();
+  const hit = findBestMatch(rows, retrievalText || query, keywords);
+  const latencyMs = Date.now() - startedAt;
+  const answer = hit
+    ? hit.content || ""
+    : "The current knowledge base does not have enough information. Please contact academic staff for confirmation.";
+  const fallbackUsed = !hit;
 
-  await writeAudit('ask_assistant', session, { query, grounded: Boolean(hit) })
+  await writeMessage(conversation._id, {
+    role: "user",
+    content: query,
+    fallback_used: false,
+    citations: [],
+    latency_ms: 0,
+    created_at: startedAt,
+  });
+  await writeMessage(conversation._id, {
+    role: "assistant",
+    content: answer,
+    model: "local-keyword-kb",
+    citations: hit ? [{ knowledge_base_id: hit._id, title: hit.title || "" }] : [],
+    fallback_used: fallbackUsed,
+    latency_ms: latencyMs,
+    created_at: Date.now(),
+  });
+  await updateConversation(conversation, query, startedAt);
+
+  await writeAudit("ask_assistant", session, {
+    query,
+    grounded: Boolean(hit),
+    source_id: hit ? hit._id : "",
+    context_turns: Array.isArray(event.history) ? Math.min(event.history.length, 5) : 0,
+    conversation_id: conversation._id,
+    latency_ms: latencyMs,
+  });
 
   if (!hit) {
     return {
       ok: true,
       data: {
-        answer: fallbackAnswer,
-        sourceTitle: 'Fallback response',
-        grounded: false
-      }
-    }
+        answer,
+        source: "",
+        sourceTitle: "",
+        grounded: false,
+        fallbackUsed,
+        conversationId: conversation._id,
+      },
+    };
   }
 
   return {
     ok: true,
     data: {
-      answer: hit.answer,
-      sourceTitle: hit.title,
-      grounded: true
+      answer,
+      source: hit.title || "",
+      sourceTitle: hit.title || "",
+      grounded: true,
+      fallbackUsed,
+      knowledgeBaseId: hit._id,
+      conversationId: conversation._id,
+    },
+  };
+};
+
+async function resolveConversation(session, event, query, now) {
+  const requestedId = String(event.conversationId || "").trim();
+  if (requestedId) {
+    const existing = await findConversationById(requestedId);
+    if (existing && existing.user_id === session.userId) {
+      return existing;
     }
   }
+
+  const scenario = resolveScenario(query);
+  const active = await findActiveConversation(session.userId, scenario);
+  if (active) {
+    return active;
+  }
+
+  const conversation = {
+    user_id: session.userId,
+    title: query.slice(0, 40) || "AI Assistant Conversation",
+    scenario,
+    context_summary: "",
+    message_count: 0,
+    status: "active",
+    created_at: now,
+    updated_at: now,
+  };
+  const result = await db.collection("ai_conversations").add(conversation);
+  return { ...conversation, _id: result.id };
 }
 
-async function readKnowledge() {
+async function findConversationById(id) {
   try {
-    const result = await db.collection('knowledge_base').limit(100).get()
-    if (result.data && result.data.length) return result.data
+    const result = await db.collection("ai_conversations").doc(id).get();
+    return result.data && result.data[0] ? result.data[0] : null;
   } catch (error) {
-    console.warn('[ask-assistant] knowledge_base unavailable, using fallback.', error)
+    console.warn("[ask-assistant] conversation lookup skipped.", error);
+    return null;
   }
-  return [
-    {
-      title: 'Graduation credit requirement',
-      keywords: ['graduation', 'credit', 'credits', '学分', '毕业'],
-      answer: 'The PoC knowledge base states that students should track completed credits and remaining required modules before graduation. Please confirm official requirements with the academic office.'
-    },
-    {
-      title: 'Leave approval workflow',
-      keywords: ['leave', 'absence', '请假', '缺勤', 'attendance'],
-      answer: 'Students submit a leave request for a specific course session. After approval by an authorised teacher or administrator, the attendance status is updated to on_leave.'
-    },
-    {
-      title: 'Anonymous course evaluation',
-      keywords: ['evaluation', 'feedback', 'anonymous', '评价', '匿名'],
-      answer: 'Course evaluations are shown to teachers as aggregated feedback only. The PoC does not expose individual student identities behind evaluation comments.'
-    }
-  ]
 }
 
-async function writeAudit(action, session, detail) {
+async function findActiveConversation(userId, scenario) {
   try {
-    await db.collection('audit_logs').add({
-      action,
-      userId: session.userId,
-      role: session.role,
-      detail,
-      createdAt: Date.now()
+    const result = await db
+      .collection("ai_conversations")
+      .where({ user_id: userId, scenario, status: "active" })
+      .limit(1)
+      .get();
+    return result.data && result.data[0] ? result.data[0] : null;
+  } catch (error) {
+    console.warn("[ask-assistant] active conversation lookup skipped.", error);
+    return null;
+  }
+}
+
+async function writeMessage(conversationId, message) {
+  try {
+    await db.collection("ai_messages").add({
+      conversation_id: conversationId,
+      ...message,
+    });
+  } catch (error) {
+    console.warn("[ask-assistant] ai message write skipped.", error);
+  }
+}
+
+async function updateConversation(conversation, query, now) {
+  try {
+    await db.collection("ai_conversations").doc(conversation._id).update({
+      title: conversation.title || query.slice(0, 40) || "AI Assistant Conversation",
+      context_summary: query.slice(0, 120),
+      message_count: Number(conversation.message_count || 0) + 2,
+      updated_at: now,
+    });
+  } catch (error) {
+    console.warn("[ask-assistant] conversation update skipped.", error);
+  }
+}
+
+async function purgeExpiredAiHistory(now = Date.now()) {
+  const cutoff = now - HISTORY_RETENTION_MS;
+  await removeOldRows("ai_messages", "created_at", cutoff);
+  await removeOldRows("ai_conversations", "updated_at", cutoff);
+}
+
+async function removeOldRows(collection, field, cutoff) {
+  try {
+    const result = await db.collection(collection).limit(500).get();
+    const rows = (result.data || []).filter((item) => Number(item[field] || 0) < cutoff);
+    for (const row of rows) {
+      if (row._id) {
+        await db.collection(collection).doc(row._id).remove();
+      }
+    }
+  } catch (error) {
+    console.warn(`[ask-assistant] ${collection} retention cleanup skipped.`, error);
+  }
+}
+
+function resolveScenario(query) {
+  const value = String(query || "").toLowerCase();
+  if (/(course|selection|elective|课程|选课)/.test(value)) return "course_selection";
+  if (/(schedule|timetable|课表|安排)/.test(value)) return "schedule_query";
+  if (/(exam|考试)/.test(value)) return "exam_query";
+  if (/(graduation|credit|毕业|学分)/.test(value)) return "graduation_check";
+  if (/(policy|rule|制度|政策)/.test(value)) return "policy_qa";
+  return "other";
+}
+
+async function readKnowledgeBase() {
+  try {
+    const result = await db.collection("knowledge_base").limit(300).get();
+    return result.data || [];
+  } catch (error) {
+    console.warn("[ask-assistant] knowledge_base read failed.", error);
+    return [];
+  }
+}
+
+function buildQueryKeywords(query) {
+  const cleaned = query
+    .toLowerCase()
+    .replace(/[^\u4e00-\u9fa5a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const words = cleaned ? cleaned.split(" ") : [];
+  return Array.from(new Set(words.flatMap((word) => [word, singularize(word)]).filter(Boolean)));
+}
+
+function findBestMatch(rows, query, keywords) {
+  const cleanedQuery = query.toLowerCase();
+  const scored = rows
+    .map((item) => {
+      const itemKeywords = Array.isArray(item.keywords) ? item.keywords : [];
+      const hitCount = itemKeywords.reduce((sum, keyword) => {
+        const normalized = singularize(String(keyword || "").toLowerCase());
+        return sum + (keywords.includes(normalized) || cleanedQuery.includes(normalized) ? 1 : 0);
+      }, 0);
+      const titleHit = item.title && cleanedQuery.includes(String(item.title).toLowerCase()) ? 1 : 0;
+      return { ...item, _score: hitCount + titleHit };
     })
+    .filter((item) => item._score > 0)
+    .sort((a, b) => b._score - a._score);
+
+  return scored[0] || null;
+}
+
+function singularize(value) {
+  return String(value || "").replace(/s$/i, "");
+}
+
+async function writeAudit(action, session, data) {
+  try {
+    await db.collection("audit_logs").add({
+      action,
+      actor_user_id: session.userId,
+      target_collection: "knowledge_base",
+      after: data,
+      created_at: Date.now(),
+    });
   } catch (error) {
-    console.warn('[ask-assistant] audit write skipped.', error)
+    console.warn("[ask-assistant] audit write skipped.", error);
   }
 }

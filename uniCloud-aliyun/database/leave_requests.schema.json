@@ -2,6 +2,8 @@
   "bsonType": "object",
   "required": [
     "student_id",
+    "course_offering_id",
+    "leave_date",
     "reason_type",
     "reason_detail",
     "start_at",
@@ -23,6 +25,14 @@
     "student_id": {
       "bsonType": "string",
       "description": "References students._id"
+    },
+    "course_offering_id": {
+      "bsonType": "string",
+      "description": "References course_offerings._id"
+    },
+    "leave_date": {
+      "bsonType": "string",
+      "description": "ISO date string for the requested leave day."
     },
     "reason_type": {
       "bsonType": "string",
@@ -72,5 +82,25 @@
     "updated_at": {
       "bsonType": "number"
     }
-  }
+  },
+  "indexes": [
+    {
+      "name": "student_status_created_idx",
+      "key": {
+        "student_id": 1,
+        "status": 1,
+        "created_at": -1
+      },
+      "unique": false
+    },
+    {
+      "name": "course_status_date_idx",
+      "key": {
+        "course_offering_id": 1,
+        "status": 1,
+        "leave_date": -1
+      },
+      "unique": false
+    }
+  ]
 }

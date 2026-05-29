@@ -4,40 +4,69 @@
       <view class="row">
         <view>
           <text class="section-title">Leave Workflow</text>
-          <text class="muted">{{ session.displayName }} · {{ session.role }}</text>
+          <text class="muted">{{ session.displayName }} - {{ session.role }}</text>
         </view>
-        <button class="secondary-btn" @click="backHome">Home</button>
+        <view class="btn-row top-actions">
+          <button class="secondary-btn" :loading="loading" @click="refresh">Refresh</button>
+          <button class="secondary-btn" @click="backHome">Home</button>
+        </view>
       </view>
     </view>
 
     <view v-if="session.role === 'student'" class="section">
       <text class="section-title">Submit Leave Request</text>
+
       <view class="field">
         <text class="label">Course</text>
-        <picker :range="courseNames" :value="courseIndex" @change="changeCourse">
-          <view class="picker-value">{{ courseNames[courseIndex] }}</view>
+        <picker :range="courseLabels" :value="courseIndex" @change="changeCourse">
+          <view class="picker-value">{{ selectedCourseLabel }}</view>
         </picker>
       </view>
+
+      <view class="field">
+        <text class="label">Leave Type</text>
+        <picker :range="reasonTypeLabels" :value="reasonTypeIndex" @change="changeReasonType">
+          <view class="picker-value">{{ selectedReasonTypeLabel }}</view>
+        </picker>
+      </view>
+
       <view class="field">
         <text class="label">Date</text>
-        <input v-model="date" placeholder="2026-05-25" />
+        <picker mode="date" :value="date" @change="changeDate">
+          <view class="picker-value">{{ date }}</view>
+        </picker>
       </view>
+
       <view class="field">
-        <text class="label">Reason</text>
-        <textarea v-model="reason" placeholder="Explain the leave reason briefly." />
+        <text class="label">Reason Detail</text>
+        <textarea v-model="reasonDetail" placeholder="Explain the leave reason briefly." />
       </view>
+
       <button class="primary-btn full-btn" @click="submitLeave">Submit</button>
+    </view>
+
+    <view v-if="session.role !== 'student'" class="section">
+      <text class="section-title">Review Comment</text>
+      <textarea v-model="reviewComment" placeholder="Optional note for the student." />
     </view>
 
     <view class="section">
       <text class="section-title">{{ session.role === 'student' ? 'My Leave Requests' : 'Pending Review' }}</text>
       <view v-if="!leaveRequests.length" class="muted">No leave requests available.</view>
+
       <view v-for="item in leaveRequests" :key="item._id" class="card">
-        <text class="value">{{ item.studentName || session.displayName }} · {{ item.courseName }}</text>
-        <text class="muted">{{ item.date }} · {{ item.status }} · {{ item.reason }}</text>
+        <text class="value">{{ leaveTitle(item) }}</text>
+        <text class="muted">{{ [item.date, reasonTypeLabel(item.reasonType), item.status].filter(Boolean).join(' - ') }}</text>
+        <text class="muted">{{ item.reasonDetail || item.reason }}</text>
+        <text v-if="item.reviewComment" class="muted">Review: {{ item.reviewComment }}</text>
+
         <view v-if="session.role !== 'student' && item.status === 'pending'" class="btn-row">
           <button class="primary-btn" @click="review(item, 'approved')">Approve</button>
           <button class="danger-btn" @click="review(item, 'rejected')">Reject</button>
+        </view>
+
+        <view v-if="session.role === 'student' && ['pending', 'approved'].includes(item.status)" class="btn-row">
+          <button class="secondary-btn" @click="cancelLeave(item)">Cancel</button>
         </view>
       </view>
     </view>
@@ -55,13 +84,31 @@ export default {
       courses: [],
       leaveRequests: [],
       courseIndex: 0,
-      date: '2026-05-25',
-      reason: ''
+      reasonTypeIndex: 0,
+      date: new Date().toISOString().slice(0, 10),
+      reasonDetail: '',
+      reviewComment: '',
+      loading: false,
+      reasonTypes: [
+        { value: 'sick', label: 'Sick Leave' },
+        { value: 'personal', label: 'Personal Leave' },
+        { value: 'official', label: 'Official Duty' },
+        { value: 'other', label: 'Other' }
+      ]
     }
   },
   computed: {
-    courseNames() {
-      return this.courses.map(item => `${item.code} ${item.name}`)
+    courseLabels() {
+      return this.courses.map(item => this.formatCourseLabel(item))
+    },
+    selectedCourseLabel() {
+      return this.courseLabels[this.courseIndex] || 'No courses available'
+    },
+    reasonTypeLabels() {
+      return this.reasonTypes.map(item => item.label)
+    },
+    selectedReasonTypeLabel() {
+      return this.reasonTypeLabels[this.reasonTypeIndex] || 'Other'
     }
   },
   onShow() {
@@ -71,46 +118,113 @@ export default {
     this.load()
   },
   methods: {
-    async load() {
-      const result = await callAiemsFunction('get-dashboard-data', { session: getSession() })
-      if (!result.ok) return
+    async load(forceRefresh = false) {
+      this.loading = true
+      const result = await callAiemsFunction('get-dashboard-data', {
+        session: getSession(),
+        forceRefresh
+      })
+      this.loading = false
+
+      if (!result.ok) {
+        uni.showToast({ title: result.message || 'Failed to load leave data.', icon: 'none' })
+        return
+      }
+
       this.courses = result.data.courses || []
       this.leaveRequests = result.data.leaveRequests || []
+
+      if (this.courseIndex >= this.courses.length) {
+        this.courseIndex = 0
+      }
+      if (this.reasonTypeIndex >= this.reasonTypes.length) {
+        this.reasonTypeIndex = 0
+      }
+    },
+    refresh() {
+      this.load(true)
     },
     async submitLeave() {
       const course = this.courses[this.courseIndex]
-      if (!course || !this.reason.trim()) {
+      const reasonDetail = this.reasonDetail.trim()
+
+      if (!course || !reasonDetail) {
         uni.showToast({ title: 'Course and reason are required.', icon: 'none' })
         return
       }
+
+      const reasonType = this.reasonTypes[this.reasonTypeIndex] || this.reasonTypes[3]
       const result = await callAiemsFunction('submit-leave', {
         session: getSession(),
-        courseId: course._id,
-        date: this.date,
-        reason: this.reason.trim()
+        courseOfferingId: course.courseOfferingId,
+        leaveDate: this.date,
+        reasonType: reasonType.value,
+        reasonDetail
       })
+
       if (result.ok) {
-        this.reason = ''
+        this.reasonDetail = ''
         uni.showToast({ title: 'Submitted', icon: 'success' })
-        this.load()
+        this.load(true)
+        return
       }
+
+      uni.showToast({ title: result.message || 'Submit failed.', icon: 'none' })
+    },
+    changeReasonType(event) {
+      this.reasonTypeIndex = Number(event.detail.value)
     },
     changeCourse(event) {
       this.courseIndex = Number(event.detail.value)
+    },
+    changeDate(event) {
+      this.date = event.detail.value
     },
     async review(item, decision) {
       const result = await callAiemsFunction('review-leave', {
         session: getSession(),
         leaveId: item._id,
-        decision
+        decision,
+        reviewComment: this.reviewComment.trim()
       })
+
       if (result.ok) {
         uni.showToast({ title: decision === 'approved' ? 'Approved' : 'Rejected', icon: 'success' })
-        this.load()
+        this.load(true)
+        return
       }
+
+      uni.showToast({ title: result.message || 'Review failed.', icon: 'none' })
+    },
+    async cancelLeave(item) {
+      const result = await callAiemsFunction('cancel-leave', {
+        session: getSession(),
+        leaveId: item._id
+      })
+
+      if (result.ok) {
+        uni.showToast({ title: 'Cancelled', icon: 'success' })
+        this.load(true)
+        return
+      }
+
+      uni.showToast({ title: result.message || 'Cancel failed.', icon: 'none' })
     },
     backHome() {
       uni.reLaunch({ url: dashboardUrl(this.session.role) })
+    },
+    formatCourseLabel(course) {
+      if (!course) {
+        return 'Unnamed course'
+      }
+      return [course.code, course.name].filter(Boolean).join(' ').trim() || 'Unnamed course'
+    },
+    leaveTitle(item) {
+      return [item.studentName || this.session.displayName, item.courseName].filter(Boolean).join(' - ')
+    },
+    reasonTypeLabel(value) {
+      const type = this.reasonTypes.find(item => item.value === value)
+      return type ? type.label : value
     }
   }
 }
@@ -131,5 +245,9 @@ export default {
 
 .full-btn {
   width: 100%;
+}
+
+.top-actions {
+  margin-top: 0;
 }
 </style>

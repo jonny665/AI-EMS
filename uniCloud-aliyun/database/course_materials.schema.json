@@ -50,5 +50,23 @@
     "updated_at": {
       "bsonType": "number"
     }
-  }
+  },
+  "indexes": [
+    {
+      "name": "course_updated_idx",
+      "key": {
+        "course_offering_id": 1,
+        "updated_at": -1
+      },
+      "unique": false
+    },
+    {
+      "name": "public_course_idx",
+      "key": {
+        "is_public_to_students": 1,
+        "course_offering_id": 1
+      },
+      "unique": false
+    }
+  ]
 }

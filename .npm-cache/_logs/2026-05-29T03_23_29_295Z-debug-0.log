@@ -1,0 +1,1430 @@
+0 verbose cli E:\Program Files\nodejs\node.exe E:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.6.1
+2 info using node@v24.11.0
+3 silly config load:file:E:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\15099\Desktop\AI-EMS\.npmrc
+5 silly config load:file:C:\Users\15099\.npmrc
+6 silly config load:file:E:\Program Files\nodejs\node_global\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install" "--cache" ".npm-cache"
+9 verbose logfile logs-max:10 dir:C:\Users\15099\Desktop\AI-EMS\.npm-cache\_logs\2026-05-29T03_23_29_295Z-
+10 verbose logfile C:\Users\15099\Desktop\AI-EMS\.npm-cache\_logs\2026-05-29T03_23_29_295Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 silly idealTree buildDeps
+14 http fetch GET https://registry.npmjs.org/npm attempt 1 failed with EACCES
+15 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\acorn' ]
+16 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\core-js-pure' ]
+17 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\core-js' ]
+18 silly reify mark retired [
+18 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\electron-to-chromium'
+18 silly reify ]
+19 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\fsevents' ]
+20 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\hasown' ]
+21 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\local-pkg' ]
+22 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\mlly' ]
+23 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\rollup' ]
+24 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\terser' ]
+25 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\tinycolor2' ]
+26 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\tapable' ]
+27 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\ufo' ]
+28 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\xregexp' ]
+29 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\yaml' ]
+30 silly reify mark retired [
+30 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\compat-data'
+30 silly reify ]
+31 silly reify mark retired [
+31 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\generator'
+31 silly reify ]
+32 silly reify mark retired [
+32 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-create-class-features-plugin'
+32 silly reify ]
+33 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helpers' ]
+34 silly reify mark retired [
+34 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-bugfix-safari-rest-destructuring-rhs-array'
+34 silly reify ]
+35 silly reify mark retired [
+35 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-transform-async-generator-functions'
+35 silly reify ]
+36 silly reify mark retired [
+36 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-transform-duplicate-named-capturing-groups-regex'
+36 silly reify ]
+37 silly reify mark retired [
+37 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-transform-modules-systemjs'
+37 silly reify ]
+38 silly reify mark retired [
+38 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-transform-named-capturing-groups-regex'
+38 silly reify ]
+39 silly reify mark retired [
+39 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-transform-regenerator'
+39 silly reify ]
+40 silly reify mark retired [
+40 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\preset-env'
+40 silly reify ]
+41 silly reify mark retired [
+41 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\runtime-corejs3'
+41 silly reify ]
+42 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\traverse' ]
+43 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\types' ]
+44 silly reify mark retired [
+44 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-app'
+44 silly reify ]
+45 silly reify mark retired [
+45 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-cloud'
+45 silly reify ]
+46 silly reify mark retired [
+46 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-cli-shared'
+46 silly reify ]
+47 silly reify mark retired [
+47 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-components'
+47 silly reify ]
+48 silly reify mark retired [
+48 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-console'
+48 silly reify ]
+49 silly reify mark retired [
+49 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-h5'
+49 silly reify ]
+50 silly reify mark retired [
+50 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-h5-vue'
+50 silly reify ]
+51 silly reify mark retired [
+51 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-h5-vite'
+51 silly reify ]
+52 silly reify mark retired [
+52 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-i18n'
+52 silly reify ]
+53 silly reify mark retired [
+53 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-nvue-styler'
+53 silly reify ]
+54 silly reify mark retired [
+54 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-push'
+54 silly reify ]
+55 silly reify mark retired [
+55 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-stat'
+55 silly reify ]
+56 silly reify mark retired [
+56 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\vite-plugin-uni'
+56 silly reify ]
+57 silly reify mark retired [
+57 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\aix-ppc64'
+57 silly reify ]
+58 silly reify mark retired [
+58 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\android-arm'
+58 silly reify ]
+59 silly reify mark retired [
+59 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\android-arm64'
+59 silly reify ]
+60 silly reify mark retired [
+60 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\darwin-arm64'
+60 silly reify ]
+61 silly reify mark retired [
+61 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\android-x64'
+61 silly reify ]
+62 silly reify mark retired [
+62 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-shared'
+62 silly reify ]
+63 silly reify mark retired [
+63 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\freebsd-x64'
+63 silly reify ]
+64 silly reify mark retired [
+64 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\darwin-x64'
+64 silly reify ]
+65 silly reify mark retired [
+65 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\freebsd-arm64'
+65 silly reify ]
+66 silly reify mark retired [
+66 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-arm'
+66 silly reify ]
+67 silly reify mark retired [
+67 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-ia32'
+67 silly reify ]
+68 silly reify mark retired [
+68 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-arm64'
+68 silly reify ]
+69 silly reify mark retired [
+69 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-loong64'
+69 silly reify ]
+70 silly reify mark retired [
+70 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-mips64el'
+70 silly reify ]
+71 silly reify mark retired [
+71 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-ppc64'
+71 silly reify ]
+72 silly reify mark retired [
+72 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-riscv64'
+72 silly reify ]
+73 silly reify mark retired [
+73 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-s390x'
+73 silly reify ]
+74 silly reify mark retired [
+74 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-x64'
+74 silly reify ]
+75 silly reify mark retired [
+75 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\netbsd-x64'
+75 silly reify ]
+76 silly reify mark retired [
+76 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\openbsd-x64'
+76 silly reify ]
+77 silly reify mark retired [
+77 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\sunos-x64'
+77 silly reify ]
+78 silly reify mark retired [
+78 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\win32-arm64'
+78 silly reify ]
+79 silly reify mark retired [
+79 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\win32-ia32'
+79 silly reify ]
+80 silly reify mark retired [
+80 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-android-arm-eabi'
+80 silly reify ]
+81 silly reify mark retired [
+81 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-darwin-arm64'
+81 silly reify ]
+82 silly reify mark retired [
+82 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-freebsd-arm64'
+82 silly reify ]
+83 silly reify mark retired [
+83 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-android-arm64'
+83 silly reify ]
+84 silly reify mark retired [
+84 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-freebsd-x64'
+84 silly reify ]
+85 silly reify mark retired [
+85 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-darwin-x64'
+85 silly reify ]
+86 silly reify mark retired [
+86 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm-musleabihf'
+86 silly reify ]
+87 silly reify mark retired [
+87 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm-gnueabihf'
+87 silly reify ]
+88 silly reify mark retired [
+88 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm64-gnu'
+88 silly reify ]
+89 silly reify mark retired [
+89 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm64-musl'
+89 silly reify ]
+90 silly reify mark retired [
+90 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-loong64-gnu'
+90 silly reify ]
+91 silly reify mark retired [
+91 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-loong64-musl'
+91 silly reify ]
+92 silly reify mark retired [
+92 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-ppc64-gnu'
+92 silly reify ]
+93 silly reify mark retired [
+93 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-ppc64-musl'
+93 silly reify ]
+94 silly reify mark retired [
+94 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-riscv64-musl'
+94 silly reify ]
+95 silly reify mark retired [
+95 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-s390x-gnu'
+95 silly reify ]
+96 silly reify mark retired [
+96 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-riscv64-gnu'
+96 silly reify ]
+97 silly reify mark retired [
+97 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-x64-musl'
+97 silly reify ]
+98 silly reify mark retired [
+98 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-x64-gnu'
+98 silly reify ]
+99 silly reify mark retired [
+99 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-openbsd-x64'
+99 silly reify ]
+100 silly reify mark retired [
+100 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-openharmony-arm64'
+100 silly reify ]
+101 silly reify mark retired [
+101 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-win32-x64-msvc'
+101 silly reify ]
+102 silly reify mark retired [
+102 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-win32-x64-gnu'
+102 silly reify ]
+103 silly reify mark retired [
+103 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-win32-arm64-msvc'
+103 silly reify ]
+104 silly reify mark retired [
+104 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-win32-ia32-msvc'
+104 silly reify ]
+105 silly reify mark retired [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@types\\estree' ]
+106 silly reify mark retired [
+106 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vitejs\\plugin-basic-ssl'
+106 silly reify ]
+107 silly reify mark retired [
+107 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\autoprefixer',
+107 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\autoprefixer',
+107 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\autoprefixer.cmd',
+107 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\autoprefixer.ps1'
+107 silly reify ]
+108 silly reify mark retired [
+108 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\baseline-browser-mapping',
+108 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\baseline-browser-mapping',
+108 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\baseline-browser-mapping.cmd',
+108 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\baseline-browser-mapping.ps1'
+108 silly reify ]
+109 silly reify mark retired [
+109 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\browserslist',
+109 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist',
+109 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist.cmd',
+109 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist.ps1'
+109 silly reify ]
+110 silly reify mark retired [
+110 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\browserslist-to-esbuild',
+110 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist-to-esbuild',
+110 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist-to-esbuild.cmd',
+110 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist-to-esbuild.ps1'
+110 silly reify ]
+111 silly reify mark retired [
+111 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\cssesc',
+111 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\cssesc',
+111 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\cssesc.cmd',
+111 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\cssesc.ps1'
+111 silly reify ]
+112 silly reify mark retired [
+112 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\esbuild',
+112 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\esbuild',
+112 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\esbuild.cmd',
+112 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\esbuild.ps1'
+112 silly reify ]
+113 silly reify mark retired [
+113 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\jsesc',
+113 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\jsesc',
+113 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\jsesc.cmd',
+113 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\jsesc.ps1'
+113 silly reify ]
+114 silly reify mark retired [
+114 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\json5',
+114 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\json5',
+114 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\json5.cmd',
+114 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\json5.ps1'
+114 silly reify ]
+115 silly reify mark retired [
+115 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\mime',
+115 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\mime',
+115 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\mime.cmd',
+115 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\mime.ps1'
+115 silly reify ]
+116 silly reify mark retired [
+116 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\nanoid',
+116 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\nanoid',
+116 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\nanoid.cmd',
+116 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\nanoid.ps1'
+116 silly reify ]
+117 silly reify mark retired [
+117 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\regjsparser',
+117 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\regjsparser',
+117 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\regjsparser.cmd',
+117 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\regjsparser.ps1'
+117 silly reify ]
+118 silly reify mark retired [
+118 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\resolve',
+118 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\resolve',
+118 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\resolve.cmd',
+118 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\resolve.ps1'
+118 silly reify ]
+119 silly reify mark retired [
+119 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\semver',
+119 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\semver',
+119 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\semver.cmd',
+119 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\semver.ps1'
+119 silly reify ]
+120 silly reify mark retired [
+120 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\mime',
+120 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\.bin\\mime',
+120 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\.bin\\mime.cmd',
+120 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\.bin\\mime.ps1'
+120 silly reify ]
+121 silly reify mark retired [
+121 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\mime',
+121 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\.bin\\mime',
+121 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\.bin\\mime.cmd',
+121 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\.bin\\mime.ps1'
+121 silly reify ]
+122 silly reify mark retired [
+122 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\update-browserslist-db',
+122 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\update-browserslist-db',
+122 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\update-browserslist-db.cmd',
+122 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\update-browserslist-db.ps1'
+122 silly reify ]
+123 silly reify mark retired [
+123 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\vite',
+123 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\vite',
+123 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\vite.cmd',
+123 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\vite.ps1'
+123 silly reify ]
+124 silly reify mark retired [
+124 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\resolve',
+124 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\.bin\\resolve',
+124 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\.bin\\resolve.cmd',
+124 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\.bin\\resolve.ps1'
+124 silly reify ]
+125 silly reify mark retired [
+125 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\parser',
+125 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\parser',
+125 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\parser.cmd',
+125 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\parser.ps1'
+125 silly reify ]
+126 silly reify mark retired [
+126 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\@babel\\code-frame'
+126 silly reify ]
+127 silly reify mark retired [
+127 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\@babel\\parser',
+127 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\.bin\\parser',
+127 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\.bin\\parser.cmd',
+127 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\.bin\\parser.ps1'
+127 silly reify ]
+128 silly reify mark retired [
+128 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@babel\\code-frame'
+128 silly reify ]
+129 silly reify mark retired [
+129 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\compiler-core'
+129 silly reify ]
+130 silly reify mark retired [
+130 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\compiler-dom'
+130 silly reify ]
+131 silly reify mark retired [
+131 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\compiler-sfc'
+131 silly reify ]
+132 silly reify mark retired [
+132 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\shared'
+132 silly reify ]
+133 silly reify mark retired [
+133 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\compiler-ssr'
+133 silly reify ]
+134 silly reify mark retired [
+134 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@babel\\parser',
+134 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\.bin\\parser',
+134 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\.bin\\parser.cmd',
+134 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\.bin\\parser.ps1'
+134 silly reify ]
+135 silly reify mark retired [
+135 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-jsx\\node_modules\\@vue\\shared'
+135 silly reify ]
+136 silly reify moves {
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\acorn': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.acorn-L5spDGZv',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\core-js-pure': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.core-js-pure-MB3loNo7',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\core-js': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.core-js-fcxeTPlE',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\electron-to-chromium': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.electron-to-chromium-6wONSFYr',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\fsevents': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.fsevents-ymYTVa24',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\hasown': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.hasown-pzhYZ0vT',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\local-pkg': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.local-pkg-1NRRE56e',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\mlly': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.mlly-otn7LDg4',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\rollup': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.rollup-yUu9IxmX',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\terser': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.terser-RESTZRIF',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\tinycolor2': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.tinycolor2-r4YG893D',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\tapable': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.tapable-0CxQBcAJ',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\ufo': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.ufo-gfIdQlfa',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\xregexp': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.xregexp-Gk9ekoPu',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\yaml': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.yaml-JqKRSdVN',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\compat-data': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.compat-data-8ZGRyz9s',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\generator': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.generator-AKuz8M3L',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-create-class-features-plugin': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.helper-create-class-features-plugin-fnbhanss',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helpers': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.helpers-PedWUNVT',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-bugfix-safari-rest-destructuring-rhs-array': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.plugin-bugfix-safari-rest-destructuring-rhs-array-bwueRV0n',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-transform-async-generator-functions': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.plugin-transform-async-generator-functions-IcVhqOaY',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-transform-duplicate-named-capturing-groups-regex': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.plugin-transform-duplicate-named-capturing-groups-regex-sJDenPWC',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-transform-modules-systemjs': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.plugin-transform-modules-systemjs-6BRusamx',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-transform-named-capturing-groups-regex': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.plugin-transform-named-capturing-groups-regex-X0OANgiq',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\plugin-transform-regenerator': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.plugin-transform-regenerator-nBSJvzet',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\preset-env': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.preset-env-kkG9a5Se',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\runtime-corejs3': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.runtime-corejs3-Jc9JVwES',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\traverse': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.traverse-wol0KdCl',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\types': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.types-cfcvn7e2',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-app': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-app-nM4xPqUr',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-cloud': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-cloud-zhjAkP3e',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-cli-shared': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-cli-shared-DimeFsL6',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-components': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-components-bjJU8zEb',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-console': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-console-SwhXg6id',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-h5': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-h5-8x05btAj',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-h5-vue': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-h5-vue-xDa6vsjV',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-h5-vite': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-h5-vite-GNxuHV2s',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-i18n': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-i18n-idObNS7j',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-nvue-styler': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-nvue-styler-yzpcbuEP',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-push': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-push-xJg5fV6s',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-stat': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-stat-wmvdK5Ma',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\vite-plugin-uni': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.vite-plugin-uni-ppX294gR',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\aix-ppc64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.aix-ppc64-AWT5FiHf',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\android-arm': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.android-arm-QtHv7M6q',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\android-arm64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.android-arm64-MjI20w2W',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\darwin-arm64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.darwin-arm64-ADaUUiQ6',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\android-x64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.android-x64-QovsEJj1',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\uni-shared': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@dcloudio\\.uni-shared-E8d97qmv',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\freebsd-x64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.freebsd-x64-06yopaF6',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\darwin-x64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.darwin-x64-Jbjx2Nj2',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\freebsd-arm64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.freebsd-arm64-uhhlnEF4',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-arm': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.linux-arm-cDT6bWPc',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-ia32': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.linux-ia32-VcpmA7TX',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-arm64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.linux-arm64-LmvB2MaS',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-loong64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.linux-loong64-SokvE56H',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-mips64el': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.linux-mips64el-juBVlYYP',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-ppc64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.linux-ppc64-ZBHGEpNb',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-riscv64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.linux-riscv64-X9Ob0uRE',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-s390x': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.linux-s390x-ZHIsrcpt',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-x64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.linux-x64-BAfCN15q',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\netbsd-x64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.netbsd-x64-LtBP7ekp',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\openbsd-x64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.openbsd-x64-x659LB5p',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\sunos-x64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.sunos-x64-otUjfyyl',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\win32-arm64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.win32-arm64-URHhj6O2',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\win32-ia32': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\.win32-ia32-jnZzAe8c',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-android-arm-eabi': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-android-arm-eabi-8YADZzRI',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-darwin-arm64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-darwin-arm64-dC051rah',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-freebsd-arm64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-freebsd-arm64-1CRLD8dY',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-android-arm64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-android-arm64-FktE0Llh',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-freebsd-x64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-freebsd-x64-MMTweREu',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-darwin-x64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-darwin-x64-Hmn9TSWh',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm-musleabihf': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-arm-musleabihf-5BoK08Nk',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm-gnueabihf': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-arm-gnueabihf-FZd3RRIG',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm64-gnu': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-arm64-gnu-ooFs5jMJ',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm64-musl': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-arm64-musl-5qvGObtC',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-loong64-gnu': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-loong64-gnu-nLeN2qHT',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-loong64-musl': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-loong64-musl-3SW145lY',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-ppc64-gnu': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-ppc64-gnu-BipzR7DQ',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-ppc64-musl': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-ppc64-musl-GuTQOYK8',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-riscv64-musl': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-riscv64-musl-wxBPbTE6',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-s390x-gnu': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-s390x-gnu-ej7kmz4W',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-riscv64-gnu': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-riscv64-gnu-BgzKLeTB',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-x64-musl': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-x64-musl-X5V2cRey',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-x64-gnu': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-linux-x64-gnu-lctBioQb',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-openbsd-x64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-openbsd-x64-tzn8Zcov',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-openharmony-arm64': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-openharmony-arm64-ohBGeFav',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-win32-x64-msvc': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-win32-x64-msvc-xLXLnexx',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-win32-x64-gnu': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-win32-x64-gnu-Mz1ErmJe',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-win32-arm64-msvc': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-win32-arm64-msvc-EoC8inS1',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-win32-ia32-msvc': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\.rollup-win32-ia32-msvc-i7rhS6mj',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@types\\estree': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@types\\.estree-P7U3rnLi',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vitejs\\plugin-basic-ssl': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vitejs\\.plugin-basic-ssl-Po9imMmZ',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\autoprefixer': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.autoprefixer-FwwGJPb6',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\autoprefixer': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.autoprefixer-CdoDyLQR',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\autoprefixer.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.autoprefixer.cmd-3X5T2dqX',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\autoprefixer.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.autoprefixer.ps1-gNFvjAGp',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\baseline-browser-mapping': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.baseline-browser-mapping-VgWuXJRc',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\baseline-browser-mapping': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.baseline-browser-mapping-BZUcQARS',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\baseline-browser-mapping.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.baseline-browser-mapping.cmd-IY8CdwPs',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\baseline-browser-mapping.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.baseline-browser-mapping.ps1-w6pTd0A7',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\browserslist': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.browserslist-27pdJZqy',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.browserslist-HOl8Coji',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.browserslist.cmd-eWqQvUF8',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.browserslist.ps1-7IzEMLap',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\browserslist-to-esbuild': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.browserslist-to-esbuild-4baj0FH3',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist-to-esbuild': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.browserslist-to-esbuild-gamqFCtV',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist-to-esbuild.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.browserslist-to-esbuild.cmd-hkoFbF05',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\browserslist-to-esbuild.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.browserslist-to-esbuild.ps1-FXoK7BRB',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\cssesc': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.cssesc-f4prqoLH',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\cssesc': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.cssesc-RdG2toNp',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\cssesc.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.cssesc.cmd-mSLqrkJd',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\cssesc.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.cssesc.ps1-nuZp9Cte',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\esbuild': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.esbuild-q3WfHf91',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\esbuild': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.esbuild-ndXjxDSO',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\esbuild.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.esbuild.cmd-Ixgbv55y',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\esbuild.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.esbuild.ps1-ArIYBukc',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\jsesc': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.jsesc-tmkeiSYW',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\jsesc': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.jsesc-hCvscZTj',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\jsesc.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.jsesc.cmd-Bo8tl21u',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\jsesc.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.jsesc.ps1-yAib11nQ',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\json5': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.json5-UgjWN0xS',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\json5': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.json5-YSmRIynG',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\json5.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.json5.cmd-EFP3hMBt',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\json5.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.json5.ps1-W2Vjvp9S',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\mime': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.mime-wjGqqvBO',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\mime': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.mime-OG0Yu35M',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\mime.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.mime.cmd-zABnNj10',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\mime.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.mime.ps1-lVtKaBOa',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\nanoid': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.nanoid-iM4YoHcN',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\nanoid': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.nanoid-JNhKXTkZ',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\nanoid.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.nanoid.cmd-frACAK2V',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\nanoid.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.nanoid.ps1-Fm3F9TzB',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\regjsparser': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.regjsparser-fBOTOkPO',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\regjsparser': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.regjsparser-yEIdGlja',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\regjsparser.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.regjsparser.cmd-b4FV3H8W',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\regjsparser.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.regjsparser.ps1-vY1DJfI3',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\resolve': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.resolve-ZfHRy8Ev',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\resolve': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.resolve-n3zLQqYl',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\resolve.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.resolve.cmd-qxGetydg',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\resolve.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.resolve.ps1-FZhdccC4',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\semver': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.semver-f40oFxmL',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\semver': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.semver-cBppR5uP',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\semver.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.semver.cmd-szVapZOO',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\semver.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.semver.ps1-ar1cBmDc',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\mime': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\.mime-CNK6HBkD',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\.bin\\mime': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\.bin\\.mime-MFVQVqz6',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\.bin\\mime.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\.bin\\.mime.cmd-VAJiRUlh',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\.bin\\mime.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\send\\node_modules\\.bin\\.mime.ps1-gi8BLllZ',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\mime': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\.mime-j0Vbkltk',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\.bin\\mime': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\.bin\\.mime-UV2hkEIS',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\.bin\\mime.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\.bin\\.mime.cmd-tWptZ5Sr',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\.bin\\mime.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\serve-static\\node_modules\\.bin\\.mime.ps1-5ggy6q6G',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\update-browserslist-db': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.update-browserslist-db-WTA01BJp',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\update-browserslist-db': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.update-browserslist-db-IcF8IBd4',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\update-browserslist-db.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.update-browserslist-db.cmd-ZXbSqyau',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\update-browserslist-db.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.update-browserslist-db.ps1-AD9wBL67',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\vite': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.vite-Y9Edz7vn',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\vite': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.vite-8uypK1Th',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\vite.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.vite.cmd-4IsMvWPe',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\vite.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.vite.ps1-KmS1gcWs',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\resolve': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\.resolve-Tv8ZLqeu',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\.bin\\resolve': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\.bin\\.resolve-Xc3GF3h2',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\.bin\\resolve.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\.bin\\.resolve.cmd-uODvhPCU',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\.bin\\resolve.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\helper-define-polyfill-provider\\node_modules\\.bin\\.resolve.ps1-Z6DYHlNa',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\parser': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\.parser-p0vMBdgw',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\parser': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.parser-kSTtChWO',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\parser.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.parser.cmd-fVhWAwaL',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\parser.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\.bin\\.parser.ps1-nH5jvYeU',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\@babel\\code-frame': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\@babel\\.code-frame-H9KC0R7o',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\@babel\\parser': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\@babel\\.parser-pjyHHbmd',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\.bin\\parser': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\.bin\\.parser-wgCUpw1R',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\.bin\\parser.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\.bin\\.parser.cmd-99F9jsEq',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\.bin\\parser.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@babel\\template\\node_modules\\.bin\\.parser.ps1-Za1pN9g3',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@babel\\code-frame': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@babel\\.code-frame-wNXQ1weM',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\compiler-core': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\.compiler-core-JJpazEVc',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\compiler-dom': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\.compiler-dom-M3vB6fRI',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\compiler-sfc': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\.compiler-sfc-K9XqLUH6',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\shared': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\.shared-s1brrlGK',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\compiler-ssr': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@vue\\.compiler-ssr-Xx4z5HHO',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@babel\\parser': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\@babel\\.parser-7xJwhsLr',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\.bin\\parser': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\.bin\\.parser-poxi9Anz',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\.bin\\parser.cmd': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\.bin\\.parser.cmd-NVAn6pbA',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\.bin\\parser.ps1': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-resolve-type\\node_modules\\.bin\\.parser.ps1-vCvZwmOj',
+136 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-jsx\\node_modules\\@vue\\shared': 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@vue\\babel-plugin-jsx\\node_modules\\@vue\\.shared-vA1z4xCz'
+136 silly reify }
+137 silly audit bulk request {
+137 silly audit   '@ampproject/remapping': [ '2.3.0' ],
+137 silly audit   '@babel/code-frame': [ '7.24.7', '7.29.0' ],
+137 silly audit   '@babel/compat-data': [ '7.29.3' ],
+137 silly audit   '@babel/core': [ '7.25.2' ],
+137 silly audit   '@babel/generator': [ '7.29.1' ],
+137 silly audit   '@babel/parser': [ '7.29.3', '7.25.6' ],
+137 silly audit   '@babel/types': [ '7.29.0', '7.25.6' ],
+137 silly audit   '@babel/helper-annotate-as-pure': [ '7.27.3' ],
+137 silly audit   '@babel/helper-compilation-targets': [ '7.28.6' ],
+137 silly audit   '@babel/helper-create-class-features-plugin': [ '7.29.3' ],
+137 silly audit   '@babel/helper-create-regexp-features-plugin': [ '7.28.5' ],
+137 silly audit   '@babel/helper-define-polyfill-provider': [ '0.6.8' ],
+137 silly audit   debug: [ '4.4.3', '2.6.9', '4.3.7' ],
+137 silly audit   resolve: [ '1.22.12', '1.22.8' ],
+137 silly audit   '@babel/helper-globals': [ '7.28.0' ],
+137 silly audit   '@babel/helper-member-expression-to-functions': [ '7.28.5' ],
+137 silly audit   '@babel/helper-module-imports': [ '7.28.6' ],
+137 silly audit   '@babel/helper-module-transforms': [ '7.28.6' ],
+137 silly audit   '@babel/helper-optimise-call-expression': [ '7.27.1' ],
+137 silly audit   '@babel/helper-plugin-utils': [ '7.28.6' ],
+137 silly audit   '@babel/helper-remap-async-to-generator': [ '7.27.1' ],
+137 silly audit   '@babel/helper-replace-supers': [ '7.28.6' ],
+137 silly audit   '@babel/helper-skip-transparent-expression-wrappers': [ '7.27.1' ],
+137 silly audit   '@babel/helper-string-parser': [ '7.27.1' ],
+137 silly audit   '@babel/helper-validator-identifier': [ '7.28.5' ],
+137 silly audit   '@babel/helper-validator-option': [ '7.27.1' ],
+137 silly audit   '@babel/helper-wrap-function': [ '7.28.6' ],
+137 silly audit   '@babel/helpers': [ '7.29.2' ],
+137 silly audit   '@babel/highlight': [ '7.25.9' ],
+137 silly audit   '@babel/plugin-bugfix-firefox-class-in-computed-class-key': [ '7.28.5' ],
+137 silly audit   '@babel/plugin-bugfix-safari-class-field-initializer-scope': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-bugfix-safari-rest-destructuring-rhs-array': [ '7.29.3' ],
+137 silly audit   '@babel/plugin-bugfix-v8-spread-parameters-in-optional-chaining': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-bugfix-v8-static-class-fields-redefine-readonly': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-proposal-private-property-in-object': [ '7.21.0-placeholder-for-preset-env.2' ],
+137 silly audit   '@babel/plugin-syntax-import-assertions': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-syntax-import-attributes': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-syntax-import-meta': [ '7.10.4' ],
+137 silly audit   '@babel/plugin-syntax-jsx': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-syntax-typescript': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-syntax-unicode-sets-regex': [ '7.18.6' ],
+137 silly audit   '@babel/plugin-transform-arrow-functions': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-async-generator-functions': [ '7.29.0' ],
+137 silly audit   '@babel/plugin-transform-async-to-generator': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-block-scoped-functions': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-block-scoping': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-class-properties': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-class-static-block': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-classes': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-computed-properties': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-destructuring': [ '7.28.5' ],
+137 silly audit   '@babel/plugin-transform-dotall-regex': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-duplicate-keys': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-duplicate-named-capturing-groups-regex': [ '7.29.0' ],
+137 silly audit   '@babel/plugin-transform-dynamic-import': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-explicit-resource-management': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-exponentiation-operator': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-export-namespace-from': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-for-of': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-function-name': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-json-strings': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-literals': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-logical-assignment-operators': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-member-expression-literals': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-modules-amd': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-modules-commonjs': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-modules-systemjs': [ '7.29.4' ],
+137 silly audit   '@babel/plugin-transform-modules-umd': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-named-capturing-groups-regex': [ '7.29.0' ],
+137 silly audit   '@babel/plugin-transform-new-target': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-nullish-coalescing-operator': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-numeric-separator': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-object-rest-spread': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-object-super': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-optional-catch-binding': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-optional-chaining': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-parameters': [ '7.27.7' ],
+137 silly audit   '@babel/plugin-transform-private-methods': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-private-property-in-object': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-property-literals': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-regenerator': [ '7.29.0' ],
+137 silly audit   '@babel/plugin-transform-regexp-modifiers': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-reserved-words': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-shorthand-properties': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-spread': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-sticky-regex': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-template-literals': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-typeof-symbol': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-typescript': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-unicode-escapes': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-unicode-property-regex': [ '7.28.6' ],
+137 silly audit   '@babel/plugin-transform-unicode-regex': [ '7.27.1' ],
+137 silly audit   '@babel/plugin-transform-unicode-sets-regex': [ '7.28.6' ],
+137 silly audit   '@babel/preset-env': [ '7.29.5' ],
+137 silly audit   '@babel/preset-modules': [ '0.1.6-no-external-plugins' ],
+137 silly audit   '@babel/runtime-corejs3': [ '7.29.2' ],
+137 silly audit   '@babel/template': [ '7.28.6' ],
+137 silly audit   picocolors: [ '1.1.1', '1.1.0' ],
+137 silly audit   '@babel/traverse': [ '7.29.0' ],
+137 silly audit   '@dcloudio/types': [ '3.4.31' ],
+137 silly audit   '@dcloudio/uni-app': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@dcloudio/uni-cli-shared': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   picomatch: [ '4.0.4', '2.3.2' ],
+137 silly audit   'unplugin-auto-import': [ '19.1.0' ],
+137 silly audit   'magic-string': [ '0.30.21', '0.30.11' ],
+137 silly audit   '@dcloudio/uni-cloud': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@dcloudio/uni-components': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@dcloudio/uni-console': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@dcloudio/uni-h5': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@dcloudio/uni-h5-vite': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@dcloudio/uni-h5-vue': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@dcloudio/uni-i18n': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@dcloudio/uni-nvue-styler': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   postcss: [ '8.5.6', '8.5.15' ],
+137 silly audit   '@dcloudio/uni-push': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@dcloudio/uni-shared': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@dcloudio/uni-stat': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@dcloudio/vite-plugin-uni': [ '3.0.0-alpha-5010120260522001' ],
+137 silly audit   '@esbuild/aix-ppc64': [ '0.20.2' ],
+137 silly audit   '@esbuild/android-arm': [ '0.20.2' ],
+137 silly audit   '@esbuild/android-arm64': [ '0.20.2' ],
+137 silly audit   '@esbuild/android-x64': [ '0.20.2' ],
+137 silly audit   '@esbuild/darwin-arm64': [ '0.20.2' ],
+137 silly audit   '@esbuild/darwin-x64': [ '0.20.2' ],
+137 silly audit   '@esbuild/freebsd-arm64': [ '0.20.2' ],
+137 silly audit   '@esbuild/freebsd-x64': [ '0.20.2' ],
+137 silly audit   '@esbuild/linux-arm': [ '0.20.2' ],
+137 silly audit   '@esbuild/linux-arm64': [ '0.20.2' ],
+137 silly audit   '@esbuild/linux-ia32': [ '0.20.2' ],
+137 silly audit   '@esbuild/linux-loong64': [ '0.20.2' ],
+137 silly audit   '@esbuild/linux-mips64el': [ '0.20.2' ],
+137 silly audit   '@esbuild/linux-ppc64': [ '0.20.2' ],
+137 silly audit   '@esbuild/linux-riscv64': [ '0.20.2' ],
+137 silly audit   '@esbuild/linux-s390x': [ '0.20.2' ],
+137 silly audit   '@esbuild/linux-x64': [ '0.20.2' ],
+137 silly audit   '@esbuild/netbsd-x64': [ '0.20.2' ],
+137 silly audit   '@esbuild/openbsd-x64': [ '0.20.2' ],
+137 silly audit   '@esbuild/sunos-x64': [ '0.20.2' ],
+137 silly audit   '@esbuild/win32-arm64': [ '0.20.2' ],
+137 silly audit   '@esbuild/win32-ia32': [ '0.20.2' ],
+137 silly audit   '@esbuild/win32-x64': [ '0.20.2' ],
+137 silly audit   '@intlify/core-base': [ '9.1.9' ],
+137 silly audit   '@intlify/devtools-if': [ '9.1.9' ],
+137 silly audit   '@intlify/message-compiler': [ '9.1.9' ],
+137 silly audit   '@intlify/message-resolver': [ '9.1.9' ],
+137 silly audit   '@intlify/runtime': [ '9.1.9' ],
+137 silly audit   '@intlify/shared': [ '9.1.9' ],
+137 silly audit   '@intlify/vue-devtools': [ '9.1.9' ],
+137 silly audit   '@jridgewell/gen-mapping': [ '0.3.13' ],
+137 silly audit   '@jridgewell/remapping': [ '2.3.5' ],
+137 silly audit   '@jridgewell/resolve-uri': [ '3.1.2' ],
+137 silly audit   '@jridgewell/source-map': [ '0.3.11' ],
+137 silly audit   '@jridgewell/sourcemap-codec': [ '1.5.5' ],
+137 silly audit   '@jridgewell/trace-mapping': [ '0.3.31' ],
+137 silly audit   '@nodelib/fs.scandir': [ '2.1.5' ],
+137 silly audit   '@nodelib/fs.stat': [ '2.0.5' ],
+137 silly audit   '@nodelib/fs.walk': [ '1.2.8' ],
+137 silly audit   '@rollup/pluginutils': [ '5.1.0' ],
+137 silly audit   '@rollup/rollup-android-arm-eabi': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-android-arm64': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-darwin-arm64': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-darwin-x64': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-freebsd-arm64': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-freebsd-x64': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-arm-gnueabihf': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-arm-musleabihf': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-arm64-gnu': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-arm64-musl': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-loong64-gnu': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-loong64-musl': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-ppc64-gnu': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-ppc64-musl': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-riscv64-gnu': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-riscv64-musl': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-s390x-gnu': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-x64-gnu': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-linux-x64-musl': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-openbsd-x64': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-openharmony-arm64': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-win32-arm64-msvc': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-win32-ia32-msvc': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-win32-x64-gnu': [ '4.60.4' ],
+137 silly audit   '@rollup/rollup-win32-x64-msvc': [ '4.60.4' ],
+137 silly audit   '@types/estree': [ '1.0.9', '1.0.8' ],
+137 silly audit   '@vitejs/plugin-basic-ssl': [ '1.2.0' ],
+137 silly audit   '@vitejs/plugin-legacy': [ '5.3.2' ],
+137 silly audit   '@vitejs/plugin-vue': [ '5.2.4' ],
+137 silly audit   '@vitejs/plugin-vue-jsx': [ '3.1.0' ],
+137 silly audit   '@vue/babel-helper-vue-transform-on': [ '1.5.0' ],
+137 silly audit   '@vue/babel-plugin-jsx': [ '1.5.0' ],
+137 silly audit   '@vue/shared': [ '3.5.34', '3.4.21' ],
+137 silly audit   '@vue/babel-plugin-resolve-type': [ '1.5.0' ],
+137 silly audit   '@vue/compiler-core': [ '3.5.34', '3.4.21' ],
+137 silly audit   '@vue/compiler-dom': [ '3.5.34', '3.4.21' ],
+137 silly audit   '@vue/compiler-sfc': [ '3.5.34', '3.4.21' ],
+137 silly audit   '@vue/compiler-ssr': [ '3.5.34', '3.4.21' ],
+137 silly audit   entities: [ '4.5.0', '7.0.1' ],
+137 silly audit   '@vue/devtools-api': [ '6.6.4' ],
+137 silly audit   '@vue/reactivity': [ '3.4.21' ],
+137 silly audit   '@vue/runtime-core': [ '3.4.21' ],
+137 silly audit   '@vue/runtime-dom': [ '3.4.21' ],
+137 silly audit   '@vue/server-renderer': [ '3.4.21' ],
+137 silly audit   accepts: [ '1.3.8' ],
+137 silly audit   acorn: [ '8.16.0' ],
+137 silly audit   'adm-zip': [ '0.5.16' ],
+137 silly audit   'ansi-styles': [ '3.2.1' ],
+137 silly audit   anymatch: [ '3.1.3' ],
+137 silly audit   'array-flatten': [ '1.1.1' ],
+137 silly audit   autoprefixer: [ '10.4.20' ],
+137 silly audit   'babel-plugin-polyfill-corejs2': [ '0.4.17' ],
+137 silly audit   'babel-plugin-polyfill-corejs3': [ '0.14.2' ],
+137 silly audit   'babel-plugin-polyfill-regenerator': [ '0.6.8' ],
+137 silly audit   base64url: [ '3.0.1' ],
+137 silly audit   'baseline-browser-mapping': [ '2.10.32' ],
+137 silly audit   'binary-extensions': [ '2.3.0' ],
+137 silly audit   'body-parser': [ '1.20.3' ],
+137 silly audit   ms: [ '2.0.0', '2.1.3' ],
+137 silly audit   qs: [ '6.13.0', '6.11.0' ],
+137 silly audit   braces: [ '3.0.3' ],
+137 silly audit   browserslist: [ '4.28.2' ],
+137 silly audit   'browserslist-to-esbuild': [ '2.1.1' ],
+137 silly audit   'buffer-from': [ '1.1.2' ],
+137 silly audit   bytes: [ '3.1.2' ],
+137 silly audit   cac: [ '6.7.9' ],
+137 silly audit   'call-bind-apply-helpers': [ '1.0.2' ],
+137 silly audit   'call-bound': [ '1.0.4' ],
+137 silly audit   'caniuse-lite': [ '1.0.30001793' ],
+137 silly audit   chalk: [ '2.4.2' ],
+137 silly audit   chokidar: [ '3.6.0' ],
+137 silly audit   'color-convert': [ '1.9.3' ],
+137 silly audit   'color-name': [ '1.1.3' ],
+137 silly audit   commander: [ '2.20.3' ],
+137 silly audit   'compare-versions': [ '3.6.0' ],
+137 silly audit   confbox: [ '0.1.8', '0.2.4' ],
+137 silly audit   'content-disposition': [ '0.5.4' ],
+137 silly audit   'content-type': [ '1.0.5' ],
+137 silly audit   'convert-source-map': [ '2.0.0' ],
+137 silly audit   cookie: [ '0.6.0' ],
+137 silly audit   'cookie-signature': [ '1.0.6' ],
+137 silly audit   'core-js': [ '3.49.0' ],
+137 silly audit   'core-js-compat': [ '3.49.0' ],
+137 silly audit   'core-js-pure': [ '3.49.0' ],
+137 silly audit   'css-font-size-keywords': [ '1.0.0' ],
+137 silly audit   'css-font-stretch-keywords': [ '1.0.1' ],
+137 silly audit   'css-font-style-keywords': [ '1.0.1' ],
+137 silly audit   'css-font-weight-keywords': [ '1.0.0' ],
+137 silly audit   'css-list-helpers': [ '2.0.0' ],
+137 silly audit   'css-system-font-keywords': [ '1.0.0' ],
+137 silly audit   cssesc: [ '3.0.0' ],
+137 silly audit   csstype: [ '3.2.3' ],
+137 silly audit   depd: [ '2.0.0' ],
+137 silly audit   destroy: [ '1.2.0' ],
+137 silly audit   'dunder-proto': [ '1.0.1' ],
+137 silly audit   'ee-first': [ '1.1.1' ],
+137 silly audit   'electron-to-chromium': [ '1.5.361' ],
+137 silly audit   encodeurl: [ '2.0.0', '1.0.2' ],
+137 silly audit   'es-define-property': [ '1.0.1' ],
+137 silly audit   'es-errors': [ '1.3.0' ],
+137 silly audit   'es-module-lexer': [ '1.5.4' ],
+137 silly audit   'es-object-atoms': [ '1.1.2' ],
+137 silly audit   esbuild: [ '0.20.2' ],
+137 silly audit   escalade: [ '3.2.0' ],
+137 silly audit   'escape-html': [ '1.0.3' ],
+137 silly audit   'escape-string-regexp': [ '1.0.5', '5.0.0' ],
+137 silly audit   'estree-walker': [ '2.0.2', '3.0.3' ],
+137 silly audit   esutils: [ '2.0.3' ],
+137 silly audit   etag: [ '1.8.1' ],
+137 silly audit   express: [ '4.20.0' ],
+137 silly audit   exsolve: [ '1.0.8' ],
+137 silly audit   'fast-glob': [ '3.3.3' ],
+137 silly audit   fastq: [ '1.20.1' ],
+137 silly audit   'fill-range': [ '7.1.1' ],
+137 silly audit   finalhandler: [ '1.2.0' ],
+137 silly audit   forwarded: [ '0.2.0' ],
+137 silly audit   'fraction.js': [ '4.3.7' ],
+137 silly audit   fresh: [ '0.5.2' ],
+137 silly audit   'fs-extra': [ '10.1.0' ],
+137 silly audit   fsevents: [ '2.3.3' ],
+137 silly audit   'function-bind': [ '1.1.2' ],
+137 silly audit   'generic-names': [ '4.0.0' ],
+137 silly audit   gensync: [ '1.0.0-beta.2' ],
+137 silly audit   'get-intrinsic': [ '1.3.0' ],
+137 silly audit   'get-proto': [ '1.0.1' ],
+137 silly audit   'glob-parent': [ '5.1.2' ],
+137 silly audit   gopd: [ '1.2.0' ],
+137 silly audit   'graceful-fs': [ '4.2.11' ],
+137 silly audit   'has-flag': [ '3.0.0' ],
+137 silly audit   'has-symbols': [ '1.1.0' ],
+137 silly audit   'hash-sum': [ '2.0.0' ],
+137 silly audit   hasown: [ '2.0.3' ],
+137 silly audit   'http-errors': [ '2.0.0' ],
+137 silly audit   'iconv-lite': [ '0.4.24' ],
+137 silly audit   'icss-replace-symbols': [ '1.1.0' ],
+137 silly audit   'icss-utils': [ '5.1.0' ],
+137 silly audit   inherits: [ '2.0.4' ],
+137 silly audit   'invert-kv': [ '3.0.1' ],
+137 silly audit   'ipaddr.js': [ '1.9.1' ],
+137 silly audit   'is-binary-path': [ '2.1.0' ],
+137 silly audit   'is-core-module': [ '2.16.2' ],
+137 silly audit   'is-extglob': [ '2.1.1' ],
+137 silly audit   'is-glob': [ '4.0.3' ],
+137 silly audit   'is-number': [ '7.0.0' ],
+137 silly audit   isbinaryfile: [ '5.0.2' ],
+137 silly audit   'js-tokens': [ '4.0.0', '9.0.1' ],
+137 silly audit   jsesc: [ '3.1.0' ],
+137 silly audit   json5: [ '2.2.3' ],
+137 silly audit   'jsonc-parser': [ '3.3.1' ],
+137 silly audit   jsonfile: [ '6.2.1' ],
+137 silly audit   lcid: [ '3.1.1' ],
+137 silly audit   lilconfig: [ '2.1.0' ],
+137 silly audit   'lines-and-columns': [ '2.0.4' ],
+137 silly audit   'loader-utils': [ '3.3.1' ],
+137 silly audit   'local-pkg': [ '1.2.1' ],
+137 silly audit   'pkg-types': [ '2.3.1', '1.3.1' ],
+137 silly audit   'localstorage-polyfill': [ '1.0.1' ],
+137 silly audit   'lodash.camelcase': [ '4.3.0' ],
+137 silly audit   'lodash.debounce': [ '4.0.8' ],
+137 silly audit   'lru-cache': [ '5.1.1' ],
+137 silly audit   'math-intrinsics': [ '1.1.0' ],
+137 silly audit   'media-typer': [ '0.3.0' ],
+137 silly audit   meow: [ '13.2.0' ],
+137 silly audit   merge: [ '2.1.1' ],
+137 silly audit   'merge-descriptors': [ '1.0.3' ],
+137 silly audit   merge2: [ '1.4.1' ],
+137 silly audit   methods: [ '1.1.2' ],
+137 silly audit   micromatch: [ '4.0.8' ],
+137 silly audit   mime: [ '3.0.0', '1.6.0' ],
+137 silly audit   'mime-db': [ '1.52.0' ],
+137 silly audit   'mime-types': [ '2.1.35' ],
+137 silly audit   mlly: [ '1.8.2' ],
+137 silly audit   'module-alias': [ '2.2.3' ],
+137 silly audit   nanoid: [ '3.3.12' ],
+137 silly audit   negotiator: [ '0.6.3' ],
+137 silly audit   'node-releases': [ '2.0.46' ],
+137 silly audit   'normalize-path': [ '3.0.0' ],
+137 silly audit   'normalize-range': [ '0.1.2' ],
+137 silly audit   'object-inspect': [ '1.13.4' ],
+137 silly audit   'on-finished': [ '2.4.1' ],
+137 silly audit   'os-locale-s-fix': [ '1.0.8-fix-1' ],
+137 silly audit   'parse-css-font': [ '4.0.0' ],
+137 silly audit   parseurl: [ '1.3.3' ],
+137 silly audit   'path-parse': [ '1.0.7' ],
+137 silly audit   'path-to-regexp': [ '0.1.10' ],
+137 silly audit   pathe: [ '2.0.3' ],
+137 silly audit   pify: [ '2.3.0' ],
+137 silly audit   'postcss-import': [ '14.1.0' ],
+137 silly audit   'postcss-load-config': [ '3.1.4' ],
+137 silly audit   'postcss-modules': [ '4.3.1' ],
+137 silly audit   'postcss-modules-extract-imports': [ '3.1.0' ],
+137 silly audit   'postcss-modules-local-by-default': [ '4.2.0' ],
+137 silly audit   'postcss-selector-parser': [ '7.1.1', '6.1.2' ],
+137 silly audit   'postcss-modules-scope': [ '3.2.1' ],
+137 silly audit   'postcss-modules-values': [ '4.0.0' ],
+137 silly audit   'postcss-value-parser': [ '4.2.0' ],
+137 silly audit   'proxy-addr': [ '2.0.7' ],
+137 silly audit   quansync: [ '0.2.11' ],
+137 silly audit   'queue-microtask': [ '1.2.3' ],
+137 silly audit   'range-parser': [ '1.2.1' ],
+137 silly audit   'raw-body': [ '2.5.2' ],
+137 silly audit   'read-cache': [ '1.0.0' ],
+137 silly audit   readdirp: [ '3.6.0' ],
+137 silly audit   regenerate: [ '1.4.2' ],
+137 silly audit   'regenerate-unicode-properties': [ '10.2.2' ],
+137 silly audit   'regenerator-runtime': [ '0.14.1' ],
+137 silly audit   'regexpu-core': [ '6.4.0' ],
+137 silly audit   regjsgen: [ '0.8.0' ],
+137 silly audit   regjsparser: [ '0.13.1' ],
+137 silly audit   reusify: [ '1.1.0' ],
+137 silly audit   rollup: [ '4.60.4' ],
+137 silly audit   'run-parallel': [ '1.2.0' ],
+137 silly audit   'safe-area-insets': [ '1.4.1' ],
+137 silly audit   'safe-buffer': [ '5.2.1' ],
+137 silly audit   'safer-buffer': [ '2.1.2' ],
+137 silly audit   scule: [ '1.3.0' ],
+137 silly audit   semver: [ '6.3.1' ],
+137 silly audit   send: [ '0.19.0', '0.18.0' ],
+137 silly audit   'serve-static': [ '1.16.0' ],
+137 silly audit   setprototypeof: [ '1.2.0' ],
+137 silly audit   'side-channel': [ '1.1.0' ],
+137 silly audit   'side-channel-list': [ '1.0.1' ],
+137 silly audit   'side-channel-map': [ '1.0.1' ],
+137 silly audit   'side-channel-weakmap': [ '1.0.2' ],
+137 silly audit   'source-map': [ '0.6.1' ],
+137 silly audit   'source-map-js': [ '1.2.1' ],
+137 silly audit   'source-map-support': [ '0.5.21' ],
+137 silly audit   statuses: [ '2.0.1' ],
+137 silly audit   'string-hash': [ '1.1.3' ],
+137 silly audit   'strip-literal': [ '3.1.0' ],
+137 silly audit   'supports-color': [ '5.5.0' ],
+137 silly audit   'supports-preserve-symlinks-flag': [ '1.0.0' ],
+137 silly audit   systemjs: [ '6.15.1' ],
+137 silly audit   tapable: [ '2.3.3' ],
+137 silly audit   terser: [ '5.48.0' ],
+137 silly audit   tinycolor2: [ '1.6.0' ],
+137 silly audit   'to-fast-properties': [ '2.0.0' ],
+137 silly audit   'to-regex-range': [ '5.0.1' ],
+137 silly audit   toidentifier: [ '1.0.1' ],
+137 silly audit   'type-is': [ '1.6.18' ],
+137 silly audit   ufo: [ '1.6.4' ],
+137 silly audit   'unicode-canonical-property-names-ecmascript': [ '2.0.1' ],
+137 silly audit   'unicode-match-property-ecmascript': [ '2.0.0' ],
+137 silly audit   'unicode-match-property-value-ecmascript': [ '2.2.1' ],
+137 silly audit   'unicode-property-aliases-ecmascript': [ '2.2.0' ],
+137 silly audit   unimport: [ '4.1.1' ],
+137 silly audit   universalify: [ '2.0.1' ],
+137 silly audit   unpipe: [ '1.0.0' ],
+137 silly audit   unplugin: [ '2.3.11' ],
+137 silly audit   'unplugin-utils': [ '0.2.5' ],
+137 silly audit   unquote: [ '1.1.1' ],
+137 silly audit   'update-browserslist-db': [ '1.2.3' ],
+137 silly audit   'util-deprecate': [ '1.0.2' ],
+137 silly audit   'utils-merge': [ '1.0.1' ],
+137 silly audit   vary: [ '1.1.2' ],
+137 silly audit   vite: [ '5.2.8' ],
+137 silly audit   vue: [ '3.4.21' ],
+137 silly audit   'vue-router': [ '4.4.4' ],
+137 silly audit   'webpack-virtual-modules': [ '0.6.2' ],
+137 silly audit   xmlhttprequest: [ '1.8.0' ],
+137 silly audit   xregexp: [ '5.1.2' ],
+137 silly audit   yallist: [ '3.1.1' ],
+137 silly audit   yaml: [ '1.10.3' ]
+137 silly audit }
+138 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-win32-ia32-msvc
+139 silly reify mark deleted [
+139 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-win32-ia32-msvc'
+139 silly reify ]
+140 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-win32-arm64-msvc
+141 silly reify mark deleted [
+141 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-win32-arm64-msvc'
+141 silly reify ]
+142 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-openharmony-arm64
+143 silly reify mark deleted [
+143 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-openharmony-arm64'
+143 silly reify ]
+144 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-openbsd-x64
+145 silly reify mark deleted [
+145 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-openbsd-x64'
+145 silly reify ]
+146 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-x64-gnu
+147 silly reify mark deleted [
+147 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-x64-gnu'
+147 silly reify ]
+148 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-x64-musl
+149 silly reify mark deleted [
+149 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-x64-musl'
+149 silly reify ]
+150 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-riscv64-gnu
+151 silly reify mark deleted [
+151 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-riscv64-gnu'
+151 silly reify ]
+152 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-s390x-gnu
+153 silly reify mark deleted [
+153 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-s390x-gnu'
+153 silly reify ]
+154 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-riscv64-musl
+155 silly reify mark deleted [
+155 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-riscv64-musl'
+155 silly reify ]
+156 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-ppc64-musl
+157 silly reify mark deleted [
+157 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-ppc64-musl'
+157 silly reify ]
+158 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-ppc64-gnu
+159 silly reify mark deleted [
+159 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-ppc64-gnu'
+159 silly reify ]
+160 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-loong64-musl
+161 silly reify mark deleted [
+161 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-loong64-musl'
+161 silly reify ]
+162 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-loong64-gnu
+163 silly reify mark deleted [
+163 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-loong64-gnu'
+163 silly reify ]
+164 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-arm64-musl
+165 silly reify mark deleted [
+165 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm64-musl'
+165 silly reify ]
+166 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-arm64-gnu
+167 silly reify mark deleted [
+167 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm64-gnu'
+167 silly reify ]
+168 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-arm-gnueabihf
+169 silly reify mark deleted [
+169 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm-gnueabihf'
+169 silly reify ]
+170 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-linux-arm-musleabihf
+171 silly reify mark deleted [
+171 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-linux-arm-musleabihf'
+171 silly reify ]
+172 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-darwin-x64
+173 silly reify mark deleted [
+173 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-darwin-x64'
+173 silly reify ]
+174 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-freebsd-x64
+175 silly reify mark deleted [
+175 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-freebsd-x64'
+175 silly reify ]
+176 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-android-arm64
+177 silly reify mark deleted [
+177 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-android-arm64'
+177 silly reify ]
+178 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-freebsd-arm64
+179 silly reify mark deleted [
+179 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-freebsd-arm64'
+179 silly reify ]
+180 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-darwin-arm64
+181 silly reify mark deleted [
+181 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-darwin-arm64'
+181 silly reify ]
+182 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@rollup\rollup-android-arm-eabi
+183 silly reify mark deleted [
+183 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@rollup\\rollup-android-arm-eabi'
+183 silly reify ]
+184 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\win32-ia32
+185 silly reify mark deleted [
+185 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\win32-ia32'
+185 silly reify ]
+186 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\win32-arm64
+187 silly reify mark deleted [
+187 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\win32-arm64'
+187 silly reify ]
+188 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\sunos-x64
+189 silly reify mark deleted [
+189 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\sunos-x64'
+189 silly reify ]
+190 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\openbsd-x64
+191 silly reify mark deleted [
+191 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\openbsd-x64'
+191 silly reify ]
+192 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\netbsd-x64
+193 silly reify mark deleted [
+193 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\netbsd-x64'
+193 silly reify ]
+194 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\linux-x64
+195 silly reify mark deleted [
+195 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-x64'
+195 silly reify ]
+196 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\linux-s390x
+197 silly reify mark deleted [
+197 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-s390x'
+197 silly reify ]
+198 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\linux-riscv64
+199 silly reify mark deleted [
+199 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-riscv64'
+199 silly reify ]
+200 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\linux-ppc64
+201 silly reify mark deleted [
+201 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-ppc64'
+201 silly reify ]
+202 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\linux-mips64el
+203 silly reify mark deleted [
+203 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-mips64el'
+203 silly reify ]
+204 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\linux-loong64
+205 silly reify mark deleted [
+205 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-loong64'
+205 silly reify ]
+206 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\linux-arm64
+207 silly reify mark deleted [
+207 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-arm64'
+207 silly reify ]
+208 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\linux-ia32
+209 silly reify mark deleted [
+209 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-ia32'
+209 silly reify ]
+210 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\linux-arm
+211 silly reify mark deleted [
+211 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\linux-arm'
+211 silly reify ]
+212 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\freebsd-arm64
+213 silly reify mark deleted [
+213 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\freebsd-arm64'
+213 silly reify ]
+214 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\darwin-x64
+215 silly reify mark deleted [
+215 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\darwin-x64'
+215 silly reify ]
+216 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\freebsd-x64
+217 silly reify mark deleted [
+217 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\freebsd-x64'
+217 silly reify ]
+218 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\android-x64
+219 silly reify mark deleted [
+219 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\android-x64'
+219 silly reify ]
+220 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\darwin-arm64
+221 silly reify mark deleted [
+221 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\darwin-arm64'
+221 silly reify ]
+222 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\android-arm64
+223 silly reify mark deleted [
+223 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\android-arm64'
+223 silly reify ]
+224 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\android-arm
+225 silly reify mark deleted [
+225 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\android-arm'
+225 silly reify ]
+226 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\@esbuild\aix-ppc64
+227 silly reify mark deleted [
+227 silly reify   'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\@esbuild\\aix-ppc64'
+227 silly reify ]
+228 verbose reify failed optional dependency C:\Users\15099\Desktop\AI-EMS\node_modules\fsevents
+229 silly reify mark deleted [ 'C:\\Users\\15099\\Desktop\\AI-EMS\\node_modules\\fsevents' ]
+230 verbose audit error FetchError: request to https://registry.npmjs.org/-/npm/v1/security/advisories/bulk failed, reason: connect EACCES 198.18.0.164:443
+230 verbose audit error     at ClientRequest.<anonymous> (E:\Program Files\nodejs\node_modules\npm\node_modules\minipass-fetch\lib\index.js:130:14)
+230 verbose audit error     at ClientRequest.emit (node:events:508:28)
+230 verbose audit error     at emitErrorEvent (node:_http_client:107:11)
+230 verbose audit error     at _destroy (node:_http_client:954:9)
+230 verbose audit error     at onSocketNT (node:_http_client:974:5)
+230 verbose audit error     at process.processTicksAndRejections (node:internal/process/task_queues:91:21) {
+230 verbose audit error   code: 'EACCES',
+230 verbose audit error   errno: 'EACCES',
+230 verbose audit error   syscall: 'connect',
+230 verbose audit error   address: '198.18.0.164',
+230 verbose audit error   port: 443,
+230 verbose audit error   type: 'system'
+230 verbose audit error }
+231 silly audit error undefined
+232 silly audit report null
+233 http cache @babel/parser@https://registry.npmjs.org/@babel/parser/-/parser-7.25.6.tgz 0ms (cache hit)
+234 http cache semver@https://registry.npmjs.org/semver/-/semver-6.3.1.tgz 0ms (cache hit)
+235 http cache regjsparser@https://registry.npmjs.org/regjsparser/-/regjsparser-0.13.1.tgz 0ms (cache hit)
+236 http cache update-browserslist-db@https://registry.npmjs.org/update-browserslist-db/-/update-browserslist-db-1.2.3.tgz 0ms (cache hit)
+237 http cache nanoid@https://registry.npmjs.org/nanoid/-/nanoid-3.3.12.tgz 0ms (cache hit)
+238 http cache resolve@https://registry.npmjs.org/resolve/-/resolve-1.22.8.tgz 0ms (cache hit)
+239 http cache mime@https://registry.npmjs.org/mime/-/mime-3.0.0.tgz 0ms (cache hit)
+240 http cache vite@https://registry.npmjs.org/vite/-/vite-5.2.8.tgz 0ms (cache hit)
+241 http cache json5@https://registry.npmjs.org/json5/-/json5-2.2.3.tgz 0ms (cache hit)
+242 http cache jsesc@https://registry.npmjs.org/jsesc/-/jsesc-3.1.0.tgz 1ms (cache hit)
+243 http cache esbuild@https://registry.npmjs.org/esbuild/-/esbuild-0.20.2.tgz 0ms (cache hit)
+244 http cache cssesc@https://registry.npmjs.org/cssesc/-/cssesc-3.0.0.tgz 0ms (cache hit)
+245 http cache browserslist@https://registry.npmjs.org/browserslist/-/browserslist-4.28.2.tgz 0ms (cache hit)
+246 http cache baseline-browser-mapping@https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.10.32.tgz 0ms (cache hit)
+247 http cache browserslist-to-esbuild@https://registry.npmjs.org/browserslist-to-esbuild/-/browserslist-to-esbuild-2.1.1.tgz 0ms (cache hit)
+248 http cache @vitejs/plugin-basic-ssl@https://registry.npmjs.org/@vitejs/plugin-basic-ssl/-/plugin-basic-ssl-1.2.0.tgz 0ms (cache hit)
+249 http cache autoprefixer@https://registry.npmjs.org/autoprefixer/-/autoprefixer-10.4.20.tgz 0ms (cache hit)
+250 http cache @types/estree@https://registry.npmjs.org/@types/estree/-/estree-1.0.9.tgz 0ms (cache hit)
+251 http cache @rollup/rollup-win32-x64-gnu@https://registry.npmjs.org/@rollup/rollup-win32-x64-gnu/-/rollup-win32-x64-gnu-4.60.4.tgz 0ms (cache hit)
+252 http cache @rollup/rollup-win32-x64-msvc@https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.60.4.tgz 0ms (cache hit)
+253 http cache @dcloudio/uni-shared@https://registry.npmjs.org/@dcloudio/uni-shared/-/uni-shared-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+254 http cache @dcloudio/vite-plugin-uni@https://registry.npmjs.org/@dcloudio/vite-plugin-uni/-/vite-plugin-uni-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+255 http cache @dcloudio/uni-stat@https://registry.npmjs.org/@dcloudio/uni-stat/-/uni-stat-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+256 http cache @dcloudio/uni-push@https://registry.npmjs.org/@dcloudio/uni-push/-/uni-push-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+257 http cache @dcloudio/uni-i18n@https://registry.npmjs.org/@dcloudio/uni-i18n/-/uni-i18n-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+258 http cache @dcloudio/uni-h5-vite@https://registry.npmjs.org/@dcloudio/uni-h5-vite/-/uni-h5-vite-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+259 http cache @dcloudio/uni-h5@https://registry.npmjs.org/@dcloudio/uni-h5/-/uni-h5-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+260 http cache @dcloudio/uni-h5-vue@https://registry.npmjs.org/@dcloudio/uni-h5-vue/-/uni-h5-vue-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+261 http cache @dcloudio/uni-nvue-styler@https://registry.npmjs.org/@dcloudio/uni-nvue-styler/-/uni-nvue-styler-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+262 http cache @dcloudio/uni-cli-shared@https://registry.npmjs.org/@dcloudio/uni-cli-shared/-/uni-cli-shared-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+263 http cache @dcloudio/uni-app@https://registry.npmjs.org/@dcloudio/uni-app/-/uni-app-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+264 http cache @dcloudio/uni-console@https://registry.npmjs.org/@dcloudio/uni-console/-/uni-console-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+265 http cache @dcloudio/uni-components@https://registry.npmjs.org/@dcloudio/uni-components/-/uni-components-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+266 http cache @dcloudio/uni-cloud@https://registry.npmjs.org/@dcloudio/uni-cloud/-/uni-cloud-3.0.0-alpha-5010120260522001.tgz 0ms (cache hit)
+267 http cache @babel/traverse@https://registry.npmjs.org/@babel/traverse/-/traverse-7.29.0.tgz 0ms (cache hit)
+268 http cache @dcloudio/types@https://registry.npmjs.org/@dcloudio/types/-/types-3.4.31.tgz 0ms (cache hit)
+269 http cache @babel/plugin-transform-regenerator@https://registry.npmjs.org/@babel/plugin-transform-regenerator/-/plugin-transform-regenerator-7.29.0.tgz 0ms (cache hit)
+270 http cache @babel/preset-env@https://registry.npmjs.org/@babel/preset-env/-/preset-env-7.29.5.tgz 0ms (cache hit)
+271 http cache @babel/plugin-transform-duplicate-named-capturing-groups-regex@https://registry.npmjs.org/@babel/plugin-transform-duplicate-named-capturing-groups-regex/-/plugin-transform-duplicate-named-capturing-groups-regex-7.29.0.tgz 0ms (cache hit)
+272 http cache @babel/runtime-corejs3@https://registry.npmjs.org/@babel/runtime-corejs3/-/runtime-corejs3-7.29.2.tgz 0ms (cache hit)
+273 http cache @babel/plugin-transform-modules-systemjs@https://registry.npmjs.org/@babel/plugin-transform-modules-systemjs/-/plugin-transform-modules-systemjs-7.29.4.tgz 0ms (cache hit)
+274 http cache @babel/plugin-transform-async-generator-functions@https://registry.npmjs.org/@babel/plugin-transform-async-generator-functions/-/plugin-transform-async-generator-functions-7.29.0.tgz 0ms (cache hit)
+275 http cache @babel/plugin-bugfix-safari-rest-destructuring-rhs-array@https://registry.npmjs.org/@babel/plugin-bugfix-safari-rest-destructuring-rhs-array/-/plugin-bugfix-safari-rest-destructuring-rhs-array-7.29.3.tgz 0ms (cache hit)
+276 http cache xregexp@https://registry.npmjs.org/xregexp/-/xregexp-5.1.2.tgz 0ms (cache hit)
+277 http cache @babel/plugin-transform-named-capturing-groups-regex@https://registry.npmjs.org/@babel/plugin-transform-named-capturing-groups-regex/-/plugin-transform-named-capturing-groups-regex-7.29.0.tgz 0ms (cache hit)
+278 http cache @babel/helpers@https://registry.npmjs.org/@babel/helpers/-/helpers-7.29.2.tgz 0ms (cache hit)
+279 http cache yaml@https://registry.npmjs.org/yaml/-/yaml-1.10.3.tgz 0ms (cache hit)
+280 http cache @babel/generator@https://registry.npmjs.org/@babel/generator/-/generator-7.29.1.tgz 0ms (cache hit)
+281 http cache ufo@https://registry.npmjs.org/ufo/-/ufo-1.6.4.tgz 0ms (cache hit)
+282 http cache @babel/compat-data@https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.29.3.tgz 0ms (cache hit)
+283 http cache @babel/helper-create-class-features-plugin@https://registry.npmjs.org/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.29.3.tgz 0ms (cache hit)
+284 http cache tapable@https://registry.npmjs.org/tapable/-/tapable-2.3.3.tgz 0ms (cache hit)
+285 http cache tinycolor2@https://registry.npmjs.org/tinycolor2/-/tinycolor2-1.6.0.tgz 0ms (cache hit)
+286 http cache terser@https://registry.npmjs.org/terser/-/terser-5.48.0.tgz 0ms (cache hit)
+287 http cache rollup@https://registry.npmjs.org/rollup/-/rollup-4.60.4.tgz 0ms (cache hit)
+288 http cache mlly@https://registry.npmjs.org/mlly/-/mlly-1.8.2.tgz 0ms (cache hit)
+289 http cache hasown@https://registry.npmjs.org/hasown/-/hasown-2.0.3.tgz 0ms (cache hit)
+290 http cache electron-to-chromium@https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.361.tgz 0ms (cache hit)
+291 http cache core-js@https://registry.npmjs.org/core-js/-/core-js-3.49.0.tgz 1ms (cache hit)
+292 http cache local-pkg@https://registry.npmjs.org/local-pkg/-/local-pkg-1.2.1.tgz 0ms (cache hit)
+293 http cache @vue/shared@https://registry.npmjs.org/@vue/shared/-/shared-3.5.34.tgz 0ms (cache hit)
+294 http cache acorn@https://registry.npmjs.org/acorn/-/acorn-8.16.0.tgz 0ms (cache hit)
+295 http cache core-js-pure@https://registry.npmjs.org/core-js-pure/-/core-js-pure-3.49.0.tgz 0ms (cache hit)
+296 http cache @babel/parser@https://registry.npmjs.org/@babel/parser/-/parser-7.29.3.tgz 0ms (cache hit)
+297 http cache @babel/code-frame@https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.29.0.tgz 0ms (cache hit)
+298 http cache @vue/compiler-core@https://registry.npmjs.org/@vue/compiler-core/-/compiler-core-3.5.34.tgz 0ms (cache hit)
+299 http cache @vue/compiler-dom@https://registry.npmjs.org/@vue/compiler-dom/-/compiler-dom-3.5.34.tgz 0ms (cache hit)
+300 http cache @vue/compiler-sfc@https://registry.npmjs.org/@vue/compiler-sfc/-/compiler-sfc-3.5.34.tgz 0ms (cache hit)
+301 http cache @vue/compiler-ssr@https://registry.npmjs.org/@vue/compiler-ssr/-/compiler-ssr-3.5.34.tgz 0ms (cache hit)
+302 http cache @babel/parser@https://registry.npmjs.org/@babel/parser/-/parser-7.29.3.tgz 0ms (cache hit)
+303 http cache resolve@https://registry.npmjs.org/resolve/-/resolve-1.22.12.tgz 0ms (cache hit)
+304 http cache @babel/code-frame@https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.29.0.tgz 0ms (cache hit)
+305 http cache mime@https://registry.npmjs.org/mime/-/mime-1.6.0.tgz 0ms (cache hit)
+306 http cache mime@https://registry.npmjs.org/mime/-/mime-1.6.0.tgz 0ms (cache hit)
+307 http cache @vue/shared@https://registry.npmjs.org/@vue/shared/-/shared-3.5.34.tgz 0ms (cache hit)
+308 http cache @babel/parser@https://registry.npmjs.org/@babel/parser/-/parser-7.29.3.tgz 0ms (cache hit)
+309 http cache pkg-types@https://registry.npmjs.org/pkg-types/-/pkg-types-2.3.1.tgz 0ms (cache hit)
+310 http cache @babel/parser@https://registry.npmjs.org/@babel/parser/-/parser-7.29.3.tgz 0ms (cache hit)
+311 silly tarball no local data for @babel/parser@https://registry.npmjs.org/@babel/parser/-/parser-7.25.6.tgz. Extracting by manifest.
+312 silly tarball no local data for semver@https://registry.npmjs.org/semver/-/semver-6.3.1.tgz. Extracting by manifest.
+313 http cache @babel/code-frame@https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.29.0.tgz 0ms (cache hit)
+314 silly tarball no local data for regjsparser@https://registry.npmjs.org/regjsparser/-/regjsparser-0.13.1.tgz. Extracting by manifest.
+315 silly tarball no local data for update-browserslist-db@https://registry.npmjs.org/update-browserslist-db/-/update-browserslist-db-1.2.3.tgz. Extracting by manifest.
+316 silly tarball no local data for nanoid@https://registry.npmjs.org/nanoid/-/nanoid-3.3.12.tgz. Extracting by manifest.
+317 silly tarball no local data for resolve@https://registry.npmjs.org/resolve/-/resolve-1.22.8.tgz. Extracting by manifest.
+318 silly tarball no local data for mime@https://registry.npmjs.org/mime/-/mime-3.0.0.tgz. Extracting by manifest.
+319 silly tarball no local data for vite@https://registry.npmjs.org/vite/-/vite-5.2.8.tgz. Extracting by manifest.
+320 silly tarball no local data for json5@https://registry.npmjs.org/json5/-/json5-2.2.3.tgz. Extracting by manifest.
+321 silly tarball no local data for jsesc@https://registry.npmjs.org/jsesc/-/jsesc-3.1.0.tgz. Extracting by manifest.
+322 silly tarball no local data for esbuild@https://registry.npmjs.org/esbuild/-/esbuild-0.20.2.tgz. Extracting by manifest.
+323 silly tarball no local data for cssesc@https://registry.npmjs.org/cssesc/-/cssesc-3.0.0.tgz. Extracting by manifest.
+324 silly tarball no local data for browserslist@https://registry.npmjs.org/browserslist/-/browserslist-4.28.2.tgz. Extracting by manifest.
+325 silly tarball no local data for baseline-browser-mapping@https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.10.32.tgz. Extracting by manifest.
+326 silly tarball no local data for browserslist-to-esbuild@https://registry.npmjs.org/browserslist-to-esbuild/-/browserslist-to-esbuild-2.1.1.tgz. Extracting by manifest.
+327 silly tarball no local data for @vitejs/plugin-basic-ssl@https://registry.npmjs.org/@vitejs/plugin-basic-ssl/-/plugin-basic-ssl-1.2.0.tgz. Extracting by manifest.
+328 silly tarball no local data for autoprefixer@https://registry.npmjs.org/autoprefixer/-/autoprefixer-10.4.20.tgz. Extracting by manifest.
+329 silly tarball no local data for @types/estree@https://registry.npmjs.org/@types/estree/-/estree-1.0.9.tgz. Extracting by manifest.
+330 silly tarball no local data for @rollup/rollup-win32-x64-gnu@https://registry.npmjs.org/@rollup/rollup-win32-x64-gnu/-/rollup-win32-x64-gnu-4.60.4.tgz. Extracting by manifest.
+331 silly tarball no local data for @rollup/rollup-win32-x64-msvc@https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.60.4.tgz. Extracting by manifest.
+332 silly tarball no local data for @dcloudio/uni-shared@https://registry.npmjs.org/@dcloudio/uni-shared/-/uni-shared-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+333 silly tarball no local data for @dcloudio/vite-plugin-uni@https://registry.npmjs.org/@dcloudio/vite-plugin-uni/-/vite-plugin-uni-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+334 silly tarball no local data for @dcloudio/uni-stat@https://registry.npmjs.org/@dcloudio/uni-stat/-/uni-stat-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+335 silly tarball no local data for @dcloudio/uni-push@https://registry.npmjs.org/@dcloudio/uni-push/-/uni-push-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+336 silly tarball no local data for @dcloudio/uni-i18n@https://registry.npmjs.org/@dcloudio/uni-i18n/-/uni-i18n-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+337 http cache confbox@https://registry.npmjs.org/confbox/-/confbox-0.2.4.tgz 0ms (cache hit)
+338 silly tarball no local data for @dcloudio/uni-h5-vite@https://registry.npmjs.org/@dcloudio/uni-h5-vite/-/uni-h5-vite-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+339 silly tarball no local data for @dcloudio/uni-h5@https://registry.npmjs.org/@dcloudio/uni-h5/-/uni-h5-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+340 silly tarball no local data for @dcloudio/uni-h5-vue@https://registry.npmjs.org/@dcloudio/uni-h5-vue/-/uni-h5-vue-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+341 silly tarball no local data for @dcloudio/uni-nvue-styler@https://registry.npmjs.org/@dcloudio/uni-nvue-styler/-/uni-nvue-styler-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+342 silly tarball no local data for @dcloudio/uni-cli-shared@https://registry.npmjs.org/@dcloudio/uni-cli-shared/-/uni-cli-shared-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+343 silly tarball no local data for @dcloudio/uni-app@https://registry.npmjs.org/@dcloudio/uni-app/-/uni-app-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+344 silly tarball no local data for @dcloudio/uni-console@https://registry.npmjs.org/@dcloudio/uni-console/-/uni-console-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+345 silly tarball no local data for @dcloudio/uni-components@https://registry.npmjs.org/@dcloudio/uni-components/-/uni-components-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+346 silly tarball no local data for @dcloudio/uni-cloud@https://registry.npmjs.org/@dcloudio/uni-cloud/-/uni-cloud-3.0.0-alpha-5010120260522001.tgz. Extracting by manifest.
+347 silly tarball no local data for @babel/traverse@https://registry.npmjs.org/@babel/traverse/-/traverse-7.29.0.tgz. Extracting by manifest.
+348 silly tarball no local data for @dcloudio/types@https://registry.npmjs.org/@dcloudio/types/-/types-3.4.31.tgz. Extracting by manifest.
+349 silly tarball no local data for @babel/plugin-transform-regenerator@https://registry.npmjs.org/@babel/plugin-transform-regenerator/-/plugin-transform-regenerator-7.29.0.tgz. Extracting by manifest.
+350 silly tarball no local data for @babel/preset-env@https://registry.npmjs.org/@babel/preset-env/-/preset-env-7.29.5.tgz. Extracting by manifest.
+351 silly tarball no local data for @babel/plugin-transform-duplicate-named-capturing-groups-regex@https://registry.npmjs.org/@babel/plugin-transform-duplicate-named-capturing-groups-regex/-/plugin-transform-duplicate-named-capturing-groups-regex-7.29.0.tgz. Extracting by manifest.
+352 silly tarball no local data for @babel/runtime-corejs3@https://registry.npmjs.org/@babel/runtime-corejs3/-/runtime-corejs3-7.29.2.tgz. Extracting by manifest.
+353 silly tarball no local data for @babel/plugin-transform-modules-systemjs@https://registry.npmjs.org/@babel/plugin-transform-modules-systemjs/-/plugin-transform-modules-systemjs-7.29.4.tgz. Extracting by manifest.
+354 silly tarball no local data for @babel/plugin-transform-async-generator-functions@https://registry.npmjs.org/@babel/plugin-transform-async-generator-functions/-/plugin-transform-async-generator-functions-7.29.0.tgz. Extracting by manifest.
+355 silly tarball no local data for @babel/plugin-bugfix-safari-rest-destructuring-rhs-array@https://registry.npmjs.org/@babel/plugin-bugfix-safari-rest-destructuring-rhs-array/-/plugin-bugfix-safari-rest-destructuring-rhs-array-7.29.3.tgz. Extracting by manifest.
+356 silly tarball no local data for xregexp@https://registry.npmjs.org/xregexp/-/xregexp-5.1.2.tgz. Extracting by manifest.
+357 silly tarball no local data for @babel/plugin-transform-named-capturing-groups-regex@https://registry.npmjs.org/@babel/plugin-transform-named-capturing-groups-regex/-/plugin-transform-named-capturing-groups-regex-7.29.0.tgz. Extracting by manifest.
+358 silly tarball no local data for @babel/helpers@https://registry.npmjs.org/@babel/helpers/-/helpers-7.29.2.tgz. Extracting by manifest.
+359 silly tarball no local data for yaml@https://registry.npmjs.org/yaml/-/yaml-1.10.3.tgz. Extracting by manifest.
+360 silly tarball no local data for @babel/generator@https://registry.npmjs.org/@babel/generator/-/generator-7.29.1.tgz. Extracting by manifest.
+361 silly tarball no local data for ufo@https://registry.npmjs.org/ufo/-/ufo-1.6.4.tgz. Extracting by manifest.
+362 silly tarball no local data for @babel/compat-data@https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.29.3.tgz. Extracting by manifest.
+363 silly tarball no local data for @babel/helper-create-class-features-plugin@https://registry.npmjs.org/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.29.3.tgz. Extracting by manifest.
+364 silly tarball no local data for tapable@https://registry.npmjs.org/tapable/-/tapable-2.3.3.tgz. Extracting by manifest.
+365 silly tarball no local data for tinycolor2@https://registry.npmjs.org/tinycolor2/-/tinycolor2-1.6.0.tgz. Extracting by manifest.
+366 silly tarball no local data for terser@https://registry.npmjs.org/terser/-/terser-5.48.0.tgz. Extracting by manifest.
+367 silly tarball no local data for rollup@https://registry.npmjs.org/rollup/-/rollup-4.60.4.tgz. Extracting by manifest.
+368 silly tarball no local data for mlly@https://registry.npmjs.org/mlly/-/mlly-1.8.2.tgz. Extracting by manifest.
+369 silly tarball no local data for hasown@https://registry.npmjs.org/hasown/-/hasown-2.0.3.tgz. Extracting by manifest.
+370 silly tarball no local data for electron-to-chromium@https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.361.tgz. Extracting by manifest.
+371 silly tarball no local data for core-js@https://registry.npmjs.org/core-js/-/core-js-3.49.0.tgz. Extracting by manifest.
+372 silly tarball no local data for local-pkg@https://registry.npmjs.org/local-pkg/-/local-pkg-1.2.1.tgz. Extracting by manifest.
+373 silly tarball no local data for @vue/shared@https://registry.npmjs.org/@vue/shared/-/shared-3.5.34.tgz. Extracting by manifest.
+374 silly tarball no local data for acorn@https://registry.npmjs.org/acorn/-/acorn-8.16.0.tgz. Extracting by manifest.
+375 silly tarball no local data for core-js-pure@https://registry.npmjs.org/core-js-pure/-/core-js-pure-3.49.0.tgz. Extracting by manifest.
+376 silly tarball no local data for @babel/parser@https://registry.npmjs.org/@babel/parser/-/parser-7.29.3.tgz. Extracting by manifest.
+377 silly tarball no local data for @babel/code-frame@https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.29.0.tgz. Extracting by manifest.
+378 silly tarball no local data for @vue/compiler-core@https://registry.npmjs.org/@vue/compiler-core/-/compiler-core-3.5.34.tgz. Extracting by manifest.
+379 silly tarball no local data for @vue/compiler-dom@https://registry.npmjs.org/@vue/compiler-dom/-/compiler-dom-3.5.34.tgz. Extracting by manifest.
+380 silly tarball no local data for @vue/compiler-sfc@https://registry.npmjs.org/@vue/compiler-sfc/-/compiler-sfc-3.5.34.tgz. Extracting by manifest.
+381 silly tarball no local data for @vue/compiler-ssr@https://registry.npmjs.org/@vue/compiler-ssr/-/compiler-ssr-3.5.34.tgz. Extracting by manifest.
+382 silly tarball no local data for @babel/parser@https://registry.npmjs.org/@babel/parser/-/parser-7.29.3.tgz. Extracting by manifest.
+383 silly tarball no local data for resolve@https://registry.npmjs.org/resolve/-/resolve-1.22.12.tgz. Extracting by manifest.
+384 silly tarball no local data for @babel/code-frame@https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.29.0.tgz. Extracting by manifest.
+385 silly tarball no local data for mime@https://registry.npmjs.org/mime/-/mime-1.6.0.tgz. Extracting by manifest.
+386 silly tarball no local data for mime@https://registry.npmjs.org/mime/-/mime-1.6.0.tgz. Extracting by manifest.
+387 silly tarball no local data for @vue/shared@https://registry.npmjs.org/@vue/shared/-/shared-3.5.34.tgz. Extracting by manifest.
+388 silly tarball no local data for @babel/parser@https://registry.npmjs.org/@babel/parser/-/parser-7.29.3.tgz. Extracting by manifest.
+389 silly tarball no local data for pkg-types@https://registry.npmjs.org/pkg-types/-/pkg-types-2.3.1.tgz. Extracting by manifest.
+390 silly tarball no local data for @babel/parser@https://registry.npmjs.org/@babel/parser/-/parser-7.29.3.tgz. Extracting by manifest.
+391 silly tarball no local data for @babel/code-frame@https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.29.0.tgz. Extracting by manifest.
+392 silly tarball no local data for confbox@https://registry.npmjs.org/confbox/-/confbox-0.2.4.tgz. Extracting by manifest.
+393 http fetch GET https://registry.npmjs.org/@babel/parser/-/parser-7.25.6.tgz attempt 1 failed with EACCES
+394 http fetch GET https://registry.npmjs.org/semver/-/semver-6.3.1.tgz attempt 1 failed with EACCES
+395 http fetch GET https://registry.npmjs.org/regjsparser/-/regjsparser-0.13.1.tgz attempt 1 failed with EACCES
+396 http fetch GET https://registry.npmjs.org/update-browserslist-db/-/update-browserslist-db-1.2.3.tgz attempt 1 failed with EACCES
+397 http fetch GET https://registry.npmjs.org/nanoid/-/nanoid-3.3.12.tgz attempt 1 failed with EACCES
+398 http fetch GET https://registry.npmjs.org/resolve/-/resolve-1.22.8.tgz attempt 1 failed with EACCES
+399 http fetch GET https://registry.npmjs.org/mime/-/mime-3.0.0.tgz attempt 1 failed with EACCES
+400 http fetch GET https://registry.npmjs.org/vite/-/vite-5.2.8.tgz attempt 1 failed with EACCES
+401 http fetch GET https://registry.npmjs.org/json5/-/json5-2.2.3.tgz attempt 1 failed with EACCES
+402 http fetch GET https://registry.npmjs.org/jsesc/-/jsesc-3.1.0.tgz attempt 1 failed with EACCES
+403 http fetch GET https://registry.npmjs.org/esbuild/-/esbuild-0.20.2.tgz attempt 1 failed with EACCES
+404 http fetch GET https://registry.npmjs.org/cssesc/-/cssesc-3.0.0.tgz attempt 1 failed with EACCES
+405 http fetch GET https://registry.npmjs.org/browserslist/-/browserslist-4.28.2.tgz attempt 1 failed with EACCES
+406 http fetch GET https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.10.32.tgz attempt 1 failed with EACCES
+407 http fetch GET https://registry.npmjs.org/browserslist-to-esbuild/-/browserslist-to-esbuild-2.1.1.tgz attempt 1 failed with EACCES
+408 http fetch GET https://registry.npmjs.org/npm attempt 2 failed with EACCES
+409 http fetch GET https://registry.npmjs.org/@babel/parser/-/parser-7.25.6.tgz attempt 2 failed with EACCES
+410 http fetch GET https://registry.npmjs.org/semver/-/semver-6.3.1.tgz attempt 2 failed with EACCES
+411 http fetch GET https://registry.npmjs.org/regjsparser/-/regjsparser-0.13.1.tgz attempt 2 failed with EACCES
+412 http fetch GET https://registry.npmjs.org/update-browserslist-db/-/update-browserslist-db-1.2.3.tgz attempt 2 failed with EACCES
+413 http fetch GET https://registry.npmjs.org/nanoid/-/nanoid-3.3.12.tgz attempt 2 failed with EACCES
+414 http fetch GET https://registry.npmjs.org/resolve/-/resolve-1.22.8.tgz attempt 2 failed with EACCES
+415 http fetch GET https://registry.npmjs.org/mime/-/mime-3.0.0.tgz attempt 2 failed with EACCES
+416 http fetch GET https://registry.npmjs.org/vite/-/vite-5.2.8.tgz attempt 2 failed with EACCES
+417 http fetch GET https://registry.npmjs.org/json5/-/json5-2.2.3.tgz attempt 2 failed with EACCES
+418 http fetch GET https://registry.npmjs.org/jsesc/-/jsesc-3.1.0.tgz attempt 2 failed with EACCES
+419 http fetch GET https://registry.npmjs.org/esbuild/-/esbuild-0.20.2.tgz attempt 2 failed with EACCES
+420 http fetch GET https://registry.npmjs.org/cssesc/-/cssesc-3.0.0.tgz attempt 2 failed with EACCES
+421 http fetch GET https://registry.npmjs.org/browserslist/-/browserslist-4.28.2.tgz attempt 2 failed with EACCES
+422 http fetch GET https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.10.32.tgz attempt 2 failed with EACCES
+423 http fetch GET https://registry.npmjs.org/browserslist-to-esbuild/-/browserslist-to-esbuild-2.1.1.tgz attempt 2 failed with EACCES
+424 http fetch GET https://registry.npmjs.org/npm attempt 3 failed with EACCES
+425 http fetch GET https://registry.npmjs.org/@babel/parser/-/parser-7.25.6.tgz attempt 3 failed with EACCES
+426 http fetch GET https://registry.npmjs.org/semver/-/semver-6.3.1.tgz attempt 3 failed with EACCES
+427 http fetch GET https://registry.npmjs.org/regjsparser/-/regjsparser-0.13.1.tgz attempt 3 failed with EACCES
+428 http fetch GET https://registry.npmjs.org/update-browserslist-db/-/update-browserslist-db-1.2.3.tgz attempt 3 failed with EACCES
+429 http fetch GET https://registry.npmjs.org/nanoid/-/nanoid-3.3.12.tgz attempt 3 failed with EACCES
+430 http fetch GET https://registry.npmjs.org/resolve/-/resolve-1.22.8.tgz attempt 3 failed with EACCES
+431 http fetch GET https://registry.npmjs.org/mime/-/mime-3.0.0.tgz attempt 3 failed with EACCES
+432 http fetch GET https://registry.npmjs.org/vite/-/vite-5.2.8.tgz attempt 3 failed with EACCES
+433 http fetch GET https://registry.npmjs.org/json5/-/json5-2.2.3.tgz attempt 3 failed with EACCES
+434 http fetch GET https://registry.npmjs.org/jsesc/-/jsesc-3.1.0.tgz attempt 3 failed with EACCES
+435 http fetch GET https://registry.npmjs.org/esbuild/-/esbuild-0.20.2.tgz attempt 3 failed with EACCES
+436 http fetch GET https://registry.npmjs.org/cssesc/-/cssesc-3.0.0.tgz attempt 3 failed with EACCES
+437 http fetch GET https://registry.npmjs.org/browserslist/-/browserslist-4.28.2.tgz attempt 3 failed with EACCES
+438 http fetch GET https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.10.32.tgz attempt 3 failed with EACCES
+439 http fetch GET https://registry.npmjs.org/browserslist-to-esbuild/-/browserslist-to-esbuild-2.1.1.tgz attempt 3 failed with EACCES
+440 verbose cwd C:\Users\15099\Desktop\AI-EMS
+441 verbose os Windows_NT 10.0.26200
+442 verbose node v24.11.0
+443 verbose npm  v11.6.1
+444 error Exit handler never called!
+445 error This is an error with npm itself. Please report this error at:
+446 error   <https://github.com/npm/cli/issues>
+447 verbose exit 1
+448 verbose code 1
+449 error A complete log of this run can be found in: C:\Users\15099\Desktop\AI-EMS\.npm-cache\_logs\2026-05-29T03_23_29_295Z-debug-0.log

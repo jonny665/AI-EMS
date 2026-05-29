@@ -19,26 +19,22 @@
     },
     "conversation_id": {
       "bsonType": "string",
-      "description": "References ai_conversations._id"
+      "description": "References ai_conversations._id."
     },
     "role": {
       "bsonType": "string",
-      "enum": [
-        "user",
-        "assistant",
-        "system"
-      ]
+      "enum": ["user", "assistant", "system"]
     },
     "content": {
       "bsonType": "string"
     },
     "model": {
       "bsonType": "string",
-      "description": "Example: DeepSeek model name."
+      "description": "Current PoC uses local-keyword-kb."
     },
     "citations": {
       "bsonType": "array",
-      "description": "Referenced knowledge chunk ids and snippets."
+      "description": "Referenced knowledge_base or knowledge_chunk ids and snippets."
     },
     "fallback_used": {
       "bsonType": "bool",
@@ -48,7 +44,25 @@
       "bsonType": "int"
     },
     "created_at": {
-      "bsonType": "number"
+      "bsonType": "number",
+      "description": "Used by get-ai-history and ask-assistant to remove messages older than 60 days."
     }
-  }
+  },
+  "indexes": [
+    {
+      "name": "conversation_created_idx",
+      "key": {
+        "conversation_id": 1,
+        "created_at": 1
+      },
+      "unique": false
+    },
+    {
+      "name": "retention_created_idx",
+      "key": {
+        "created_at": 1
+      },
+      "unique": false
+    }
+  ]
 }

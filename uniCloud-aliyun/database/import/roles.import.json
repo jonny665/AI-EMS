@@ -1,0 +1,6 @@
+{"_id":"role_student","code":"student","name":"Student","permissions":["dashboard.read.self","leave.submit","evaluation.submit","assistant.ask"],"created_at":1779595200000,"updated_at":1779595200000}
+{"_id":"role_teacher","code":"teacher","name":"Teacher","permissions":["dashboard.read.class","leave.review","evaluation.read.own","materials.manage"],"created_at":1779595200000,"updated_at":1779595200000}
+{"_id":"role_admin","code":"admin","name":"Administrator","permissions":["system.manage","profile.review","leave.review","evaluation.read.all"],"created_at":1779595200000,"updated_at":1779595200000}
+{"_id":"role_academic_staff","code":"academic_staff","name":"Academic Staff","permissions":["academic.manage","profile.review"],"created_at":1779595200000,"updated_at":1779595200000}
+{"_id":"role_counselor","code":"counselor","name":"Counselor","permissions":["alert.read.class","leave.review"],"created_at":1779595200000,"updated_at":1779595200000}
+{"_id":"role_guardian","code":"guardian","name":"Guardian","permissions":["alert.read.child"],"created_at":1779595200000,"updated_at":1779595200000}

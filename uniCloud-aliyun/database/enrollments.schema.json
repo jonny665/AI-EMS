@@ -28,14 +28,7 @@
     },
     "status": {
       "bsonType": "string",
-      "enum": [
-        "selected",
-        "enrolled",
-        "waitlisted",
-        "dropped",
-        "completed",
-        "failed"
-      ],
+      "enum": ["selected", "enrolled", "waitlisted", "dropped", "completed", "failed"],
       "defaultValue": "selected"
     },
     "selected_at": {
@@ -50,5 +43,23 @@
     "updated_at": {
       "bsonType": "number"
     }
-  }
+  },
+  "indexes": [
+    {
+      "name": "student_offering_unique",
+      "key": {
+        "student_id": 1,
+        "course_offering_id": 1
+      },
+      "unique": true
+    },
+    {
+      "name": "offering_status_idx",
+      "key": {
+        "course_offering_id": 1,
+        "status": 1
+      },
+      "unique": false
+    }
+  ]
 }

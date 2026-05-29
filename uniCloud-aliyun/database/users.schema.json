@@ -25,7 +25,7 @@
     },
     "password_hash": {
       "bsonType": "string",
-      "description": "Hashed credential. Never store plain text passwords."
+      "description": "Salted one-way password verifier, for example argon2id, bcrypt, or pbkdf2_sha256. Plain text passwords must never be stored or recovered."
     },
     "role_ids": {
       "bsonType": "array",
@@ -54,6 +54,15 @@
     },
     "last_login_at": {
       "bsonType": "number"
+    },
+    "password_updated_at": {
+      "bsonType": "number",
+      "description": "Unix timestamp of the latest password change."
+    },
+    "must_change_password": {
+      "bsonType": "bool",
+      "defaultValue": false,
+      "description": "Force the user to change password at next login, such as after account import or administrator reset."
     },
     "created_at": {
       "bsonType": "number"

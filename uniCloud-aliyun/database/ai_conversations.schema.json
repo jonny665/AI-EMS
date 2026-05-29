@@ -20,21 +20,14 @@
     },
     "user_id": {
       "bsonType": "string",
-      "description": "References users._id"
+      "description": "References users._id; this binds each assistant history to one person."
     },
     "title": {
       "bsonType": "string"
     },
     "scenario": {
       "bsonType": "string",
-      "enum": [
-        "policy_qa",
-        "course_selection",
-        "schedule_query",
-        "exam_query",
-        "graduation_check",
-        "other"
-      ],
+      "enum": ["policy_qa", "course_selection", "schedule_query", "exam_query", "graduation_check", "other"],
       "defaultValue": "other"
     },
     "context_summary": {
@@ -46,17 +39,32 @@
     },
     "status": {
       "bsonType": "string",
-      "enum": [
-        "active",
-        "closed"
-      ],
+      "enum": ["active", "closed"],
       "defaultValue": "active"
     },
     "created_at": {
       "bsonType": "number"
     },
     "updated_at": {
-      "bsonType": "number"
+      "bsonType": "number",
+      "description": "Used by get-ai-history and ask-assistant to remove conversations older than 60 days."
     }
-  }
+  },
+  "indexes": [
+    {
+      "name": "user_updated_idx",
+      "key": {
+        "user_id": 1,
+        "updated_at": -1
+      },
+      "unique": false
+    },
+    {
+      "name": "retention_updated_idx",
+      "key": {
+        "updated_at": 1
+      },
+      "unique": false
+    }
+  ]
 }

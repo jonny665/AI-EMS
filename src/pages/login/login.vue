@@ -2,29 +2,21 @@
   <view class="page login-page">
     <view class="hero">
       <text class="title">AI-EMS</text>
-      <text class="subtitle">Educational Management PoC</text>
+      <text class="subtitle">Educational Management System</text>
     </view>
 
     <view class="section">
-      <text class="section-title">Demo Login</text>
+      <text class="section-title">Login</text>
       <view class="field">
         <text class="label">Username</text>
-        <input v-model="username" placeholder="student001 / teacher001 / admin001" />
+        <input v-model="username" placeholder="Enter username" />
       </view>
       <view class="field">
         <text class="label">Password</text>
-        <input v-model="password" password placeholder="demo123" />
+        <input v-model="password" password placeholder="Enter password" />
       </view>
       <button class="primary-btn full-btn" :loading="loading" @click="login">Login</button>
       <text v-if="message" class="error">{{ message }}</text>
-    </view>
-
-    <view class="section">
-      <text class="section-title">Demo Accounts</text>
-      <view v-for="account in accounts" :key="account.username" class="account-row" @click="fill(account)">
-        <text class="value">{{ account.username }}</text>
-        <text class="muted">{{ account.role }} / demo123</text>
-      </view>
     </view>
   </view>
 </template>
@@ -36,23 +28,13 @@ import { dashboardUrl, setSession } from '../../common/session.js'
 export default {
   data() {
     return {
-      username: 'student001',
-      password: 'demo123',
+      username: '',
+      password: '',
       loading: false,
-      message: '',
-      accounts: [
-        { username: 'student001', role: 'student' },
-        { username: 'teacher001', role: 'teacher' },
-        { username: 'admin001', role: 'admin' }
-      ]
+      message: ''
     }
   },
   methods: {
-    fill(account) {
-      this.username = account.username
-      this.password = 'demo123'
-      this.message = ''
-    },
     async login() {
       this.loading = true
       this.message = ''
@@ -114,10 +96,4 @@ export default {
   font-size: 24rpx;
 }
 
-.account-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 16rpx 0;
-  border-bottom: 1rpx solid #e2e8f0;
-}
 </style>

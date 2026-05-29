@@ -52,11 +52,7 @@
     },
     "status": {
       "bsonType": "string",
-      "enum": [
-        "submitted",
-        "indexed",
-        "hidden"
-      ],
+      "enum": ["submitted", "indexed", "hidden"],
       "defaultValue": "submitted"
     },
     "submitted_at": {
@@ -68,5 +64,31 @@
     "updated_at": {
       "bsonType": "number"
     }
-  }
+  },
+  "indexes": [
+    {
+      "name": "token_hash_unique",
+      "key": {
+        "token_hash": 1
+      },
+      "unique": true
+    },
+    {
+      "name": "course_status_submitted_idx",
+      "key": {
+        "course_offering_id": 1,
+        "status": 1,
+        "submitted_at": -1
+      },
+      "unique": false
+    },
+    {
+      "name": "teacher_status_idx",
+      "key": {
+        "teacher_ids": 1,
+        "status": 1
+      },
+      "unique": false
+    }
+  ]
 }

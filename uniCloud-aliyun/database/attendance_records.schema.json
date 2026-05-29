@@ -38,13 +38,7 @@
     },
     "status": {
       "bsonType": "string",
-      "enum": [
-        "present",
-        "late",
-        "absent",
-        "on_leave",
-        "excused"
-      ],
+      "enum": ["present", "late", "absent", "on_leave", "excused"],
       "defaultValue": "absent"
     },
     "checkin_at": {
@@ -61,12 +55,7 @@
     },
     "source": {
       "bsonType": "string",
-      "enum": [
-        "location",
-        "teacher_manual",
-        "leave_auto",
-        "system_import"
-      ],
+      "enum": ["location", "teacher_manual", "leave_auto", "system_import"],
       "defaultValue": "location"
     },
     "leave_request_id": {
@@ -82,5 +71,33 @@
     "updated_at": {
       "bsonType": "number"
     }
-  }
+  },
+  "indexes": [
+    {
+      "name": "student_course_date_unique",
+      "key": {
+        "student_id": 1,
+        "course_offering_id": 1,
+        "attendance_date": 1
+      },
+      "unique": true
+    },
+    {
+      "name": "course_date_status_idx",
+      "key": {
+        "course_offering_id": 1,
+        "attendance_date": -1,
+        "status": 1
+      },
+      "unique": false
+    },
+    {
+      "name": "student_date_idx",
+      "key": {
+        "student_id": 1,
+        "attendance_date": -1
+      },
+      "unique": false
+    }
+  ]
 }
