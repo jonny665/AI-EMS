@@ -1066,75 +1066,9 @@ function askAssistantFallback(session, data) {
   if (!session.userId || !["student", "teacher", "admin"].includes(session.role)) {
     return { ok: false, message: "Login is required." };
   }
-
-  purgeExpiredAiHistoryFallback();
-  const query = String(data.query || data.question || "").trim();
-  const now = Date.now();
-  const conversation = resolveAiConversationFallback(session, data, query, now);
-  const historyText = Array.isArray(data.history)
-    ? data.history
-        .slice(-5)
-        .map((item) => item && item.content)
-        .filter(Boolean)
-        .join(" ")
-    : "";
-  const queryText = (historyText + " " + query).toLowerCase();
-  const keywords = buildQueryKeywords(queryText);
-  const rows = buildKnowledgeRows();
-  const hit = rows
-    .map((item) => ({
-      ...item,
-      score: scoreKnowledgeHit(item, queryText, keywords),
-    }))
-    .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score)[0];
-  const answer = hit
-    ? hit.answer || hit.content || ""
-    : "The current local knowledge base does not have enough information. Please contact academic staff for confirmation.";
-  const assistantCreatedAt = Date.now();
-
-  fallbackState.aiMessages.push({
-    _id: "ai_msg_user_" + now,
-    conversationId: conversation._id,
-    role: "user",
-    content: query,
-    fallbackUsed: false,
-    latencyMs: 0,
-    createdAt: now,
-  });
-  fallbackState.aiMessages.push({
-    _id: "ai_msg_assistant_" + assistantCreatedAt,
-    conversationId: conversation._id,
-    role: "assistant",
-    content: answer,
-    model: "local-keyword-kb",
-    citations: hit ? [{ knowledgeBaseId: hit._id, title: hit.title || "" }] : [],
-    fallbackUsed: !hit,
-    latencyMs: assistantCreatedAt - now,
-    createdAt: assistantCreatedAt,
-  });
-  conversation.messageCount = Number(conversation.messageCount || 0) + 2;
-  conversation.contextSummary = query.slice(0, 120);
-  conversation.updatedAt = assistantCreatedAt;
-
-  recordAudit("ask_assistant", session.userId, "knowledge_base", hit ? hit._id : "", null, {
-    query,
-    grounded: Boolean(hit),
-    conversation_id: conversation._id,
-    context_turns: Array.isArray(data.history) ? Math.min(data.history.length, 5) : 0,
-  });
-
   return {
-    ok: true,
-    data: {
-      answer,
-      source: hit ? hit.title || "" : "",
-      sourceTitle: hit ? hit.title || "" : "",
-      grounded: Boolean(hit),
-      fallbackUsed: !hit,
-      knowledgeBaseId: hit ? hit._id : "",
-      conversationId: conversation._id,
-    },
+    ok: false,
+    message: "AI assistant requires cloud connection. Please run via HBuilderX with a deployed ask-assistant cloud function and DEEPSEEK_API_KEY configured.",
   };
 }
 
@@ -1685,28 +1619,6 @@ function syncEvaluationKnowledgeFallback(course, evaluation) {
     answer: `Anonymous course feedback for ${buildCourseName(course, course.courseOfferingId)}: average ${evaluation.rating}/5. ${evaluation.feedback}`,
     category: "course",
   });
-}
-
-function buildKnowledgeRows() {
-  const evaluationRows = buildEvaluationSummary({ role: "admin" }).map((item) => ({
-    _id: `kb_summary_${item.courseOfferingId}`,
-    title: `${item.courseName} evaluation summary`,
-    keywords: ["course", "evaluation", "feedback", "selection", item.courseName].filter(Boolean),
-    answer: `${item.courseName} has an anonymous evaluation average of ${item.averageRating}/5 from ${item.count} response(s). Representative feedback: ${item.feedback.slice(0, 3).join(" / ") || "No text feedback yet."}`,
-    category: "course",
-  }));
-  return fallbackState.knowledge.concat(evaluationRows);
-}
-
-function scoreKnowledgeHit(item, queryText, keywords) {
-  const itemKeywords = Array.isArray(item.keywords) ? item.keywords : [];
-  const keywordScore = itemKeywords.reduce((sum, keyword) => {
-    const normalized = String(keyword || "").toLowerCase();
-    return sum + (keywords.includes(normalized) || queryText.includes(normalized) ? 2 : 0);
-  }, 0);
-  const title = String(item.title || "").toLowerCase();
-  const titleScore = title && queryText.includes(title) ? 3 : 0;
-  return keywordScore + titleScore;
 }
 
 function buildQueryKeywords(value) {

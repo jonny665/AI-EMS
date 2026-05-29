@@ -1,52 +1,145 @@
 <template>
-  <view class="assistant-shell">
-    <view class="chat-main">
-      <view class="chat-header">
+  <view class="page">
+    <PageHeader title="AI Assistant" :displayName="session.displayName" :username="session.username">
+      <button class="secondary-btn" :disabled="loading" @click="newChat">New Chat</button>
+    </PageHeader>
+    <NavTabs :role="session.role" current="assistant" />
+
+    <!-- Chat Section -->
+    <view class="section">
+      <view class="section-head">
         <view>
-          <text class="chat-title">AI Assistant</text>
-          <text class="chat-subtitle">Local knowledge-base retrieval</text>
+          <text class="section-title">Conversation</text>
+          <text class="muted">{{ apiSettings.provider }} / {{ apiSettings.model }}</text>
         </view>
-        <button class="header-btn" @click="backHome">Home</button>
+        <text class="muted" v-if="messages.length">{{ messages.length }} messages</text>
       </view>
 
-      <scroll-view scroll-y class="message-scroll" :scroll-into-view="scrollAnchor">
-        <view v-if="!messages.length" class="empty-state">
-          <text class="empty-title">Local Knowledge Q&A</text>
-          <text class="empty-copy">Ask a question after importing records into the knowledge_base collection.</text>
+      <scroll-view scroll-y class="chat-scroll" :scroll-into-view="scrollAnchor">
+        <view v-if="!messages.length" class="empty-chat">
+          <text class="empty-icon">💬</text>
+          <text class="section-title">Ask me anything</text>
+          <text class="muted">Questions are answered by DeepSeek with knowledge base retrieval.</text>
         </view>
 
         <view
           v-for="message in messages"
           :id="message.id"
           :key="message.id"
-          class="message-row"
+          class="msg-row"
           :class="message.role"
         >
-          <view class="role-dot">{{ message.role === 'user' ? 'You' : 'KB' }}</view>
-          <view class="message-card">
-            <text class="message-text">{{ message.content }}</text>
-            <view v-if="message.sourceTitle" class="source-row">
-              <text class="source-label">Source</text>
-              <text class="source-title">{{ message.sourceTitle }}</text>
+          <view class="msg-bubble">
+            <text class="msg-text">{{ message.content }}</text>
+            <view v-if="message.sourceTitle" class="msg-source">
+              <text class="msg-source-label">Source:</text>
+              <text class="msg-source-title">{{ message.sourceTitle }}</text>
             </view>
+          </view>
+        </view>
+
+        <view v-if="loading" class="msg-row assistant">
+          <view class="msg-bubble">
+            <text class="msg-text loading-dots">Thinking...</text>
           </view>
         </view>
 
         <view id="bottomAnchor" class="bottom-anchor"></view>
       </scroll-view>
-    </view>
 
-    <view class="composer-wrap">
       <view class="composer">
         <textarea
           v-model="query"
           auto-height
-          maxlength="500"
+          maxlength="2000"
           :disabled="loading"
-          placeholder="Ask the local knowledge base"
+          placeholder="Ask a question..."
           class="composer-input"
+          @confirm="ask"
         />
-        <button class="send-btn" :loading="loading" @click="ask">&gt;</button>
+        <button class="primary-btn composer-btn" :loading="loading" @click="ask">Send</button>
+      </view>
+    </view>
+
+    <!-- API Settings Section -->
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">API Settings</text>
+        <button class="secondary-btn" @click="showSettings = !showSettings">
+          {{ showSettings ? 'Hide' : 'Configure' }}
+        </button>
+      </view>
+
+      <view v-if="showSettings">
+        <view class="field">
+          <text class="label">Provider</text>
+          <picker
+            :value="providerIndex"
+            :range="providers"
+            class="picker-value"
+            @change="onProviderChange"
+          >
+            <text>{{ apiSettings.provider || 'Select provider' }}</text>
+          </picker>
+        </view>
+
+        <view class="field">
+          <text class="label">API Key</text>
+          <view class="api-key-row">
+            <input
+              :value="apiSettings.apiKey"
+              :password="!showKey"
+              placeholder="sk-..."
+              class="api-key-input"
+              @input="onKeyInput"
+            />
+            <button class="secondary-btn compact-btn" @click="showKey = !showKey">
+              {{ showKey ? 'Hide' : 'Show' }}
+            </button>
+          </view>
+        </view>
+
+        <view class="field">
+          <text class="label">Model</text>
+          <input
+            :value="apiSettings.model"
+            placeholder="deepseek-chat"
+            class="api-key-input"
+            @input="onModelInput"
+          />
+        </view>
+
+        <view class="row api-params">
+          <view class="field param-half">
+            <text class="label">Temperature ({{ apiSettings.temperature }})</text>
+            <slider
+              :value="apiSettings.temperature"
+              :min="0"
+              :max="2"
+              :step="0.1"
+              show-value
+              activeColor="#2563eb"
+              @change="onTempChange"
+            />
+          </view>
+          <view class="field param-half">
+            <text class="label">Max Tokens ({{ apiSettings.maxTokens }})</text>
+            <slider
+              :value="apiSettings.maxTokens"
+              :min="256"
+              :max="8192"
+              :step="256"
+              show-value
+              activeColor="#2563eb"
+              @change="onTokensChange"
+            />
+          </view>
+        </view>
+
+        <button class="primary-btn full-btn" @click="saveSettings">Save Settings</button>
+        <text class="muted" style="display:block;margin-top:16rpx;text-align:center;">
+          Settings are stored locally. API key is sent to the cloud function with each request.
+        </text>
       </view>
     </view>
   </view>
@@ -54,9 +147,22 @@
 
 <script>
 import { callAiemsFunction } from '../../common/api.js'
-import { dashboardUrl, getSession, requireRole } from '../../common/session.js'
+import { getSession, requireRole } from '../../common/session.js'
+import PageHeader from '../../components/PageHeader.vue'
+import NavTabs from '../../components/NavTabs.vue'
+
+const SETTINGS_KEY = 'ai_ems_api_settings'
+
+const DEFAULT_SETTINGS = {
+  provider: 'deepseek',
+  apiKey: '',
+  model: 'deepseek-chat',
+  temperature: 0.7,
+  maxTokens: 2048,
+}
 
 export default {
+  components: { PageHeader, NavTabs },
   data() {
     return {
       session: {},
@@ -64,40 +170,82 @@ export default {
       messages: [],
       currentConversationId: '',
       loading: false,
-      scrollAnchor: ''
+      scrollAnchor: '',
+      showSettings: false,
+      showKey: false,
+      apiSettings: { ...DEFAULT_SETTINGS },
+      providers: ['deepseek', 'openai'],
     }
+  },
+  computed: {
+    providerIndex() {
+      const idx = this.providers.indexOf(this.apiSettings.provider)
+      return idx >= 0 ? idx : 0
+    },
   },
   onShow() {
     const session = requireRole(['student', 'teacher', 'admin'])
     if (!session) return
     this.session = session
+    this.loadSettings()
     this.loadHistory()
   },
   methods: {
+    loadSettings() {
+      try {
+        const saved = uni.getStorageSync(SETTINGS_KEY)
+        if (saved) {
+          this.apiSettings = { ...DEFAULT_SETTINGS, ...JSON.parse(saved) }
+        }
+      } catch (_) {
+        // use defaults
+      }
+    },
+    saveSettings() {
+      try {
+        uni.setStorageSync(SETTINGS_KEY, JSON.stringify(this.apiSettings))
+        uni.showToast({ title: 'Settings saved.', icon: 'success' })
+      } catch (_) {
+        uni.showToast({ title: 'Failed to save settings.', icon: 'none' })
+      }
+    },
+    onProviderChange(e) {
+      this.apiSettings.provider = this.providers[e.detail.value]
+    },
+    onKeyInput(e) {
+      this.apiSettings.apiKey = e.detail.value
+    },
+    onModelInput(e) {
+      this.apiSettings.model = e.detail.value
+    },
+    onTempChange(e) {
+      this.apiSettings.temperature = e.detail.value
+    },
+    onTokensChange(e) {
+      this.apiSettings.maxTokens = e.detail.value
+    },
+
     async loadHistory() {
       const result = await callAiemsFunction('get-ai-history', {
         session: getSession(),
-        forceRefresh: true
+        forceRefresh: true,
       })
       if (!result.ok) return
       const data = result.data || {}
       this.currentConversationId = data.activeConversationId || ''
-      this.messages = (data.messages || []).map(item =>
+      this.messages = (data.messages || []).map((item) =>
         this.buildMessage(
           item.role,
           item.content,
           item.citations && item.citations[0] ? item.citations[0].title || '' : '',
-          item._id
-        )
+          item._id,
+        ),
       )
       this.scrollToBottom()
     },
     async ask() {
       const question = this.query.trim()
-      if (!question) {
-        uni.showToast({ title: 'Please enter a question.', icon: 'none' })
-        return
-      }
+      if (!question) return
 
       this.messages.push(this.buildMessage('user', question))
       this.query = ''
@@ -108,26 +256,40 @@ export default {
         session: getSession(),
         conversationId: this.currentConversationId,
         query: question,
-        history: this.messages.slice(-10)
+        history: this.messages.slice(-10),
+        apiSettings: {
+          provider: this.apiSettings.provider,
+          apiKey: this.apiSettings.apiKey,
+          model: this.apiSettings.model,
+          temperature: this.apiSettings.temperature,
+          maxTokens: this.apiSettings.maxTokens,
+        },
       })
       this.loading = false
 
       if (result.ok) {
         const data = result.data || {}
         this.currentConversationId = data.conversationId || this.currentConversationId
-        this.messages.push(this.buildMessage('assistant', data.answer || '', data.sourceTitle || ''))
+        this.messages.push(
+          this.buildMessage('assistant', data.answer || '', data.sourceTitle || ''),
+        )
         this.scrollToBottom()
         return
       }
 
       uni.showToast({ title: result.message || 'Query failed.', icon: 'none' })
     },
+    newChat() {
+      this.currentConversationId = ''
+      this.messages = []
+      this.scrollAnchor = ''
+    },
     buildMessage(role, content, sourceTitle = '', id = '') {
       return {
         id: id || `${role}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
         role,
         content,
-        sourceTitle
+        sourceTitle,
       }
     },
     scrollToBottom() {
@@ -138,193 +300,155 @@ export default {
         }, 20)
       })
     },
-    backHome() {
-      uni.reLaunch({ url: dashboardUrl(this.session.role) })
-    }
-  }
+  },
 }
 </script>
 
 <style scoped>
-.assistant-shell {
-  min-height: 100vh;
-  padding-bottom: 190rpx;
-  background: #141414;
-  color: #f3f4f6;
-  box-sizing: border-box;
+.chat-scroll {
+  height: 600rpx;
+  margin-bottom: 24rpx;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
-.chat-main {
-  width: 100%;
-  max-width: 1080rpx;
-  margin: 0 auto;
-  padding: 34rpx 28rpx 0;
-  box-sizing: border-box;
-}
-
-.chat-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20rpx;
-  margin-bottom: 28rpx;
-}
-
-.chat-title,
-.empty-title {
-  display: block;
-  color: #f7f7f7;
-  font-size: 38rpx;
-  font-weight: 700;
-  line-height: 1.25;
-}
-
-.chat-subtitle,
-.empty-copy {
-  display: block;
-  margin-top: 8rpx;
-  color: #a3a3a3;
-  font-size: 24rpx;
-  line-height: 1.5;
-}
-
-.header-btn {
-  flex: 0 0 auto;
-  margin: 0;
-  padding: 0 26rpx;
-  background: #242424;
-  color: #f4f4f5;
-  border: 1rpx solid #3f3f46;
-  border-radius: 30rpx;
-  font-size: 24rpx;
-  line-height: 2.5;
-}
-
-.message-scroll {
-  height: calc(100vh - 280rpx);
-}
-
-.empty-state {
-  margin-top: 22vh;
+.empty-chat {
+  margin-top: 120rpx;
   text-align: center;
 }
 
-.message-row {
+.empty-icon {
+  display: block;
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+}
+
+.msg-row {
   display: flex;
-  gap: 18rpx;
   margin-bottom: 22rpx;
 }
 
-.message-row.user {
-  flex-direction: row-reverse;
+.msg-row.assistant {
+  justify-content: flex-start;
 }
 
-.role-dot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 58rpx;
-  height: 58rpx;
-  flex: 0 0 58rpx;
-  background: #2f2f2f;
-  color: #d4d4d8;
-  border-radius: 50%;
-  font-size: 20rpx;
-  font-weight: 700;
+.msg-row.user {
+  justify-content: flex-end;
 }
 
-.message-card {
-  max-width: 760rpx;
+.msg-bubble {
+  max-width: 640rpx;
   padding: 22rpx 24rpx;
-  background: #202020;
-  border: 1rpx solid #333333;
-  border-radius: 8rpx;
+  border-radius: 12rpx;
   box-sizing: border-box;
 }
 
-.message-row.user .message-card {
-  background: #2d2d2d;
+.msg-row.assistant .msg-bubble {
+  background: #f8fafc;
+  border: 1rpx solid #e2e8f0;
+  border-top-left-radius: 4rpx;
 }
 
-.message-text {
+.msg-row.user .msg-bubble {
+  background: #2563eb;
+  border-top-right-radius: 4rpx;
+}
+
+.msg-row.user .msg-text {
+  color: #ffffff;
+}
+
+.msg-text {
   display: block;
-  color: #f5f5f5;
+  color: #1f2937;
   font-size: 28rpx;
   line-height: 1.65;
   white-space: pre-wrap;
   word-break: break-word;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
-.source-row {
+.loading-dots {
+  color: #94a3b8 !important;
+  font-style: italic;
+}
+
+.msg-source {
   display: flex;
   flex-wrap: wrap;
-  gap: 12rpx;
-  margin-top: 18rpx;
-  padding-top: 16rpx;
-  border-top: 1rpx solid #3f3f46;
+  gap: 8rpx;
+  margin-top: 16rpx;
+  padding-top: 14rpx;
+  border-top: 1rpx solid #e2e8f0;
 }
 
-.source-label {
-  color: #8bcbff;
+.msg-source-label {
+  color: #2563eb;
   font-size: 22rpx;
+  font-weight: 600;
 }
 
-.source-title {
-  color: #d4d4d8;
+.msg-source-title {
+  color: #64748b;
   font-size: 22rpx;
 }
 
 .bottom-anchor {
-  height: 12rpx;
-}
-
-.composer-wrap {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 22rpx 28rpx 34rpx;
-  background: linear-gradient(180deg, rgba(20, 20, 20, 0), #141414 32%);
-  box-sizing: border-box;
+  height: 8rpx;
 }
 
 .composer {
   display: flex;
   align-items: flex-end;
   gap: 16rpx;
-  width: 100%;
-  max-width: 1080rpx;
-  margin: 0 auto;
-  padding: 18rpx 18rpx 18rpx 26rpx;
-  background: #2b2b2b;
-  border: 1rpx solid #3d3d3d;
-  border-radius: 34rpx;
-  box-sizing: border-box;
 }
 
 .composer-input {
-  min-height: 56rpx;
-  max-height: 180rpx;
   flex: 1;
-  color: #f5f5f5;
+  min-height: 80rpx;
+  max-height: 200rpx;
+  padding: 18rpx;
+  background: #ffffff;
+  border: 1rpx solid #cbd5e1;
+  border-radius: 8rpx;
   font-size: 28rpx;
   line-height: 1.55;
+  box-sizing: border-box;
 }
 
-.send-btn {
+.composer-btn {
+  min-width: 120rpx !important;
+  margin: 0 !important;
+}
+
+.api-key-row {
   display: flex;
+  gap: 12rpx;
   align-items: center;
-  justify-content: center;
-  width: 66rpx;
-  height: 66rpx;
-  flex: 0 0 66rpx;
-  margin: 0;
-  padding: 0;
-  background: #f4f4f5;
-  color: #18181b;
-  border-radius: 50%;
-  font-size: 34rpx;
-  font-weight: 700;
-  line-height: 66rpx;
+}
+
+.api-key-input {
+  flex: 1;
+  padding: 18rpx;
+  background: #ffffff;
+  border: 1rpx solid #cbd5e1;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.compact-btn {
+  min-width: 100rpx !important;
+  font-size: 22rpx !important;
+}
+
+.api-params {
+  display: flex;
+  gap: 24rpx;
+}
+
+.param-half {
+  flex: 1;
 }
 </style>
