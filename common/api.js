@@ -191,7 +191,7 @@ function fallbackResult(name, data = {}) {
   }
 
   if (name === "ask-assistant") {
-    const query = String(data.query || "").toLowerCase();
+    const query = String(data.query || data.question || "").toLowerCase();
     const hit = fallbackState.knowledge.find((item) =>
       item.keywords.some((keyword) =>
         query.includes(String(keyword).toLowerCase()),
@@ -202,6 +202,7 @@ function fallbackResult(name, data = {}) {
         ok: true,
         data: {
           answer: "当前知识库没有足够信息，请联系教务人员确认。",
+          source: "Fallback response",
           sourceTitle: "Fallback response",
           grounded: false,
         },
@@ -211,6 +212,7 @@ function fallbackResult(name, data = {}) {
       ok: true,
       data: {
         answer: hit.answer,
+        source: hit.title,
         sourceTitle: hit.title,
         grounded: true,
       },
