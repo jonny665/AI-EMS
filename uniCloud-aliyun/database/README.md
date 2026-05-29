@@ -114,3 +114,7 @@
 - `api_clients`：第三方系统 API 接入账号。
 - `api_request_logs`：API 调用日志，用于监控和排查问题。
 - `audit_logs`：敏感操作审计日志，如审批、改成绩、改权限。
+
+
+
+"password_hash_algorithm": "sha256"
