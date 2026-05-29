@@ -60,7 +60,7 @@ async function canReviewLeave(session, leave) {
     return true;
   }
 
-  const teacher = await findByField("teachers", "user_id", session.userId);
+  const teacher = await findTeacherBySessionUserId(session.userId);
   if (!teacher) {
     return false;
   }
@@ -171,6 +171,47 @@ async function findById(collection, id) {
 async function findByField(collection, field, value) {
   const result = await db.collection(collection).where({ [field]: value }).limit(1).get();
   return result.data && result.data[0] ? result.data[0] : null;
+}
+
+async function findTeacherBySessionUserId(userId) {
+  for (const key of buildUserKeys(userId)) {
+    const teacher = await findByField("teachers", "user_id", key);
+    if (teacher) {
+      return teacher;
+    }
+  }
+  return null;
+}
+
+function buildUserKeys(userId) {
+  const value = String(userId || "").trim();
+  const keys = new Set(value ? [value] : []);
+  addRoleAliases(keys, value, "teacher", "t");
+  return Array.from(keys);
+}
+
+function addRoleAliases(keys, value, roleName, roleCode) {
+  const legacyPrefix = `u_${roleName}_`;
+  const userPrefix = `user_${roleCode}_`;
+  const entityPrefix = `${roleName}_`;
+  const lower = value.toLowerCase();
+  let suffix = "";
+
+  if (lower.startsWith(legacyPrefix)) {
+    suffix = value.slice(legacyPrefix.length);
+  } else if (lower.startsWith(userPrefix)) {
+    suffix = value.slice(userPrefix.length);
+  } else if (lower.startsWith(entityPrefix)) {
+    suffix = value.slice(entityPrefix.length);
+  }
+
+  if (!suffix) {
+    return;
+  }
+
+  keys.add(`${legacyPrefix}${suffix}`);
+  keys.add(`${userPrefix}${suffix}`);
+  keys.add(`${entityPrefix}${suffix}`);
 }
 
 function buildLeaveView(leave) {

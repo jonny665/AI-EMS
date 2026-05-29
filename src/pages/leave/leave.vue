@@ -89,6 +89,8 @@ export default {
       reasonDetail: '',
       reviewComment: '',
       loading: false,
+      lastLoadedAt: 0,
+      loadTtlMs: 30000,
       reasonTypes: [
         { value: 'sick', label: 'Sick Leave' },
         { value: 'personal', label: 'Personal Leave' },
@@ -115,7 +117,10 @@ export default {
     const session = requireRole(['student', 'teacher', 'admin'])
     if (!session) return
     this.session = session
-    this.load()
+    const now = Date.now()
+    if (!this.courses.length || now - this.lastLoadedAt > this.loadTtlMs) {
+      this.load()
+    }
   },
   methods: {
     async load(forceRefresh = false) {
@@ -133,6 +138,13 @@ export default {
 
       this.courses = result.data.courses || []
       this.leaveRequests = result.data.leaveRequests || []
+      if (!this.courses.length) {
+        console.warn('[AI-EMS] No courses returned for leave page.', {
+          session: getSession(),
+          dashboardMeta: result.data.meta || null
+        })
+      }
+      this.lastLoadedAt = Date.now()
 
       if (this.courseIndex >= this.courses.length) {
         this.courseIndex = 0
@@ -217,7 +229,9 @@ export default {
       if (!course) {
         return 'Unnamed course'
       }
-      return [course.code, course.name].filter(Boolean).join(' ').trim() || 'Unnamed course'
+      const title = [course.code, course.name].filter(Boolean).join(' ').trim() || 'Unnamed course'
+      const teachers = Array.isArray(course.teacherNames) && course.teacherNames.length ? ` (${course.teacherNames.join(', ')})` : ''
+      return title + teachers
     },
     leaveTitle(item) {
       return [item.studentName || this.session.displayName, item.courseName].filter(Boolean).join(' - ')

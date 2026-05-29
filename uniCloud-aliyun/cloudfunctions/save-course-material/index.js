@@ -84,7 +84,13 @@ async function canManageOffering(session, offering) {
   }
 
   const teacher = await findByField("teachers", "user_id", session.userId);
-  return Boolean(teacher && Array.isArray(offering.teacher_ids) && offering.teacher_ids.includes(teacher._id));
+  const teacherIds = Array.isArray(offering.teacher_ids)
+    ? offering.teacher_ids.map((item) => String(item || "").trim())
+    : [];
+  if (teacher && teacherIds.includes(String(teacher._id || "").trim())) {
+    return true;
+  }
+  return teacherIds.includes(String(session.userId || "").trim());
 }
 
 async function findById(collection, id) {

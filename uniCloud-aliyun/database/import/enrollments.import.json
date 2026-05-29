@@ -3,3 +3,17 @@
 {"_id":"enroll_s2_sd","student_id":"student_002","course_offering_id":"offering_sd_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
 {"_id":"enroll_s2_pm","student_id":"student_002","course_offering_id":"offering_pm_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
 {"_id":"enroll_s3_sd","student_id":"student_003","course_offering_id":"offering_sd_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s4_sd","student_id":"student_004","course_offering_id":"offering_sd_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s4_da","student_id":"student_004","course_offering_id":"offering_da_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s5_pm","student_id":"student_005","course_offering_id":"offering_pm_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s5_da","student_id":"student_005","course_offering_id":"offering_da_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s6_sd","student_id":"student_006","course_offering_id":"offering_sd_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s6_pm","student_id":"student_006","course_offering_id":"offering_pm_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s7_sd","student_id":"student_007","course_offering_id":"offering_sd_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s7_da","student_id":"student_007","course_offering_id":"offering_da_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s8_pm","student_id":"student_008","course_offering_id":"offering_pm_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s8_da","student_id":"student_008","course_offering_id":"offering_da_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s9_sd","student_id":"student_009","course_offering_id":"offering_sd_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s9_pm","student_id":"student_009","course_offering_id":"offering_pm_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s10_sd","student_id":"student_010","course_offering_id":"offering_sd_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}
+{"_id":"enroll_s10_da","student_id":"student_010","course_offering_id":"offering_da_2026s","status":"enrolled","selected_at":1777867200000,"created_at":1777867200000,"updated_at":1777867200000}

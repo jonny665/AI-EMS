@@ -17,7 +17,7 @@ exports.main = async (event = {}) => {
     return { ok: false, message: "Course and location coordinates are required." };
   }
 
-  const student = await findByField("students", "user_id", session.userId);
+  const student = await findStudentBySessionUserId(session.userId);
   if (!student) {
     return { ok: false, message: "Student profile was not found." };
   }
@@ -156,6 +156,47 @@ async function findByField(collection, field, value) {
     console.warn(`[submit-attendance-checkin] ${collection} lookup failed.`, error);
     return null;
   }
+}
+
+async function findStudentBySessionUserId(userId) {
+  for (const key of buildUserKeys(userId)) {
+    const student = await findByField("students", "user_id", key);
+    if (student) {
+      return student;
+    }
+  }
+  return null;
+}
+
+function buildUserKeys(userId) {
+  const value = String(userId || "").trim();
+  const keys = new Set(value ? [value] : []);
+  addRoleAliases(keys, value, "student", "s");
+  return Array.from(keys);
+}
+
+function addRoleAliases(keys, value, roleName, roleCode) {
+  const legacyPrefix = `u_${roleName}_`;
+  const userPrefix = `user_${roleCode}_`;
+  const entityPrefix = `${roleName}_`;
+  const lower = value.toLowerCase();
+  let suffix = "";
+
+  if (lower.startsWith(legacyPrefix)) {
+    suffix = value.slice(legacyPrefix.length);
+  } else if (lower.startsWith(userPrefix)) {
+    suffix = value.slice(userPrefix.length);
+  } else if (lower.startsWith(entityPrefix)) {
+    suffix = value.slice(entityPrefix.length);
+  }
+
+  if (!suffix) {
+    return;
+  }
+
+  keys.add(`${legacyPrefix}${suffix}`);
+  keys.add(`${userPrefix}${suffix}`);
+  keys.add(`${entityPrefix}${suffix}`);
 }
 
 function distanceMeters(lat1, lon1, lat2, lon2) {

@@ -92,7 +92,9 @@ export default {
         { key: 'workload', label: 'Workload' },
         { key: 'achievement', label: 'Achievement' },
         { key: 'overall', label: 'Overall' }
-      ]
+      ],
+      lastLoadedAt: 0,
+      loadTtlMs: 30000
     }
   },
   computed: {
@@ -107,7 +109,10 @@ export default {
     const session = requireRole(['student', 'teacher', 'admin'])
     if (!session) return
     this.session = session
-    this.load()
+    const now = Date.now()
+    if (!this.lastLoadedAt || now - this.lastLoadedAt > this.loadTtlMs) {
+      this.load()
+    }
   },
   methods: {
     defaultScores() {
@@ -138,6 +143,7 @@ export default {
       if (result.ok) {
         this.summaries = result.summary || result.data || []
       }
+      this.lastLoadedAt = Date.now()
       if (this.courseIndex >= this.courses.length) this.courseIndex = 0
     },
     refresh() {

@@ -72,7 +72,53 @@ exports.main = async (event = {}) => {
 async function resolveTarget(session) {
   const collection = session.role === "teacher" ? "teachers" : "students";
   const result = await db.collection(collection).where({ user_id: session.userId }).limit(1).get();
-  return result.data && result.data[0] ? result.data[0] : null;
+  if (result.data && result.data[0]) {
+    return result.data[0];
+  }
+
+  const now = Date.now();
+  if (session.role === "student") {
+    const seeded = {
+      user_id: session.userId,
+      student_no: `TEMP-${String(session.userId || "").replace(/[^a-zA-Z0-9]/g, "").slice(-12) || now}`,
+      name: session.displayName || session.username || "Unknown Student",
+      major_id: "major_unknown",
+      enrollment_year: new Date().getFullYear(),
+      status: "active",
+      created_at: now,
+      updated_at: now,
+      contact: {
+        email: session.email || "",
+        phone: session.phone || "",
+        address: "",
+      },
+      family_info: {
+        guardianName: "",
+        guardianPhone: "",
+      },
+    };
+    const created = await db.collection("students").add(seeded);
+    return { _id: created.id, ...seeded };
+  }
+
+  const seededTeacher = {
+    user_id: session.userId,
+    teacher_no: `TEMP-${String(session.userId || "").replace(/[^a-zA-Z0-9]/g, "").slice(-12) || now}`,
+    name: session.displayName || session.username || "Unknown Teacher",
+    department_id: "dept_unknown",
+    status: "active",
+    created_at: now,
+    updated_at: now,
+    office: "",
+    research_fields: [],
+    teaching_experience: "",
+    public_profile: {
+      officeHours: "",
+      homepage: "",
+    },
+  };
+  const createdTeacher = await db.collection("teachers").add(seededTeacher);
+  return { _id: createdTeacher.id, ...seededTeacher };
 }
 
 function normalizeChanges(role, target, raw) {

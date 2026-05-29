@@ -5,6 +5,8 @@ const CACHE_TTL_MS = {
   "get-ai-history": 30000,
 };
 
+const CLIENT_CACHE_VERSION = "course-session-v2";
+
 const WRITE_FUNCTIONS = new Set([
   "submit-leave",
   "review-leave",
@@ -15,6 +17,14 @@ const WRITE_FUNCTIONS = new Set([
   "review-profile-change",
   "submit-attendance-checkin",
   "ask-assistant",
+]);
+
+const CLOUD_STRICT_FUNCTIONS = new Set([
+  "get-dashboard-data",
+  "get-course-materials",
+  "save-course-material",
+  "ask-assistant",
+  "get-ai-history",
 ]);
 
 const responseCache = new Map();
@@ -503,7 +513,14 @@ async function runFunction(name, data) {
     const response = await uniCloud.callFunction({ name, data });
     return response.result || response;
   } catch (error) {
-    console.warn(`[AI-EMS] Cloud function ${name} failed, using local fallback.`, error);
+    console.warn(`[AI-EMS] Cloud function ${name} failed.`, error);
+    if (CLOUD_STRICT_FUNCTIONS.has(name)) {
+      return {
+        ok: false,
+        message: `Cloud function ${name} failed. ${error && error.message ? error.message : "Please try again."}`,
+      };
+    }
+    console.warn(`[AI-EMS] Falling back to local mode for ${name}.`);
     return fallbackResult(name, data);
   }
 }
@@ -1225,11 +1242,22 @@ function resolveCoursesForSession(session) {
   if (session.role === "teacher") {
     return fallbackState.courses.filter((item) => canTeacherAccessCourse(session.userId, item.courseOfferingId)).map(clone);
   }
-  return fallbackState.enrollments
-    .filter((item) => item.studentId === session.userId && item.status !== "dropped")
+  const student = findStudentBySession(session);
+  const studentKeys = buildUserKeySet(session.userId, student ? student.userId || student.user_id || student._id : "");
+  if (student && student._id) {
+    studentKeys.add(student._id);
+  }
+
+  const courses = fallbackState.enrollments
+    .filter((item) => {
+      const enrollmentStudentId = String(item.studentId || item.student_id || "").trim();
+      return studentKeys.has(enrollmentStudentId) && item.status !== "dropped";
+    })
     .map((item) => findCourse(item.courseOfferingId))
     .filter(Boolean)
     .map(clone);
+
+  return courses.length ? courses : fallbackState.courses.map(clone);
 }
 
 function resolveAttendanceForSession(session) {
@@ -1643,12 +1671,101 @@ function applyProfileChanges(request) {
 
 function resolveProfileTarget(session) {
   if (session.role === "student") {
-    return fallbackState.students.find((item) => item.userId === session.userId);
+    const matched = findStudentBySession(session);
+    if (matched) {
+      return matched;
+    }
+    const seeded = {
+      _id: `stu_${String(session.userId || Date.now()).replace(/[^a-zA-Z0-9_-]/g, "")}`,
+      userId: session.userId,
+      studentNo: "",
+      name: session.displayName || session.username || "",
+      gender: "",
+      major: "",
+      adminClass: "",
+      enrollmentYear: "",
+      contact: {
+        email: session.email || "",
+        phone: session.phone || "",
+        address: "",
+      },
+      familyInfo: {
+        guardianName: "",
+        guardianPhone: "",
+      },
+      interestTags: [],
+      totalCredits: 0,
+      creditsEarned: 0,
+      moduleCredits: {
+        general: { current: 0, total: 0 },
+        majorRequired: { current: 0, total: 0 },
+        majorElective: { current: 0, total: 0 },
+        practice: { current: 0, total: 0 },
+      },
+      grades: [],
+      gpaTrend: [],
+      percentileRank: 0,
+      gpa: "0.0",
+    };
+    fallbackState.students.unshift(seeded);
+    return seeded;
   }
   if (session.role === "teacher") {
-    return fallbackState.teachers.find((item) => item.userId === session.userId);
+    const keys = buildUserKeySet(session.userId);
+    const matched = fallbackState.teachers.find((item) => {
+      const candidate = String(item.userId || item.user_id || "").trim();
+      return keys.has(candidate);
+    });
+    if (matched) {
+      return matched;
+    }
+    const seeded = {
+      _id: `tea_${String(session.userId || Date.now()).replace(/[^a-zA-Z0-9_-]/g, "")}`,
+      userId: session.userId,
+      teacherNo: "",
+      name: session.displayName || session.username || "",
+      department: "",
+      title: "",
+      office: "",
+      researchFields: [],
+      teachingExperience: "",
+      publicProfile: {
+        officeHours: "",
+        homepage: "",
+      },
+    };
+    fallbackState.teachers.unshift(seeded);
+    return seeded;
   }
   return null;
+}
+
+function buildUserKeySet(...values) {
+  const keys = new Set();
+  values
+    .map((value) => String(value || "").trim())
+    .filter(Boolean)
+    .forEach((value) => {
+      keys.add(value);
+      if (value.startsWith("user_")) {
+        keys.add(`u_${value.slice(5)}`);
+      }
+      if (value.startsWith("u_")) {
+        keys.add(`user_${value.slice(2)}`);
+      }
+    });
+  return keys;
+}
+
+function findStudentBySession(session) {
+  const keys = buildUserKeySet(session.userId);
+  return (
+    fallbackState.students.find((item) => {
+      const userId = String(item.userId || item.user_id || "").trim();
+      const studentId = String(item._id || "").trim();
+      return keys.has(userId) || keys.has(studentId);
+    }) || null
+  );
 }
 
 function buildMaterialView(item) {
@@ -1870,11 +1987,40 @@ function stripClientOnlyFields(data) {
   delete cloned.forceRefresh;
   delete cloned.__forceRefresh;
   delete cloned.refreshToken;
+  if (cloned.session) {
+    cloned.session = normalizeSessionForCloud(cloned.session);
+  }
   return cloned;
 }
 
+function normalizeSessionForCloud(session) {
+  const normalized = { ...session };
+  normalized.userId = normalizeCloudUserId(normalized.userId);
+  return normalized;
+}
+
+function normalizeCloudUserId(userId) {
+  const value = String(userId || "").trim();
+  if (/^u_student_/i.test(value)) {
+    return `user_s_${value.slice("u_student_".length)}`;
+  }
+  if (/^student_/i.test(value)) {
+    return `user_s_${value.slice("student_".length)}`;
+  }
+  if (/^u_teacher_/i.test(value)) {
+    return `user_t_${value.slice("u_teacher_".length)}`;
+  }
+  if (/^teacher_/i.test(value)) {
+    return `user_t_${value.slice("teacher_".length)}`;
+  }
+  if (/^u_admin_/i.test(value)) {
+    return `user_admin_${value.slice("u_admin_".length)}`;
+  }
+  return value;
+}
+
 function buildCacheKey(name, data) {
-  return `${name}:${stableSerialize(data)}`;
+  return `${CLIENT_CACHE_VERSION}:${name}:${stableSerialize(data)}`;
 }
 
 function stableSerialize(value) {

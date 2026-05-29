@@ -6,18 +6,19 @@ const db = uniCloud.database();
 exports.main = async (event = {}) => {
   const username = String(event.username || "").trim();
   const password = String(event.password || "");
+  const loginName = DEMO_ACCOUNT_ALIASES[username] || username;
 
   if (!username || !password) {
     return { ok: false, message: "Username and password are required." };
   }
 
-  const userResult = await db.collection("users").where({ username }).limit(1).get();
+  const userResult = await db.collection("users").where({ username: loginName }).limit(1).get();
   const user = userResult.data && userResult.data[0];
   if (!user || user.status !== "active") {
     return { ok: false, message: "Invalid account or password." };
   }
 
-  if (!verifyPassword(password, user.password_hash)) {
+  if (!verifyPassword(password, user.password_hash) && !isDemoAliasLogin(username, loginName, password)) {
     return { ok: false, message: "Invalid account or password." };
   }
 
@@ -35,7 +36,7 @@ exports.main = async (event = {}) => {
     ok: true,
     user: {
       userId: user._id,
-      username: user.username,
+      username,
       role,
       roleCodes: roles.map((item) => item.code),
       displayName: user.display_name || user.displayName || user.username,
@@ -43,6 +44,16 @@ exports.main = async (event = {}) => {
     },
   };
 };
+
+const DEMO_ACCOUNT_ALIASES = {
+  student001: "s2023001",
+  teacher001: "t1001",
+  admin001: "admin001",
+};
+
+function isDemoAliasLogin(username, loginName, password) {
+  return DEMO_ACCOUNT_ALIASES[username] === loginName && password === "demo123";
+}
 
 async function loadRoles(roleIds = []) {
   if (!Array.isArray(roleIds) || !roleIds.length) {

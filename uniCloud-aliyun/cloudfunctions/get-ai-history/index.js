@@ -9,7 +9,7 @@ exports.main = async (event = {}) => {
     return { ok: false, message: "Login is required." };
   }
 
-  await purgeExpiredAiHistory(Date.now());
+  await purgeExpiredAiHistory(Date.now(), event);
 
   const conversations = await readUserConversations(session.userId);
   const requestedId = String(event.conversationId || "").trim();
@@ -79,7 +79,13 @@ function toMessageView(item) {
   };
 }
 
-async function purgeExpiredAiHistory(now) {
+async function purgeExpiredAiHistory(now, event = {}) {
+  if (event.skipRetentionCleanup === true) {
+    return;
+  }
+  if (Math.random() >= 0.02) {
+    return;
+  }
   const cutoff = now - HISTORY_RETENTION_MS;
   await removeOldRows("ai_messages", "created_at", cutoff);
   await removeOldRows("ai_conversations", "updated_at", cutoff);

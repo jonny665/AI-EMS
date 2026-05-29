@@ -273,7 +273,10 @@ export default {
     const session = requireRole(['student'])
     if (!session) return
     this.session = session
-    this.load()
+    const now = Date.now()
+    if (!this.lastUpdatedAt || now - this.lastUpdatedAt > 30000) {
+      this.load()
+    }
   },
   methods: {
     emptyProfile() {
@@ -326,6 +329,12 @@ export default {
           }
         }
         if (this.checkinCourseIndex >= this.data.courses.length) this.checkinCourseIndex = 0
+        if (!this.data.courses.length) {
+          console.warn('[AI-EMS] No courses returned for student dashboard.', {
+            session: getSession(),
+            dashboardMeta: result.data.meta || null
+          })
+        }
         this.lastUpdatedAt = Date.now()
       }
     },
@@ -400,13 +409,16 @@ export default {
       return course ? course.code + ' ' + course.name : courseId
     },
     courseSubtitle(course) {
-      return [course.schedule, course.credits ? course.credits + ' credits' : ''].filter(Boolean).join(' - ')
+      const teachers = Array.isArray(course.teacherNames) ? course.teacherNames.join(', ') : ''
+      return [teachers ? 'Teacher: ' + teachers : '', course.schedule, course.credits ? course.credits + ' credits' : ''].filter(Boolean).join(' - ')
     },
     attendanceSubtitle(item) {
       return [item.source, item.distanceToClassroomM ? item.distanceToClassroomM + 'm' : ''].filter(Boolean).join(' - ')
     },
     formatCourseLabel(course) {
-      return [course.code, course.name].filter(Boolean).join(' ').trim() || 'Unnamed course'
+      const title = [course.code, course.name].filter(Boolean).join(' ').trim() || 'Unnamed course'
+      const teachers = Array.isArray(course.teacherNames) && course.teacherNames.length ? ` (${course.teacherNames.join(', ')})` : ''
+      return title + teachers
     },
     formatChangeRequest(item) {
       const changes = item.changes || {}

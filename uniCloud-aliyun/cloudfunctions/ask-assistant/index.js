@@ -15,19 +15,20 @@ exports.main = async (event = {}) => {
   }
 
   const startedAt = Date.now();
-  await purgeExpiredAiHistory(startedAt);
+  await purgeExpiredAiHistory(startedAt, event);
   const conversation = await resolveConversation(session, event, query, startedAt);
-  const historyText = Array.isArray(event.history)
+  const historyUserText = Array.isArray(event.history)
     ? event.history
         .slice(-10)
-        .map((item) => item && item.content)
+        .filter((item) => item && item.role === "user")
+        .map((item) => item.content)
         .filter(Boolean)
         .join(" ")
     : "";
-  const retrievalText = `${historyText} ${query}`.trim();
-  const keywords = buildQueryKeywords(retrievalText);
+  const keywords = buildQueryKeywords(query);
+  const contextKeywords = buildQueryKeywords(historyUserText);
   const rows = await readKnowledgeBase();
-  const hit = findBestMatch(rows, retrievalText || query, keywords);
+  const hit = findBestMatch(rows, query, keywords, contextKeywords);
   const latencyMs = Date.now() - startedAt;
   const answer = hit
     ? hit.content || ""
@@ -167,7 +168,13 @@ async function updateConversation(conversation, query, now) {
   }
 }
 
-async function purgeExpiredAiHistory(now = Date.now()) {
+async function purgeExpiredAiHistory(now = Date.now(), event = {}) {
+  if (event.skipRetentionCleanup === true) {
+    return;
+  }
+  if (Math.random() >= 0.02) {
+    return;
+  }
   const cutoff = now - HISTORY_RETENTION_MS;
   await removeOldRows("ai_messages", "created_at", cutoff);
   await removeOldRows("ai_conversations", "updated_at", cutoff);
@@ -214,19 +221,41 @@ function buildQueryKeywords(query) {
     .replace(/\s+/g, " ")
     .trim();
   const words = cleaned ? cleaned.split(" ") : [];
-  return Array.from(new Set(words.flatMap((word) => [word, singularize(word)]).filter(Boolean)));
+  const cjkRuns = cleaned.replace(/[a-z0-9\s]/g, "");
+  const cjkTokens = [];
+  for (let i = 0; i < cjkRuns.length; i += 1) {
+    cjkTokens.push(cjkRuns.slice(i, i + 1));
+    if (i + 1 < cjkRuns.length) {
+      cjkTokens.push(cjkRuns.slice(i, i + 2));
+    }
+    if (i + 2 < cjkRuns.length) {
+      cjkTokens.push(cjkRuns.slice(i, i + 3));
+    }
+  }
+  return Array.from(
+    new Set(words.concat(cjkTokens).flatMap((word) => [word, singularize(word)]).filter(Boolean)),
+  );
 }
 
-function findBestMatch(rows, query, keywords) {
+function findBestMatch(rows, query, keywords, contextKeywords = []) {
   const cleanedQuery = query.toLowerCase();
+  const context = new Set(contextKeywords);
   const scored = rows
     .map((item) => {
       const itemKeywords = Array.isArray(item.keywords) ? item.keywords : [];
       const hitCount = itemKeywords.reduce((sum, keyword) => {
         const normalized = singularize(String(keyword || "").toLowerCase());
-        return sum + (keywords.includes(normalized) || cleanedQuery.includes(normalized) ? 1 : 0);
+        const directHit = keywords.includes(normalized) || cleanedQuery.includes(normalized);
+        const contextHit = context.has(normalized);
+        if (directHit) {
+          return sum + 3;
+        }
+        if (contextHit) {
+          return sum + 1;
+        }
+        return sum;
       }, 0);
-      const titleHit = item.title && cleanedQuery.includes(String(item.title).toLowerCase()) ? 1 : 0;
+      const titleHit = item.title && cleanedQuery.includes(String(item.title).toLowerCase()) ? 2 : 0;
       return { ...item, _score: hitCount + titleHit };
     })
     .filter((item) => item._score > 0)

@@ -151,7 +151,10 @@ export default {
     const session = requireRole(['admin'])
     if (!session) return
     this.session = session
-    this.load()
+    const now = Date.now()
+    if (!this.lastUpdatedAt || now - this.lastUpdatedAt > 30000) {
+      this.load()
+    }
   },
   methods: {
     async load(forceRefresh = false) {

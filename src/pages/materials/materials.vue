@@ -104,6 +104,8 @@ export default {
       fileTypes: ['document', 'slide', 'video', 'link', 'other'],
       loading: false,
       saving: false,
+      lastLoadedAt: 0,
+      loadTtlMs: 30000,
       form: {
         materialId: '',
         title: '',
@@ -129,7 +131,10 @@ export default {
     const session = requireRole(['student', 'teacher', 'admin'])
     if (!session) return
     this.session = session
-    this.load()
+    const now = Date.now()
+    if (!this.materials.length || now - this.lastLoadedAt > this.loadTtlMs) {
+      this.load()
+    }
   },
   methods: {
     emptyForm() {
@@ -155,6 +160,7 @@ export default {
 
       this.courses = result.data.courses || []
       this.materials = result.data.materials || []
+      this.lastLoadedAt = Date.now()
       if (this.courseIndex >= this.courses.length) {
         this.courseIndex = 0
       }
