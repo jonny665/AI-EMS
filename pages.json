@@ -33,7 +33,9 @@
     {
       "path": "pages/evaluation/evaluation",
       "style": {
-        "navigationBarTitleText": "Course Evaluation"
+        "navigationBarTitleText": "Course Evaluation",
+        "navigationBarBackgroundColor": "#409eff",
+        "navigationBarTextStyle": "white"
       }
     },
     {
