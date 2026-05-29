@@ -3,7 +3,7 @@
     <view class="header-row">
       <view class="header-left">
         <text class="header-title">{{ title }}</text>
-        <text class="header-sub">{{ displayName }} · {{ username }}</text>
+        <text class="header-sub">{{ displayName }} - {{ username }}</text>
       </view>
       <view class="header-right">
         <slot></slot>

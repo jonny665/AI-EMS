@@ -1,292 +1,253 @@
 <template>
-  <view class="evaluation-page">
-    <!-- Student View: Submit Evaluation Form -->
-    <view v-if="userRole === 'student'" class="submit-section">
-      <view class="page-title">Course Evaluation</view>
-      
-      <view class="form-item">
-        <text class="label">Select Course</text>
-        <picker mode="selector" :range="courseList" range-key="name" @change="onCourseChange">
-          <view class="picker">{{ selectedCourse ? selectedCourse.name : 'Please select a course' }}</view>
-        </picker>
-      </view>
-
-      <view class="form-item">
-        <text class="label">Course Rating</text>
-        <view class="rating-group">
-          <text 
-            v-for="star in 5" 
-            :key="star" 
-            class="star" 
-            :class="{ active: rating >= star }"
-            @click="rating = star"
-          >★</text>
+  <view class="page">
+    <view class="section">
+      <view class="row">
+        <view>
+          <text class="section-title">Course Evaluation</text>
+          <text class="muted">{{ session.displayName }} - {{ session.role }}</text>
+        </view>
+        <view class="btn-row top-actions">
+          <button class="secondary-btn" :loading="loading" @click="refresh">Refresh</button>
+          <button class="secondary-btn" @click="backHome">Home</button>
         </view>
       </view>
-
-      <view class="form-item">
-        <text class="label">Evaluation Content (max 500 characters)</text>
-        <textarea 
-          v-model="content" 
-          class="textarea" 
-          placeholder="Write your honest feedback for this course. All submissions are fully anonymous."
-          maxlength="500"
-        />
-        <text class="word-count">{{ content.length }}/500</text>
-      </view>
-
-      <button class="submit-btn" @click="submitEvaluation">Submit Evaluation</button>
     </view>
 
-    <!-- Teacher/Admin View: Aggregated Results -->
-    <view v-else class="summary-section">
-      <view class="page-title">Course Evaluation Summary</view>
-
-      <!-- Summary Cards -->
-      <view class="summary-card" v-for="item in evaluationSummary" :key="item.course_id">
-        <view class="course-name">{{ item.course_name }}</view>
-        <view class="stats-row">
-          <view class="stat-item">
-            <text class="stat-value">{{ item.average_rating }}</text>
-            <text class="stat-label">Average Rating</text>
-          </view>
-          <view class="stat-item">
-            <text class="stat-value">{{ item.total_evaluations }}</text>
-            <text class="stat-label">Total Evaluations</text>
-          </view>
+    <view v-if="session.role === 'student'" class="section">
+      <text class="section-title">Submit Anonymous Feedback</text>
+      <view class="field">
+        <text class="label">Course</text>
+        <picker :range="courseNames" :value="courseIndex" @change="changeCourse">
+          <view class="picker-value">{{ selectedCourseName }}</view>
+        </picker>
+      </view>
+      <view class="score-grid">
+        <view v-for="field in scoreFields" :key="field.key" class="field">
+          <text class="label">{{ field.label }}</text>
+          <input v-model="scores[field.key]" type="number" />
         </view>
       </view>
+      <view class="field">
+        <text class="label">Feedback</text>
+        <textarea v-model="feedback" maxlength="500" placeholder="Your feedback will be stored anonymously." />
+      </view>
+      <button class="primary-btn full-btn" :loading="submitting" @click="submitEvaluation">Submit</button>
+    </view>
 
-      <!-- Anonymous Evaluation List -->
-      <view class="list-title">Anonymous Evaluation Details</view>
-      <view class="evaluation-item" v-for="(evalItem, index) in evaluationList" :key="index">
-        <view class="eval-header">
-          <text class="eval-rating">Rating: {{ evalItem.rating }}/5</text>
-          <text class="eval-time">{{ formatTime(evalItem.create_time) }}</text>
+    <view class="section">
+      <text class="section-title">Aggregated Evaluation Summary</text>
+      <template v-if="!summaries.length">
+        <text class="muted">No evaluation records available.</text>
+      </template>
+      <view v-for="item in summaries" :key="item.courseOfferingId || item.courseId" class="card">
+        <view class="summary-head">
+          <view>
+            <text class="value">{{ item.courseName }}</text>
+            <text class="muted">Average {{ item.average }} / 5 - {{ item.count }} response(s)</text>
+          </view>
+          <StatusBadge :status="item.average < 3 ? 'high' : 'present'" />
         </view>
-        <text class="eval-content">{{ evalItem.content }}</text>
+        <view v-if="item.averageScores" class="dimension-grid">
+          <view v-for="field in scoreFields" :key="field.key" class="dimension-cell">
+            <text class="label">{{ field.label }}</text>
+            <text class="value">{{ formatScore(item.averageScores[field.key]) }}</text>
+          </view>
+        </view>
+        <view v-for="(comment, index) in item.feedback" :key="index" class="comment">
+          <text class="muted">Anonymous feedback: {{ comment }}</text>
+        </view>
       </view>
     </view>
   </view>
 </template>
 
 <script>
+import StatusBadge from '../../components/StatusBadge.vue'
+import { callAiemsFunction } from '../../common/api.js'
+import { dashboardUrl, getSession, requireRole } from '../../common/session.js'
+
 export default {
+  components: { StatusBadge },
   data() {
     return {
-      userRole: '',
-      courseList: [],
-      selectedCourse: null,
-      rating: 0,
-      content: '',
-      evaluationSummary: [],
-      evaluationList: []
-    };
-  },
-  onLoad() {
-    this.loadStudentCourses();
-    this.userRole = uni.getStorageSync('role') || 'student';
-    if (this.userRole !== 'student') {
-      this.loadEvaluationSummary();
+      session: {},
+      courses: [],
+      summaries: [],
+      courseIndex: 0,
+      loading: false,
+      submitting: false,
+      feedback: '',
+      scores: {
+        content: 5,
+        teaching_method: 5,
+        difficulty: 3,
+        workload: 3,
+        achievement: 5,
+        overall: 5
+      },
+      scoreFields: [
+        { key: 'content', label: 'Content' },
+        { key: 'teaching_method', label: 'Teaching' },
+        { key: 'difficulty', label: 'Difficulty' },
+        { key: 'workload', label: 'Workload' },
+        { key: 'achievement', label: 'Achievement' },
+        { key: 'overall', label: 'Overall' }
+      ]
     }
+  },
+  computed: {
+    courseNames() {
+      return this.courses.map(item => this.formatCourseLabel(item))
+    },
+    selectedCourseName() {
+      return this.courseNames[this.courseIndex] || 'No courses available'
+    }
+  },
+  onShow() {
+    const session = requireRole(['student', 'teacher', 'admin'])
+    if (!session) return
+    this.session = session
+    this.load()
   },
   methods: {
-    async loadStudentCourses() {
-      this.courseList = [
-        { id: 'CS001', name: 'Introduction to Software Engineering' },
-        { id: 'CS002', name: 'Database Principles' }
-      ];
-    },
-    onCourseChange(e) {
-      const selectIndex = e.detail.value;
-      if (selectIndex >= 0 && this.courseList[selectIndex]) {
-        this.selectedCourse = this.courseList[selectIndex];
+    defaultScores() {
+      return {
+        content: 5,
+        teaching_method: 5,
+        difficulty: 3,
+        workload: 3,
+        achievement: 5,
+        overall: 5
       }
     },
-    async submitEvaluation() {
-      if (!this.selectedCourse) {
-        uni.showToast({ title: 'Please select a course', icon: 'none' });
-        return;
-      }
-      if (this.rating <= 0) {
-        uni.showToast({ title: 'Please rate the course', icon: 'none' });
-        return;
-      }
-      if (!this.content.trim()) {
-        uni.showToast({ title: 'Please write evaluation content', icon: 'none' });
-        return;
+    async load(forceRefresh = false) {
+      this.loading = true
+      const dashboard = await callAiemsFunction('get-dashboard-data', {
+        session: getSession(),
+        forceRefresh
+      })
+      if (dashboard.ok) {
+        this.courses = dashboard.data.courses || []
       }
 
-      uni.showLoading({ title: 'Submitting...' });
-      try {
-        const res = await uniCloud.callFunction({
-          // 已改成和你文件夹一致的下划线名字
-          name: 'submit-evaluation',
-          data: {
-            course_id: this.selectedCourse.id,
-            course_name: this.selectedCourse.name,
-            rating: this.rating,
-            content: this.content
-          }
-        });
-        uni.hideLoading();
-        if (res.result.code === 200) {
-          uni.showToast({ title: 'Submitted Successfully', icon: 'success' });
-          this.selectedCourse = null;
-          this.rating = 0;
-          this.content = '';
-        } else {
-          uni.showToast({ title: res.result.message, icon: 'none' });
-        }
-      } catch (err) {
-        uni.hideLoading();
-        uni.showToast({ title: 'Submission failed, please retry', icon: 'none' });
+      const result = await callAiemsFunction('get-evaluation-summary', {
+        session: getSession(),
+        forceRefresh
+      })
+      this.loading = false
+      if (result.ok) {
+        this.summaries = result.summary || result.data || []
       }
+      if (this.courseIndex >= this.courses.length) this.courseIndex = 0
     },
-    async loadEvaluationSummary() {
-      uni.showLoading({ title: 'Loading...' });
-      try {
-        const res = await uniCloud.callFunction({
-          // 已改成和你文件夹一致的下划线名字
-          name: 'get-evaluation-summary',
-        });
-        uni.hideLoading();
-        if (res.result.code === 200) {
-          this.evaluationSummary = res.result.data.summary;
-          this.evaluationList = res.result.data.anonymous_evaluations;
-        }
-      } catch (err) {
-        uni.hideLoading();
-        uni.showToast({ title: 'Load failed, please retry', icon: 'none' });
+    refresh() {
+      this.load(true)
+    },
+    async submitEvaluation() {
+      const course = this.courses[this.courseIndex]
+      const scores = this.normalizedScores()
+      if (!course || !scores || !this.feedback.trim()) {
+        uni.showToast({ title: 'Valid course, scores and feedback are required.', icon: 'none' })
+        return
       }
+
+      this.submitting = true
+      const result = await callAiemsFunction('submit-evaluation', {
+        session: getSession(),
+        courseOfferingId: course.courseOfferingId || course._id,
+        rating: scores.overall,
+        scores,
+        feedback: this.feedback.trim()
+      })
+      this.submitting = false
+
+      if (result.ok) {
+        this.feedback = ''
+        this.scores = this.defaultScores()
+        uni.showToast({ title: 'Submitted anonymously', icon: 'success' })
+        this.load(true)
+        return
+      }
+
+      uni.showToast({ title: result.message || 'Submit failed.', icon: 'none' })
     },
-    formatTime(timestamp) {
-      const date = new Date(timestamp);
-      return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+    normalizedScores() {
+      const next = {}
+      for (const field of this.scoreFields) {
+        const value = Number(this.scores[field.key])
+        if (!Number.isFinite(value) || value < 1 || value > 5) {
+          return null
+        }
+        next[field.key] = value
+      }
+      return next
+    },
+    changeCourse(event) {
+      this.courseIndex = Number(event.detail.value)
+    },
+    formatCourseLabel(course) {
+      return [course.code, course.name].filter(Boolean).join(' ').trim()
+    },
+    formatScore(value) {
+      const numberValue = Number(value || 0)
+      return numberValue ? numberValue.toFixed(1) : '0.0'
+    },
+    backHome() {
+      uni.reLaunch({ url: dashboardUrl(this.session.role) })
     }
   }
-};
+}
 </script>
 
 <style scoped>
-.evaluation-page {
-  padding: 20rpx;
-  background: #f5f7fa;
-  min-height: 100vh;
+.field {
+  margin-bottom: 18rpx;
 }
-.page-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 30rpx;
-}
-.form-item {
-  background: #fff;
-  padding: 24rpx;
-  border-radius: 12rpx;
-  margin-bottom: 20rpx;
-}
-.label {
-  display: block;
+
+.picker-value {
+  padding: 18rpx;
+  background: #ffffff;
+  border: 1rpx solid #cbd5e1;
+  border-radius: 8rpx;
   font-size: 28rpx;
-  color: #666;
-  margin-bottom: 16rpx;
 }
-.picker {
-  font-size: 30rpx;
-  color: #333;
-  padding: 10rpx 0;
+
+.score-grid,
+.dimension-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14rpx;
 }
-.rating-group {
+
+.dimension-grid {
+  margin-top: 16rpx;
+}
+
+.dimension-cell {
+  padding: 14rpx;
+  background: #ffffff;
+  border: 1rpx solid #e2e8f0;
+  border-radius: 8rpx;
+}
+
+.summary-head {
   display: flex;
-  gap: 20rpx;
-}
-.star {
-  font-size: 48rpx;
-  color: #ddd;
-}
-.star.active {
-  color: #ffc107;
-}
-.textarea {
-  width: 100%;
-  min-height: 200rpx;
-  font-size: 28rpx;
-  line-height: 1.6;
-}
-.word-count {
-  display: block;
-  text-align: right;
-  font-size: 24rpx;
-  color: #999;
-  margin-top: 10rpx;
-}
-.submit-btn {
-  width: 100%;
-  height: 88rpx;
-  background: #409eff;
-  color: #fff;
-  border-radius: 44rpx;
-  margin-top: 40rpx;
-}
-.summary-card {
-  background: #fff;
-  padding: 24rpx;
-  border-radius: 12rpx;
-  margin-bottom: 20rpx;
-}
-.course-name {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20rpx;
-}
-.stats-row {
-  display: flex;
-  justify-content: space-around;
-}
-.stat-item {
-  text-align: center;
-}
-.stat-value {
-  display: block;
-  font-size: 40rpx;
-  font-weight: bold;
-  color: #409eff;
-}
-.stat-label {
-  font-size: 24rpx;
-  color: #999;
-  margin-top: 8rpx;
-}
-.list-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin: 30rpx 0 20rpx;
-}
-.evaluation-item {
-  background: #fff;
-  padding: 24rpx;
-  border-radius: 12rpx;
-  margin-bottom: 16rpx;
-}
-.eval-header {
-  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 12rpx;
+  gap: 16rpx;
 }
-.eval-rating {
-  font-size: 28rpx;
-  color: #ffc107;
+
+.full-btn {
+  width: 100%;
 }
-.eval-time {
-  font-size: 24rpx;
-  color: #999;
+
+.comment {
+  margin-top: 12rpx;
+  padding-top: 12rpx;
+  border-top: 1rpx solid #e2e8f0;
 }
-.eval-content {
-  font-size: 28rpx;
-  color: #333;
-  line-height: 1.6;
+
+.top-actions {
+  margin-top: 0;
 }
 </style>

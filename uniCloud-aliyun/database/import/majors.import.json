@@ -1,0 +1,2 @@
+{"_id":"major_se","code":"SE","name":"Software Engineering","department_id":"dept_cs","degree_type":"Bachelor","duration_years":4,"created_at":1779595200000,"updated_at":1779595200000}
+{"_id":"major_ai","code":"AI","name":"Artificial Intelligence","department_id":"dept_cs","degree_type":"Bachelor","duration_years":4,"created_at":1779595200000,"updated_at":1779595200000}

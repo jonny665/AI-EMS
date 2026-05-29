@@ -37,9 +37,17 @@
       }
     },
     {
+      "path": "pages/materials/materials",
+      "style": {
+        "navigationBarTitleText": "Course Materials"
+      }
+    },
+    {
       "path": "pages/assistant/assistant",
       "style": {
-        "navigationBarTitleText": "AI Assistant"
+        "navigationBarTitleText": "AI Assistant",
+        "navigationBarBackgroundColor": "#141414",
+        "navigationBarTextStyle": "white"
       }
     },
     {

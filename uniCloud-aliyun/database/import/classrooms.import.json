@@ -1,0 +1,2 @@
+{"_id":"room_a101","building":"A","room_no":"101","name":"A101","capacity":60,"latitude":31.230416,"longitude":121.473701,"geofence_radius_m":50,"created_at":1779595200000,"updated_at":1779595200000}
+{"_id":"room_b208","building":"B","room_no":"208","name":"B208","capacity":45,"latitude":31.2306,"longitude":121.4739,"geofence_radius_m":50,"created_at":1779595200000,"updated_at":1779595200000}

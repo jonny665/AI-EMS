@@ -5,12 +5,19 @@
       :displayName="session.displayName"
       :username="session.username"
     >
+      <button class="secondary-btn refresh-btn" :loading="loading" @click="refresh">Refresh</button>
     </PageHeader>
 
     <NavTabs :role="session.role" current="dashboard" />
 
     <view class="section">
-      <text class="section-title">System Overview</text>
+      <view class="section-head">
+        <view>
+          <text class="section-title">System Overview</text>
+          <text class="muted">Role-based academic operations</text>
+        </view>
+        <text class="muted">{{ lastUpdatedText }}</text>
+      </view>
       <view class="row">
         <StatCard :value="sysStats.totalStudents" label="Students" />
         <StatCard :value="sysStats.totalTeachers" label="Teachers" />
@@ -29,6 +36,28 @@
     </view>
 
     <view class="section">
+      <text class="section-title">Profile Change Reviews</text>
+      <view class="field">
+        <text class="label">Review Comment</text>
+        <textarea v-model="profileReviewComment" placeholder="Optional note" />
+      </view>
+      <template v-if="!data.profileChangeRequests.length">
+        <text class="muted">No pending profile changes.</text>
+      </template>
+      <DataCard
+        v-for="item in data.profileChangeRequests"
+        :key="item._id"
+        :title="profileRequestTitle(item)"
+        :subtitle="formatChangeRequest(item)"
+      >
+        <view class="inline-actions">
+          <button class="primary-btn compact-btn" @click="reviewProfile(item, 'approved')">Approve</button>
+          <button class="danger-btn compact-btn" @click="reviewProfile(item, 'rejected')">Reject</button>
+        </view>
+      </DataCard>
+    </view>
+
+    <view class="section">
       <text class="section-title">Pending Leave Requests</text>
       <template v-if="!data.leaveRequests.length">
         <text class="muted">No pending leave requests.</text>
@@ -36,13 +65,28 @@
       <DataCard
         v-for="item in data.leaveRequests"
         :key="item._id"
-        :title="item.studentName + ' · ' + item.courseName"
-        :subtitle="item.date + ' · ' + item.reason"
+        :title="[item.studentName, item.courseName].filter(Boolean).join(' - ')"
+        :subtitle="[item.date, item.reason].filter(Boolean).join(' - ')"
       >
-        <view style="display:flex;gap:8rpx">
-          <button class="primary-btn" @click="review(item, 'approved')">Approve</button>
-          <button class="danger-btn" @click="review(item, 'rejected')">Reject</button>
+        <view class="inline-actions">
+          <button class="primary-btn compact-btn" @click="reviewLeave(item, 'approved')">Approve</button>
+          <button class="danger-btn compact-btn" @click="reviewLeave(item, 'rejected')">Reject</button>
         </view>
+      </DataCard>
+    </view>
+
+    <view class="section">
+      <text class="section-title">Course Quality Monitor</text>
+      <template v-if="!data.evaluationSummary.length">
+        <text class="muted">No evaluation summary yet.</text>
+      </template>
+      <DataCard
+        v-for="item in data.evaluationSummary"
+        :key="item.courseOfferingId || item.courseId"
+        :title="item.courseName"
+        :subtitle="'Average ' + item.average + ' / 5 - ' + item.count + ' response(s)'"
+      >
+        <StatusBadge :status="item.average < 3 ? 'high' : 'present'" />
       </DataCard>
     </view>
 
@@ -51,6 +95,7 @@
       <view class="btn-row">
         <button class="primary-btn" @click="go('/pages/leave/leave')">Leave Reviews</button>
         <button class="primary-btn" @click="go('/pages/evaluation/evaluation')">Evaluations</button>
+        <button class="primary-btn" @click="go('/pages/materials/materials')">Materials</button>
         <button class="primary-btn" @click="go('/pages/assistant/assistant')">Assistant</button>
       </view>
     </view>
@@ -62,24 +107,29 @@ import PageHeader from '../../components/PageHeader.vue'
 import NavTabs from '../../components/NavTabs.vue'
 import DataCard from '../../components/DataCard.vue'
 import StatCard from '../../components/StatCard.vue'
+import StatusBadge from '../../components/StatusBadge.vue'
 import { callAiemsFunction } from '../../common/api.js'
-import { clearSession, getSession, requireRole } from '../../common/session.js'
-
-const SYSTEM_STATS = {
-  totalStudents: 2000,
-  totalTeachers: 200,
-  activeCourses: 45
-}
+import { getSession, requireRole } from '../../common/session.js'
 
 export default {
-  components: { PageHeader, NavTabs, DataCard, StatCard },
+  components: { PageHeader, NavTabs, DataCard, StatCard, StatusBadge },
   data() {
     return {
       session: {},
-      sysStats: SYSTEM_STATS,
+      loading: false,
+      lastUpdatedAt: 0,
+      profileReviewComment: '',
+      sysStats: {
+        totalStudents: 0,
+        totalTeachers: 0,
+        activeCourses: 0
+      },
       data: {
         leaveRequests: [],
-        metrics: { courses: 0, pendingLeaves: 0, evaluations: 0 }
+        profileChangeRequests: [],
+        evaluationSummary: [],
+        atRiskStudents: [],
+        metrics: { courses: 0, pendingLeaves: 0, evaluations: 0, profileChanges: 0, riskStudents: 0 }
       }
     }
   },
@@ -88,8 +138,13 @@ export default {
       return [
         { label: 'Courses', value: this.data.metrics.courses },
         { label: 'Pending Leaves', value: this.data.metrics.pendingLeaves },
-        { label: 'Evaluations Submitted', value: this.data.metrics.evaluations }
+        { label: 'Evaluations Submitted', value: this.data.metrics.evaluations },
+        { label: 'Profile Reviews', value: this.data.metrics.profileChanges },
+        { label: 'At-Risk Students', value: this.data.metrics.riskStudents }
       ]
+    },
+    lastUpdatedText() {
+      return this.lastUpdatedAt ? 'Updated ' + this.formatTime(this.lastUpdatedAt) : ''
     }
   },
   onShow() {
@@ -99,77 +154,101 @@ export default {
     this.load()
   },
   methods: {
-    async load() {
-      const result = await callAiemsFunction('get-dashboard-data', { session: getSession() })
-      if (result.ok) this.data = result.data
+    async load(forceRefresh = false) {
+      this.loading = true
+      const result = await callAiemsFunction('get-dashboard-data', {
+        session: getSession(),
+        forceRefresh
+      })
+      this.loading = false
+      if (result.ok) {
+        this.data = {
+          ...this.data,
+          ...result.data,
+          leaveRequests: result.data.leaveRequests || [],
+          profileChangeRequests: result.data.profileChangeRequests || [],
+          evaluationSummary: result.data.evaluationSummary || [],
+          atRiskStudents: result.data.atRiskStudents || [],
+          metrics: result.data.metrics || this.data.metrics
+        }
+        this.sysStats = result.data.systemStats || this.sysStats
+        this.lastUpdatedAt = Date.now()
+      }
     },
-    async review(item, decision) {
+    refresh() {
+      this.load(true)
+    },
+    async reviewLeave(item, decision) {
       const result = await callAiemsFunction('review-leave', {
         session: getSession(),
         leaveId: item._id,
         decision
       })
+      this.afterReview(result, decision)
+    },
+    async reviewProfile(item, decision) {
+      const result = await callAiemsFunction('review-profile-change', {
+        session: getSession(),
+        requestId: item._id,
+        decision,
+        reviewComment: this.profileReviewComment.trim()
+      })
+      this.afterReview(result, decision)
+    },
+    afterReview(result, decision) {
       if (result.ok) {
         uni.showToast({ title: decision === 'approved' ? 'Approved' : 'Rejected', icon: 'success' })
-        this.load()
+        this.load(true)
+        return
       }
+      uni.showToast({ title: result.message || 'Review failed.', icon: 'none' })
+    },
+    profileRequestTitle(item) {
+      return [item.requesterName || item.requester_user_id, item.targetType || item.target_type].filter(Boolean).join(' - ')
+    },
+    formatChangeRequest(item) {
+      const changes = item.changes || {}
+      return Object.keys(changes).map(key => {
+        const change = changes[key] || {}
+        return (change.label || key) + ': ' + change.oldValue + ' -> ' + change.newValue
+      }).join('; ')
+    },
+    formatTime(value) {
+      const date = new Date(value)
+      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
     },
     go(url) {
       uni.navigateTo({ url })
-    },
-    logout() {
-      clearSession()
-      uni.reLaunch({ url: '/pages/login/login' })
     }
   }
 }
 </script>
 
 <style scoped>
-.section {
-  margin-bottom: 24rpx;
-  padding: 24rpx;
-  background: #ffffff;
-  border: 1rpx solid #e5e7eb;
-  border-radius: 8rpx;
-}
-
-.section-title {
-  display: block;
+.section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16rpx;
   margin-bottom: 14rpx;
-  color: #0f172a;
-  font-size: 32rpx;
-  font-weight: 700;
 }
 
-.muted {
-  color: #64748b;
-  font-size: 24rpx;
+.refresh-btn {
+  min-width: 150rpx;
 }
 
-.btn-row {
+.field {
+  margin-bottom: 18rpx;
+}
+
+.inline-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  gap: 8rpx;
 }
 
-.primary-btn {
-  min-width: 180rpx;
-  margin: 0;
-  background: #2563eb;
-  color: #ffffff;
-  border-radius: 8rpx;
-  font-size: 26rpx;
-  line-height: 2.5;
-}
-
-.danger-btn {
-  min-width: 140rpx;
-  margin: 0;
-  background: #fee2e2;
-  color: #991b1b;
-  border-radius: 8rpx;
+.compact-btn {
+  min-width: 126rpx;
   font-size: 24rpx;
-  line-height: 2.2;
 }
 </style>

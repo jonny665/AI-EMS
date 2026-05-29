@@ -1,1 +1,87 @@
-{"bsonType":"object","required":["requester_user_id","target_type","target_id","changes","status","created_at","updated_at"],"permission":{"read":false,"create":false,"update":false,"delete":false},"properties":{"_id":{"description":"profile_change_requests primary key"},"requester_user_id":{"bsonType":"string","description":"References users._id"},"target_type":{"bsonType":"string","enum":["student","teacher"]},"target_id":{"bsonType":"string","description":"students._id or teachers._id."},"changes":{"bsonType":"object","description":"Field-level old and new values."},"status":{"bsonType":"string","enum":["pending","approved","rejected","cancelled"],"defaultValue":"pending"},"reviewer_user_id":{"bsonType":"string","description":"References users._id"},"review_comment":{"bsonType":"string"},"reviewed_at":{"bsonType":"number"},"created_at":{"bsonType":"number"},"updated_at":{"bsonType":"number"}}}
+{
+  "bsonType": "object",
+  "required": [
+    "requester_user_id",
+    "target_type",
+    "target_id",
+    "changes",
+    "status",
+    "created_at",
+    "updated_at"
+  ],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "profile_change_requests primary key"
+    },
+    "requester_user_id": {
+      "bsonType": "string",
+      "description": "References users._id"
+    },
+    "target_type": {
+      "bsonType": "string",
+      "enum": ["student", "teacher"]
+    },
+    "target_id": {
+      "bsonType": "string",
+      "description": "students._id or teachers._id."
+    },
+    "changes": {
+      "bsonType": "object",
+      "description": "Field-level old and new values."
+    },
+    "status": {
+      "bsonType": "string",
+      "enum": ["pending", "approved", "rejected", "cancelled"],
+      "defaultValue": "pending"
+    },
+    "reviewer_user_id": {
+      "bsonType": "string",
+      "description": "References users._id"
+    },
+    "review_comment": {
+      "bsonType": "string"
+    },
+    "reviewed_at": {
+      "bsonType": "number"
+    },
+    "created_at": {
+      "bsonType": "number"
+    },
+    "updated_at": {
+      "bsonType": "number"
+    }
+  },
+  "indexes": [
+    {
+      "name": "status_created_idx",
+      "key": {
+        "status": 1,
+        "created_at": -1
+      },
+      "unique": false
+    },
+    {
+      "name": "requester_status_idx",
+      "key": {
+        "requester_user_id": 1,
+        "status": 1
+      },
+      "unique": false
+    },
+    {
+      "name": "target_status_idx",
+      "key": {
+        "target_type": 1,
+        "target_id": 1,
+        "status": 1
+      },
+      "unique": false
+    }
+  ]
+}

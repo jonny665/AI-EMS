@@ -22,12 +22,14 @@ export default {
   computed: {
     tabs() {
       const roleDashboard = `/pages/${this.role}/dashboard`
-      return [
+      const tabs = [
         { key: 'dashboard', url: roleDashboard, label: 'Dashboard' },
         { key: 'leave', url: '/pages/leave/leave', label: 'Leave' },
         { key: 'evaluation', url: '/pages/evaluation/evaluation', label: 'Evaluation' },
+        { key: 'materials', url: '/pages/materials/materials', label: 'Materials' },
         { key: 'assistant', url: '/pages/assistant/assistant', label: 'Assistant' }
       ]
+      return tabs
     }
   },
   methods: {

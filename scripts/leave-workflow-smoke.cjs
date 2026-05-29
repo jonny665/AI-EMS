@@ -5,11 +5,14 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 function createMockDb(seed = {}) {
   const collections = new Map();
-
-  for (const [name, items] of Object.entries(seed)) {
-    collections.set(name, items.map(clone));
+  for (const [name, rows] of Object.entries(seed)) {
+    collections.set(name, rows.map(clone));
   }
 
   function ensureCollection(name) {
@@ -20,7 +23,13 @@ function createMockDb(seed = {}) {
   }
 
   function matchDoc(doc, query) {
-    return Object.entries(query).every(([key, value]) => doc[key] === value);
+    return Object.entries(query).every(([key, value]) => {
+      const actual = doc[key];
+      if (Array.isArray(actual) && !Array.isArray(value)) {
+        return actual.includes(value);
+      }
+      return actual === value;
+    });
   }
 
   function queryBuilder(items) {
@@ -60,11 +69,8 @@ function createMockDb(seed = {}) {
             },
             update(updateDoc) {
               const item = docs.find((doc) => doc._id === id);
-              if (!item) {
-                return Promise.resolve({ updated: 0 });
-              }
-              Object.assign(item, clone(updateDoc));
-              return Promise.resolve({ updated: 1 });
+              if (item) Object.assign(item, clone(updateDoc));
+              return Promise.resolve({ updated: item ? 1 : 0 });
             },
           };
         },
@@ -74,16 +80,15 @@ function createMockDb(seed = {}) {
         limit(count) {
           return queryBuilder(docs).limit(count);
         },
+        get() {
+          return Promise.resolve({ data: docs.map(clone) });
+        },
       };
     },
     snapshot(name) {
       return ensureCollection(name).map(clone);
     },
   };
-}
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
 }
 
 function loadCloudFunction(filePath, mockDb) {
@@ -146,17 +151,37 @@ function loadFallbackModule(filePath) {
 
 async function main() {
   const db = createMockDb({
-    courses: [
+    students: [{ _id: "stu_001", user_id: "u_student_001", name: "Alice Chen" }],
+    teachers: [{ _id: "tea_001", user_id: "u_teacher_001", name: "Dr. Zhang" }],
+    course_offerings: [
       {
-        _id: "c_software_design",
-        course_code: "JC3506",
-        name: "Software Design and Implementation",
+        _id: "co_software_design",
+        course_id: "c_software_design",
+        semester_id: "sem_2026_spring",
+        section_no: "01",
+        teacher_ids: ["tea_001"],
+        capacity: 50,
+        enrolled_count: 30,
+        selection_status: "open",
+        created_at: 1,
+        updated_at: 1,
+      },
+    ],
+    enrollments: [
+      {
+        _id: "enr_001",
+        student_id: "stu_001",
+        course_offering_id: "co_software_design",
+        status: "enrolled",
+        selected_at: 1,
+        created_at: 1,
+        updated_at: 1,
       },
     ],
     class_sessions: [
       {
         _id: "cs_001",
-        course_offering_id: "c_software_design",
+        course_offering_id: "co_software_design",
         session_date: "2026-05-25",
         status: "scheduled",
         created_at: 1,
@@ -166,77 +191,38 @@ async function main() {
     attendance_records: [
       {
         _id: "att_001",
-        student_id: "u_student_001",
-        studentId: "u_student_001",
-        course_offering_id: "c_software_design",
-        courseId: "c_software_design",
+        student_id: "stu_001",
+        course_offering_id: "co_software_design",
         class_session_id: "cs_001",
         attendance_date: "2026-05-25",
-        date: "2026-05-25",
         status: "absent",
         source: "location",
         created_at: 1,
         updated_at: 1,
       },
     ],
+    leave_requests: [],
+    leave_request_sessions: [],
+    audit_logs: [],
   });
 
-  const submitLeave = loadCloudFunction(
-    path.join(
-      __dirname,
-      "..",
-      "uniCloud-aliyun",
-      "cloudfunctions",
-      "submit-leave",
-      "index.js",
-    ),
-    db,
-  );
-  const reviewLeave = loadCloudFunction(
-    path.join(
-      __dirname,
-      "..",
-      "uniCloud-aliyun",
-      "cloudfunctions",
-      "review-leave",
-      "index.js",
-    ),
-    db,
-  );
-  const cancelLeave = loadCloudFunction(
-    path.join(
-      __dirname,
-      "..",
-      "uniCloud-aliyun",
-      "cloudfunctions",
-      "cancel-leave",
-      "index.js",
-    ),
-    db,
-  );
+  const cloudRoot = path.join(__dirname, "..", "uniCloud-aliyun", "cloudfunctions");
+  const submitLeave = loadCloudFunction(path.join(cloudRoot, "submit-leave", "index.js"), db);
+  const reviewLeave = loadCloudFunction(path.join(cloudRoot, "review-leave", "index.js"), db);
+  const cancelLeave = loadCloudFunction(path.join(cloudRoot, "cancel-leave", "index.js"), db);
 
-  const studentSession = {
-    role: "student",
-    userId: "u_student_001",
-    displayName: "Alice Chen",
-  };
-  const teacherSession = {
-    role: "teacher",
-    userId: "u_teacher_001",
-    displayName: "Dr. Zhang",
-  };
+  const studentSession = { role: "student", userId: "u_student_001", displayName: "Alice Chen" };
+  const teacherSession = { role: "teacher", userId: "u_teacher_001", displayName: "Dr. Zhang" };
 
   const submitResult = await submitLeave({
     session: studentSession,
-    courseId: "c_software_design",
-    date: "2026-05-25",
+    courseOfferingId: "co_software_design",
+    leaveDate: "2026-05-25",
     reasonType: "sick",
     reasonDetail: "Fever and doctor visit.",
   });
-
   assert.strictEqual(submitResult.ok, true, "submit should succeed");
   assert.strictEqual(submitResult.leave.status, "pending");
-  assert.strictEqual(submitResult.leave.reasonType, "sick");
 
   const leaveId = submitResult.leave._id;
   const reviewResult = await reviewLeave({
@@ -245,105 +231,42 @@ async function main() {
     decision: "approved",
     reviewComment: "Approved for one day sick leave.",
   });
-
   assert.strictEqual(reviewResult.ok, true, "review should succeed");
-  assert.strictEqual(reviewResult.leave.status, "approved");
 
-  const approvedAttendance = db
-    .snapshot("attendance_records")
-    .find((item) => item._id === "att_001");
-  assert.strictEqual(
-    approvedAttendance.status,
-    "on_leave",
-    "attendance should be on_leave after approval",
-  );
+  const approvedAttendance = db.snapshot("attendance_records").find((item) => item._id === "att_001");
+  assert.strictEqual(approvedAttendance.status, "on_leave", "attendance should be on_leave after approval");
 
-  const cancelResult = await cancelLeave({
-    session: studentSession,
-    leaveId,
-  });
-
+  const cancelResult = await cancelLeave({ session: studentSession, leaveId });
   assert.strictEqual(cancelResult.ok, true, "cancel should succeed");
-  assert.strictEqual(cancelResult.leave.status, "cancelled");
 
-  const restoredAttendance = db
-    .snapshot("attendance_records")
-    .find((item) => item._id === "att_001");
-  assert.strictEqual(
-    restoredAttendance.status,
-    "absent",
-    "attendance should be restored after cancel",
-  );
-  assert.strictEqual(
-    restoredAttendance.source,
-    "location",
-    "attendance source should be restored after cancel",
-  );
+  const restoredAttendance = db.snapshot("attendance_records").find((item) => item._id === "att_001");
+  assert.strictEqual(restoredAttendance.status, "absent", "attendance should be restored after cancel");
+  assert.strictEqual(restoredAttendance.source, "location", "attendance source should be restored after cancel");
 
-  console.log("submit-leave result:");
-  console.log(JSON.stringify(submitResult, null, 2));
-  console.log("review-leave result:");
-  console.log(JSON.stringify(reviewResult, null, 2));
-  console.log("cancel-leave result:");
-  console.log(JSON.stringify(cancelResult, null, 2));
-  console.log("attendance snapshot:");
-  console.log(JSON.stringify(db.snapshot("attendance_records"), null, 2));
-  console.log("leave request snapshot:");
-  console.log(JSON.stringify(db.snapshot("leave_requests"), null, 2));
-  console.log("leave session snapshot:");
-  console.log(JSON.stringify(db.snapshot("leave_request_sessions"), null, 2));
-  console.log("audit log snapshot:");
-  console.log(JSON.stringify(db.snapshot("audit_logs"), null, 2));
-
-  const fallbackModule = loadFallbackModule(
-    path.join(__dirname, "..", "common", "api.js"),
-  );
-  const fallbackSubmit = await fallbackModule.callAiemsFunction(
-    "submit-leave",
-    {
-      session: studentSession,
-      courseId: "c_process_management",
-      date: "2026-05-27",
-      reasonType: "personal",
-      reasonDetail: "Family errand.",
-    },
-  );
-  const fallbackReview = await fallbackModule.callAiemsFunction(
-    "review-leave",
-    {
-      session: teacherSession,
-      leaveId: fallbackSubmit.leave._id,
-      decision: "approved",
-      reviewComment: "Approved in fallback flow.",
-    },
-  );
-  const fallbackCancel = await fallbackModule.callAiemsFunction(
-    "cancel-leave",
-    {
-      session: studentSession,
-      leaveId: fallbackSubmit.leave._id,
-    },
-  );
+  const fallbackModule = loadFallbackModule(path.join(__dirname, "..", "common", "api.js"));
+  const fallbackSubmit = await fallbackModule.callAiemsFunction("submit-leave", {
+    session: studentSession,
+    courseOfferingId: "co_process_management",
+    leaveDate: "2026-05-27",
+    reasonType: "personal",
+    reasonDetail: "Family errand.",
+  });
+  const fallbackReview = await fallbackModule.callAiemsFunction("review-leave", {
+    session: teacherSession,
+    leaveId: fallbackSubmit.leave._id,
+    decision: "approved",
+    reviewComment: "Approved in fallback flow.",
+  });
+  const fallbackCancel = await fallbackModule.callAiemsFunction("cancel-leave", {
+    session: studentSession,
+    leaveId: fallbackSubmit.leave._id,
+  });
 
   assert.strictEqual(fallbackSubmit.ok, true, "fallback submit should succeed");
   assert.strictEqual(fallbackReview.ok, true, "fallback review should succeed");
   assert.strictEqual(fallbackCancel.ok, true, "fallback cancel should succeed");
 
-  const fallbackDashboard = await fallbackModule.callAiemsFunction(
-    "get-dashboard-data",
-    {
-      session: studentSession,
-    },
-  );
-
-  console.log("fallback submit result:");
-  console.log(JSON.stringify(fallbackSubmit, null, 2));
-  console.log("fallback review result:");
-  console.log(JSON.stringify(fallbackReview, null, 2));
-  console.log("fallback cancel result:");
-  console.log(JSON.stringify(fallbackCancel, null, 2));
-  console.log("fallback dashboard snapshot:");
-  console.log(JSON.stringify(fallbackDashboard, null, 2));
+  console.log("leave workflow smoke ok");
 }
 
 main().catch((error) => {

@@ -1,103 +1,183 @@
-'use strict';
+"use strict";
 
 const db = uniCloud.database();
 
-const SCORE_KEYS = ['content', 'teaching_method', 'difficulty', 'workload', 'achievement', 'overall'];
+const SCORE_KEYS = ["content", "teaching_method", "difficulty", "workload", "achievement", "overall"];
 
-exports.main = async (event = {}, context = {}) => {
-  const auth = context.auth || {};
-  const role = String(auth.role || 'student');
-
-  if (!['teacher', 'admin'].includes(role)) {
-    return { code: 403, message: 'No permission to view course evaluations', data: null };
+exports.main = async (event = {}) => {
+  const session = event.session || {};
+  if (!session.userId || !["student", "teacher", "admin"].includes(session.role)) {
+    return { ok: false, code: 403, message: "Login is required.", data: null };
   }
 
-  try {
-    const filter = buildFilter(event);
-    const queryResult = await db.collection('course_evaluations').get();
-    const rows = (queryResult.data || [])
-      .filter((item) => item.status !== 'hidden')
-      .map(normalizeEvaluation)
-      .filter((item) => applyFilter(item, filter));
+  const [students, teachers, courses, offerings, enrollments, evaluations] = await Promise.all([
+    readCollection("students"),
+    readCollection("teachers"),
+    readCollection("courses"),
+    readCollection("course_offerings"),
+    readCollection("enrollments"),
+    readCollection("course_evaluations"),
+  ]);
 
-    const grouped = groupEvaluations(rows);
-    const summary = Array.from(grouped.values())
-      .map(buildSummaryItem)
-      .sort((a, b) => String(a.course_name).localeCompare(String(b.course_name)));
-    const anonymousEvaluations = rows
-      .slice()
-      .sort((a, b) => b.submitted_at - a.submitted_at)
-      .map(stripIdentityFields);
+  const currentStudent = students.find((item) => item.user_id === session.userId) || null;
+  const currentTeacher = teachers.find((item) => item.user_id === session.userId) || null;
+  const relevantOfferingIds = resolveRelevantOfferingIds(session.role, currentStudent, currentTeacher, offerings, enrollments);
+  const indexes = {
+    coursesById: mapById(courses),
+    offeringsById: mapById(offerings),
+  };
 
-    return {
-      code: 200,
-      message: 'Query successful',
-      data: {
-        summary,
-        anonymous_evaluations: anonymousEvaluations
+  const rows = evaluations
+    .filter((item) => item.status !== "hidden")
+    .filter((item) => {
+      if (session.role === "admin") {
+        return true;
       }
-    };
-  } catch (error) {
-    console.error('Failed to query evaluations:', error);
-    return { code: 500, message: 'Server error, please try again later', data: null };
-  }
+      if (session.role === "teacher") {
+        return currentTeacher && Array.isArray(item.teacher_ids) && item.teacher_ids.includes(currentTeacher._id);
+      }
+      return relevantOfferingIds.includes(item.course_offering_id);
+    })
+    .map((item) => normalizeEvaluation(item, indexes));
+
+  const summary = buildSummary(rows);
+  const anonymousEvaluations = ["teacher", "admin"].includes(session.role)
+    ? rows.slice().sort((a, b) => b.submittedAt - a.submittedAt).map(stripIdentityFields)
+    : [];
+
+  return {
+    ok: true,
+    code: 200,
+    message: "Query successful.",
+    data: summary,
+    summary,
+    anonymousEvaluations,
+  };
 };
 
-function buildFilter(event) {
-  return {
-    courseId: String(event.course_id || event.courseId || '').trim(),
-    courseOfferingId: String(event.course_offering_id || event.courseOfferingId || '').trim(),
-    teacherId: String(event.teacher_id || event.teacherId || '').trim()
-  };
+async function readCollection(name, limit = 1000) {
+  try {
+    const result = await db.collection(name).limit(limit).get();
+    return result.data || [];
+  } catch (error) {
+    console.warn(`[get-evaluation-summary] failed to read ${name}.`, error);
+    return [];
+  }
 }
 
-function applyFilter(row, filter) {
-  if (filter.courseId && row.course_id !== filter.courseId) {
-    return false;
+function resolveRelevantOfferingIds(role, currentStudent, currentTeacher, offerings, enrollments) {
+  if (role === "admin") {
+    return offerings.map((item) => item._id);
   }
-  if (filter.courseOfferingId && row.course_offering_id !== filter.courseOfferingId) {
-    return false;
+  if (role === "teacher") {
+    if (!currentTeacher) {
+      return [];
+    }
+    return offerings
+      .filter((item) => Array.isArray(item.teacher_ids) && item.teacher_ids.includes(currentTeacher._id))
+      .map((item) => item._id);
   }
-  if (filter.teacherId && Array.isArray(row.teacher_ids) && !row.teacher_ids.includes(filter.teacherId)) {
-    return false;
+  if (!currentStudent) {
+    return [];
   }
-  return true;
+  return enrollments
+    .filter((item) => item.student_id === currentStudent._id && item.status !== "dropped")
+    .map((item) => item.course_offering_id);
 }
 
-function normalizeEvaluation(item) {
+function normalizeEvaluation(item, indexes) {
   const scores = normalizeScores(item);
-  const courseId = String(item.course_id || item.courseId || '').trim();
-  const courseOfferingId = String(item.course_offering_id || item.courseOfferingId || courseId || '').trim();
-  const feedbackText = String(item.feedback_text || item.content || item.feedback || '').trim();
+  const courseName = courseNameFromOffering(item.course_offering_id, indexes) || courseNameFromCourse(item.course_id, indexes);
+  const feedbackText = String(item.feedback_text || "").trim();
 
   return {
-    ...item,
-    course_id: courseId || courseOfferingId,
-    course_offering_id: courseOfferingId,
-    teacher_ids: Array.isArray(item.teacher_ids) ? item.teacher_ids : [],
+    courseId: item.course_id || "",
+    courseOfferingId: item.course_offering_id || "",
+    courseName,
+    teacherIds: Array.isArray(item.teacher_ids) ? item.teacher_ids : [],
     scores,
-    feedback_text: feedbackText,
-    rating: Number(scores.overall || item.rating || 0),
+    feedbackText,
+    rating: Number(scores.overall || 0),
     content: feedbackText,
-    submitted_at: Number(item.submitted_at || item.create_time || item.created_at || 0)
+    status: item.status || "",
+    submittedAt: Number(item.submitted_at || item.created_at || 0),
   };
 }
 
 function normalizeScores(item) {
-  const sourceScores = item.scores && typeof item.scores === 'object' ? item.scores : {};
-  const fallbackRating = Number(item.rating || 0);
+  const sourceScores = item.scores && typeof item.scores === "object" ? item.scores : {};
   const normalized = {};
 
   for (const key of SCORE_KEYS) {
-    const rawValue = Object.prototype.hasOwnProperty.call(sourceScores, key) ? sourceScores[key] : (key === 'overall' ? fallbackRating : fallbackRating);
-    normalized[key] = toDisplayScore(rawValue);
+    normalized[key] = toDisplayScore(sourceScores[key]);
   }
-
-  if (!normalized.overall) {
-    normalized.overall = toDisplayScore(fallbackRating);
-  }
-
   return normalized;
+}
+
+function buildSummary(rows) {
+  const grouped = new Map();
+  for (const row of rows) {
+    const key = row.courseOfferingId || row.courseId;
+    if (!grouped.has(key)) {
+      grouped.set(key, []);
+    }
+    grouped.get(key).push(row);
+  }
+
+  return Array.from(grouped.values())
+    .map((groupRows) => {
+      const first = groupRows[0];
+      const totals = groupRows.length;
+      const averageScores = {};
+      for (const key of SCORE_KEYS) {
+        averageScores[key] = round1(
+          groupRows.reduce((sum, row) => sum + Number(row.scores[key] || 0), 0) / Math.max(totals, 1),
+        );
+      }
+
+      return {
+        courseId: first.courseId,
+        courseOfferingId: first.courseOfferingId,
+        courseName: first.courseName,
+        count: totals,
+        average: averageScores.overall,
+        averageRating: averageScores.overall.toFixed(1),
+        averageScores,
+        feedback: groupRows.map((row) => row.feedbackText).filter(Boolean),
+      };
+    })
+    .sort((a, b) => String(a.courseName).localeCompare(String(b.courseName)));
+}
+
+function stripIdentityFields(row) {
+  return {
+    courseId: row.courseId,
+    courseOfferingId: row.courseOfferingId,
+    courseName: row.courseName,
+    scores: row.scores,
+    feedbackText: row.feedbackText,
+    status: row.status,
+    submittedAt: row.submittedAt,
+    rating: row.rating,
+    content: row.content,
+    createTime: row.submittedAt,
+  };
+}
+
+function courseNameFromOffering(offeringId, indexes) {
+  const offering = indexes.offeringsById.get(offeringId);
+  if (!offering) {
+    return "";
+  }
+  return courseNameFromCourse(offering.course_id, indexes);
+}
+
+function courseNameFromCourse(courseId, indexes) {
+  const course = indexes.coursesById.get(courseId);
+  if (!course) {
+    return "";
+  }
+  return [course.course_code, course.name].filter(Boolean).join(" ").trim();
 }
 
 function toDisplayScore(value) {
@@ -108,67 +188,13 @@ function toDisplayScore(value) {
   return Math.max(1, Math.min(5, numberValue));
 }
 
-function groupEvaluations(rows) {
-  const map = new Map();
-  for (const row of rows) {
-    const key = `${row.course_id}::${row.course_offering_id || row.course_id}`;
-    if (!map.has(key)) {
-      map.set(key, []);
-    }
-    map.get(key).push(row);
-  }
-  return map;
-}
-
-function buildSummaryItem(groupRows) {
-  const first = groupRows[0];
-  const totals = groupRows.length;
-  const sums = SCORE_KEYS.reduce((accumulator, key) => {
-    accumulator[key] = groupRows.reduce((sum, row) => sum + Number(row.scores[key] || 0), 0);
-    return accumulator;
-  }, {});
-  const averages = SCORE_KEYS.reduce((accumulator, key) => {
-    accumulator[key] = totals ? round1(sums[key] / totals) : 0;
-    return accumulator;
-  }, {});
-  const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-  for (const row of groupRows) {
-    const overall = Math.round(Number(row.scores.overall || row.rating || 0));
-    if (distribution[overall] !== undefined) {
-      distribution[overall] += 1;
-    }
-  }
-
-  return {
-    course_id: first.course_id,
-    course_offering_id: first.course_offering_id,
-    course_name: first.course_name || first.courseName || '',
-    evaluation_count: totals,
-    total_evaluations: totals,
-    average_scores: averages,
-    average_rating: averages.overall.toFixed(1),
-    rating_distribution: distribution,
-    positive_tags: [],
-    negative_tags: [],
-    ai_summary: ''
-  };
-}
-
-function stripIdentityFields(row) {
-  return {
-    course_id: row.course_id,
-    course_offering_id: row.course_offering_id,
-    course_name: row.course_name || row.courseName || '',
-    scores: row.scores,
-    feedback_text: row.feedback_text,
-    status: row.status,
-    submitted_at: row.submitted_at,
-    rating: row.rating,
-    content: row.content,
-    create_time: row.submitted_at
-  };
+function mapById(items) {
+  return new Map(items.filter((item) => item && item._id).map((item) => [item._id, item]));
 }
 
 function round1(value) {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
   return Math.round(value * 10) / 10;
 }

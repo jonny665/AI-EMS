@@ -2,136 +2,121 @@
 
 const db = uniCloud.database();
 
-exports.main = async (event) => {
+exports.main = async (event = {}) => {
   const session = event.session || {};
-  if (session.role !== "student") {
+  if (session.role !== "student" || !session.userId) {
     return { ok: false, message: "Only students can submit leave requests." };
   }
 
-  const courseOfferingId = String(
-    event.courseOfferingId || event.courseId || "",
-  ).trim();
+  const student = await findByField("students", "user_id", session.userId);
+  if (!student) {
+    return { ok: false, message: "Student profile was not found." };
+  }
+
+  const courseOfferingId = String(event.courseOfferingId || event.courseId || "").trim();
   const leaveDate = String(event.leaveDate || event.date || "").trim();
   const reasonType = normalizeReasonType(event.reasonType);
   const reasonDetail = String(event.reasonDetail || event.reason || "").trim();
 
   if (!courseOfferingId || !leaveDate || !reasonDetail) {
-    return {
-      ok: false,
-      message: "Course, leave date, and reason are required.",
-    };
+    return { ok: false, message: "Course, leave date, and reason are required." };
   }
 
-  if (!reasonType) {
-    return { ok: false, message: "Invalid leave reason type." };
+  const offering = await findById("course_offerings", courseOfferingId);
+  if (!offering) {
+    return { ok: false, message: "Course offering was not found." };
   }
 
-  const { course, courseOffering } = await findCourse(courseOfferingId);
-  const courseName = formatCourseName(
-    courseOffering,
-    course,
-    event.courseName || courseOfferingId,
-  );
-  let startAt = 0;
-  let endAt = 0;
+  const enrollment = await findEnrollment(student._id, courseOfferingId);
+  if (!enrollment) {
+    return { ok: false, message: "You are not enrolled in this course offering." };
+  }
+
+  let range;
   try {
-    const range = buildLeaveRange(leaveDate);
-    startAt = range.startAt;
-    endAt = range.endAt;
+    range = buildLeaveRange(leaveDate);
   } catch (error) {
     return { ok: false, message: error.message || "Invalid leave date." };
   }
+
+  const now = Date.now();
   const leave = {
-    studentId: session.userId,
-    student_id: session.userId,
-    studentName: session.displayName,
-    student_name: session.displayName,
-    courseOfferingId,
+    student_id: student._id,
     course_offering_id: courseOfferingId,
-    courseId: courseOfferingId,
-    course_id: course && course._id ? course._id : courseOfferingId,
-    courseName,
-    course_name: courseName,
-    leaveDate,
     leave_date: leaveDate,
-    date: leaveDate,
-    reasonType,
     reason_type: reasonType,
-    reasonDetail,
     reason_detail: reasonDetail,
-    reason: reasonDetail,
-    startAt,
-    start_at: startAt,
-    endAt,
-    end_at: endAt,
+    start_at: range.startAt,
+    end_at: range.endAt,
+    attachment_urls: Array.isArray(event.attachment_urls) ? event.attachment_urls : [],
     status: "pending",
-    reviewerId: "",
-    reviewerUserId: "",
     reviewer_user_id: "",
-    reviewerName: "",
-    reviewer_name: "",
-    reviewComment: "",
     review_comment: "",
-    reviewedAt: 0,
     reviewed_at: 0,
-    createdAt: Date.now(),
-    created_at: Date.now(),
-    updatedAt: Date.now(),
-    updated_at: Date.now(),
+    created_at: now,
+    updated_at: now,
   };
 
   const result = await db.collection("leave_requests").add(leave);
   await writeAudit("leave.submit", session, result.id, null, leave);
 
-  return { ok: true, leave: formatLeaveView({ ...leave, _id: result.id }) };
+  return {
+    ok: true,
+    leave: {
+      _id: result.id,
+      studentId: student._id,
+      studentName: student.name || "",
+      courseOfferingId,
+      leaveDate,
+      date: leaveDate,
+      startAt: range.startAt,
+      endAt: range.endAt,
+      reasonType,
+      reasonDetail,
+      reason: reasonDetail,
+      status: "pending",
+      reviewerUserId: "",
+      reviewComment: "",
+      reviewedAt: 0,
+      createdAt: now,
+      updatedAt: now,
+    },
+  };
 };
 
-async function findCourse(courseOfferingId) {
+async function findById(collection, id) {
   try {
-    const offeringResult = await db
-      .collection("course_offerings")
-      .doc(courseOfferingId)
-      .get();
-    const courseOffering = offeringResult.data && offeringResult.data[0];
-    if (courseOffering) {
-      const courseResult = courseOffering.course_id
-        ? await db.collection("courses").doc(courseOffering.course_id).get()
-        : { data: [] };
-      return {
-        courseOffering,
-        course: courseResult.data && courseResult.data[0],
-      };
-    }
-
-    const courseResult = await db
-      .collection("courses")
-      .doc(courseOfferingId)
-      .get();
-    return {
-      courseOffering: null,
-      course: courseResult.data && courseResult.data[0],
-    };
+    const result = await db.collection(collection).doc(id).get();
+    return result.data && result.data[0] ? result.data[0] : null;
   } catch (error) {
-    return { courseOffering: null, course: null };
+    console.warn(`[submit-leave] ${collection} lookup failed.`, error);
+    return null;
   }
 }
 
-function formatCourseName(courseOffering, course, fallbackName) {
-  if (course) {
-    const code = course.course_code || course.code || "";
-    return code
-      ? `${code} ${course.name || ""}`.trim()
-      : course.name || fallbackName;
+async function findByField(collection, field, value) {
+  try {
+    const result = await db.collection(collection).where({ [field]: value }).limit(1).get();
+    return result.data && result.data[0] ? result.data[0] : null;
+  } catch (error) {
+    console.warn(`[submit-leave] ${collection} lookup failed.`, error);
+    return null;
   }
+}
 
-  if (courseOffering) {
-    const code = courseOffering.course_code || courseOffering.code || "";
-    const name =
-      courseOffering.name || courseOffering.course_name || fallbackName;
-    return code ? `${code} ${name}`.trim() : name;
+async function findEnrollment(studentId, courseOfferingId) {
+  try {
+    const result = await db
+      .collection("enrollments")
+      .where({ student_id: studentId, course_offering_id: courseOfferingId })
+      .limit(1)
+      .get();
+    const row = result.data && result.data[0];
+    return row && row.status !== "dropped" ? row : null;
+  } catch (error) {
+    console.warn("[submit-leave] enrollment lookup failed.", error);
+    return null;
   }
-
-  return fallbackName;
 }
 
 function normalizeReasonType(reasonType) {
@@ -152,50 +137,6 @@ function buildLeaveRange(leaveDate) {
   return {
     startAt: start.getTime(),
     endAt: end.getTime(),
-  };
-}
-
-function formatLeaveView(leave) {
-  return {
-    ...leave,
-    studentId: leave.studentId || leave.student_id,
-    student_id: leave.student_id || leave.studentId,
-    courseOfferingId: leave.courseOfferingId || leave.course_offering_id,
-    course_offering_id: leave.course_offering_id || leave.courseOfferingId,
-    courseId:
-      leave.courseId || leave.courseOfferingId || leave.course_offering_id,
-    course_id:
-      leave.course_id ||
-      leave.courseId ||
-      leave.courseOfferingId ||
-      leave.course_offering_id,
-    courseName: leave.courseName || leave.course_name,
-    course_name: leave.course_name || leave.courseName,
-    leaveDate: leave.leaveDate || leave.leave_date,
-    leave_date: leave.leave_date || leave.leaveDate,
-    date: leave.date || leave.leave_date || leave.leaveDate,
-    reasonType: leave.reasonType || leave.reason_type,
-    reason_type: leave.reason_type || leave.reasonType,
-    reasonDetail: leave.reasonDetail || leave.reason_detail,
-    reason_detail: leave.reason_detail || leave.reasonDetail,
-    reason: leave.reason || leave.reason_detail || leave.reasonDetail,
-    startAt: leave.startAt || leave.start_at,
-    start_at: leave.start_at || leave.startAt,
-    endAt: leave.endAt || leave.end_at,
-    end_at: leave.end_at || leave.endAt,
-    reviewerId: leave.reviewerId || leave.reviewer_user_id,
-    reviewerUserId: leave.reviewerUserId || leave.reviewer_user_id,
-    reviewer_user_id: leave.reviewer_user_id || leave.reviewerUserId,
-    reviewerName: leave.reviewerName || leave.reviewer_name,
-    reviewer_name: leave.reviewer_name || leave.reviewerName,
-    reviewComment: leave.reviewComment || leave.review_comment,
-    review_comment: leave.review_comment || leave.reviewComment,
-    reviewedAt: leave.reviewedAt || leave.reviewed_at,
-    reviewed_at: leave.reviewed_at || leave.reviewedAt,
-    createdAt: leave.createdAt || leave.created_at,
-    created_at: leave.created_at || leave.createdAt,
-    updatedAt: leave.updatedAt || leave.updated_at,
-    updated_at: leave.updated_at || leave.updatedAt,
   };
 }
 

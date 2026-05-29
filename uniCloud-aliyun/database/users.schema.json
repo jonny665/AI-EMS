@@ -1,1 +1,74 @@
-{"bsonType":"object","required":["username","password_hash","role_ids","display_name","status","created_at","updated_at"],"permission":{"read":false,"create":false,"update":false,"delete":false},"properties":{"_id":{"description":"users primary key"},"username":{"bsonType":"string","description":"Login username, student number, teacher number, or admin account."},"password_hash":{"bsonType":"string","description":"Hashed credential. Never store plain text passwords."},"role_ids":{"bsonType":"array","description":"References roles._id"},"display_name":{"bsonType":"string"},"email":{"bsonType":"string"},"phone":{"bsonType":"string"},"avatar_url":{"bsonType":"string"},"status":{"bsonType":"string","enum":["active","disabled","pending"],"defaultValue":"active"},"last_login_at":{"bsonType":"number"},"created_at":{"bsonType":"number"},"updated_at":{"bsonType":"number"}}}
+{
+  "bsonType": "object",
+  "required": [
+    "username",
+    "password_hash",
+    "role_ids",
+    "display_name",
+    "status",
+    "created_at",
+    "updated_at"
+  ],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "users primary key"
+    },
+    "username": {
+      "bsonType": "string",
+      "description": "Login username, student number, teacher number, or admin account."
+    },
+    "password_hash": {
+      "bsonType": "string",
+      "description": "Salted one-way password verifier, for example argon2id, bcrypt, or pbkdf2_sha256. Plain text passwords must never be stored or recovered."
+    },
+    "role_ids": {
+      "bsonType": "array",
+      "description": "References roles._id"
+    },
+    "display_name": {
+      "bsonType": "string"
+    },
+    "email": {
+      "bsonType": "string"
+    },
+    "phone": {
+      "bsonType": "string"
+    },
+    "avatar_url": {
+      "bsonType": "string"
+    },
+    "status": {
+      "bsonType": "string",
+      "enum": [
+        "active",
+        "disabled",
+        "pending"
+      ],
+      "defaultValue": "active"
+    },
+    "last_login_at": {
+      "bsonType": "number"
+    },
+    "password_updated_at": {
+      "bsonType": "number",
+      "description": "Unix timestamp of the latest password change."
+    },
+    "must_change_password": {
+      "bsonType": "bool",
+      "defaultValue": false,
+      "description": "Force the user to change password at next login, such as after account import or administrator reset."
+    },
+    "created_at": {
+      "bsonType": "number"
+    },
+    "updated_at": {
+      "bsonType": "number"
+    }
+  }
+}

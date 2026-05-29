@@ -1,1 +1,72 @@
-{"bsonType":"object","required":["course_offering_id","uploader_user_id","title","file_url","is_public_to_students","created_at","updated_at"],"permission":{"read":false,"create":false,"update":false,"delete":false},"properties":{"_id":{"description":"course_materials primary key"},"course_offering_id":{"bsonType":"string","description":"References course_offerings._id"},"uploader_user_id":{"bsonType":"string","description":"References users._id"},"title":{"bsonType":"string"},"file_url":{"bsonType":"string"},"file_type":{"bsonType":"string"},"is_public_to_students":{"bsonType":"bool","defaultValue":true},"knowledge_document_id":{"bsonType":"string","description":"References knowledge_documents._id"},"created_at":{"bsonType":"number"},"updated_at":{"bsonType":"number"}}}
+{
+  "bsonType": "object",
+  "required": [
+    "course_offering_id",
+    "uploader_user_id",
+    "title",
+    "file_url",
+    "is_public_to_students",
+    "created_at",
+    "updated_at"
+  ],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "course_materials primary key"
+    },
+    "course_offering_id": {
+      "bsonType": "string",
+      "description": "References course_offerings._id"
+    },
+    "uploader_user_id": {
+      "bsonType": "string",
+      "description": "References users._id"
+    },
+    "title": {
+      "bsonType": "string"
+    },
+    "file_url": {
+      "bsonType": "string"
+    },
+    "file_type": {
+      "bsonType": "string"
+    },
+    "is_public_to_students": {
+      "bsonType": "bool",
+      "defaultValue": true
+    },
+    "knowledge_document_id": {
+      "bsonType": "string",
+      "description": "References knowledge_documents._id"
+    },
+    "created_at": {
+      "bsonType": "number"
+    },
+    "updated_at": {
+      "bsonType": "number"
+    }
+  },
+  "indexes": [
+    {
+      "name": "course_updated_idx",
+      "key": {
+        "course_offering_id": 1,
+        "updated_at": -1
+      },
+      "unique": false
+    },
+    {
+      "name": "public_course_idx",
+      "key": {
+        "is_public_to_students": 1,
+        "course_offering_id": 1
+      },
+      "unique": false
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{"_id":"pr_general","training_plan_id":"tp_se_2024","module_code":"general","module_name":"General Education","required_credits":30,"course_ids":["course_math"],"rule":{},"created_at":1779595200000,"updated_at":1779595200000}
+{"_id":"pr_major_required","training_plan_id":"tp_se_2024","module_code":"major_required","module_name":"Major Required","required_credits":45,"course_ids":["course_software_design","course_database"],"rule":{},"created_at":1779595200000,"updated_at":1779595200000}
+{"_id":"pr_major_elective","training_plan_id":"tp_se_2024","module_code":"major_elective","module_name":"Major Elective","required_credits":30,"course_ids":["course_process","course_data_analysis"],"rule":{},"created_at":1779595200000,"updated_at":1779595200000}
+{"_id":"pr_practice","training_plan_id":"tp_se_2024","module_code":"practice","module_name":"Practice","required_credits":15,"course_ids":["course_capstone"],"rule":{},"created_at":1779595200000,"updated_at":1779595200000}

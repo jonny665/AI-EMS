@@ -4,9 +4,12 @@
       <view class="row">
         <view>
           <text class="section-title">Leave Workflow</text>
-          <text class="muted">{{ session.displayName }} · {{ session.role }}</text>
+          <text class="muted">{{ session.displayName }} - {{ session.role }}</text>
         </view>
-        <button class="secondary-btn" @click="backHome">Home</button>
+        <view class="btn-row top-actions">
+          <button class="secondary-btn" :loading="loading" @click="refresh">Refresh</button>
+          <button class="secondary-btn" @click="backHome">Home</button>
+        </view>
       </view>
     </view>
 
@@ -52,10 +55,10 @@
       <view v-if="!leaveRequests.length" class="muted">No leave requests available.</view>
 
       <view v-for="item in leaveRequests" :key="item._id" class="card">
-        <text class="value">{{ item.studentName || session.displayName }} · {{ item.courseName || item.course_name }}</text>
-        <text class="muted">{{ item.date || item.leaveDate }} · {{ item.reasonType || item.reason_type || 'other' }} · {{ item.status }}</text>
-        <text class="muted">{{ item.reasonDetail || item.reason_detail || item.reason }}</text>
-        <text v-if="item.reviewComment || item.review_comment" class="muted">Review: {{ item.reviewComment || item.review_comment }}</text>
+        <text class="value">{{ leaveTitle(item) }}</text>
+        <text class="muted">{{ [item.date, reasonTypeLabel(item.reasonType), item.status].filter(Boolean).join(' - ') }}</text>
+        <text class="muted">{{ item.reasonDetail || item.reason }}</text>
+        <text v-if="item.reviewComment" class="muted">Review: {{ item.reviewComment }}</text>
 
         <view v-if="session.role !== 'student' && item.status === 'pending'" class="btn-row">
           <button class="primary-btn" @click="review(item, 'approved')">Approve</button>
@@ -85,6 +88,7 @@ export default {
       date: new Date().toISOString().slice(0, 10),
       reasonDetail: '',
       reviewComment: '',
+      loading: false,
       reasonTypes: [
         { value: 'sick', label: 'Sick Leave' },
         { value: 'personal', label: 'Personal Leave' },
@@ -98,19 +102,13 @@ export default {
       return this.courses.map(item => this.formatCourseLabel(item))
     },
     selectedCourseLabel() {
-      if (!this.courseLabels.length) {
-        return 'No courses available'
-      }
-      return this.courseLabels[this.courseIndex] || this.courseLabels[0]
+      return this.courseLabels[this.courseIndex] || 'No courses available'
     },
     reasonTypeLabels() {
       return this.reasonTypes.map(item => item.label)
     },
     selectedReasonTypeLabel() {
-      if (!this.reasonTypeLabels.length) {
-        return 'Other'
-      }
-      return this.reasonTypeLabels[this.reasonTypeIndex] || this.reasonTypeLabels[0]
+      return this.reasonTypeLabels[this.reasonTypeIndex] || 'Other'
     }
   },
   onShow() {
@@ -120,21 +118,21 @@ export default {
     this.load()
   },
   methods: {
-    async load() {
+    async load(forceRefresh = false) {
+      this.loading = true
       const result = await callAiemsFunction('get-dashboard-data', {
-        session: getSession()
+        session: getSession(),
+        forceRefresh
       })
+      this.loading = false
 
       if (!result.ok) {
-        uni.showToast({
-          title: result.message || 'Failed to load leave data.',
-          icon: 'none'
-        })
+        uni.showToast({ title: result.message || 'Failed to load leave data.', icon: 'none' })
         return
       }
 
-      this.courses = (result.data.courses || []).map(item => this.normalizeCourse(item))
-      this.leaveRequests = (result.data.leaveRequests || []).map(item => this.normalizeLeave(item))
+      this.courses = result.data.courses || []
+      this.leaveRequests = result.data.leaveRequests || []
 
       if (this.courseIndex >= this.courses.length) {
         this.courseIndex = 0
@@ -143,42 +141,35 @@ export default {
         this.reasonTypeIndex = 0
       }
     },
+    refresh() {
+      this.load(true)
+    },
     async submitLeave() {
       const course = this.courses[this.courseIndex]
       const reasonDetail = this.reasonDetail.trim()
 
       if (!course || !reasonDetail) {
-        uni.showToast({
-          title: 'Course and reason are required.',
-          icon: 'none'
-        })
+        uni.showToast({ title: 'Course and reason are required.', icon: 'none' })
         return
       }
 
       const reasonType = this.reasonTypes[this.reasonTypeIndex] || this.reasonTypes[3]
       const result = await callAiemsFunction('submit-leave', {
         session: getSession(),
-        courseId: course._id,
-        courseOfferingId: course._id,
-        courseName: this.formatCourseLabel(course),
-        date: this.date,
+        courseOfferingId: course.courseOfferingId,
         leaveDate: this.date,
         reasonType: reasonType.value,
-        reasonDetail,
-        reason: reasonDetail
+        reasonDetail
       })
 
       if (result.ok) {
         this.reasonDetail = ''
         uni.showToast({ title: 'Submitted', icon: 'success' })
-        this.load()
+        this.load(true)
         return
       }
 
-      uni.showToast({
-        title: result.message || 'Submit failed.',
-        icon: 'none'
-      })
+      uni.showToast({ title: result.message || 'Submit failed.', icon: 'none' })
     },
     changeReasonType(event) {
       this.reasonTypeIndex = Number(event.detail.value)
@@ -198,18 +189,12 @@ export default {
       })
 
       if (result.ok) {
-        uni.showToast({
-          title: decision === 'approved' ? 'Approved' : 'Rejected',
-          icon: 'success'
-        })
-        this.load()
+        uni.showToast({ title: decision === 'approved' ? 'Approved' : 'Rejected', icon: 'success' })
+        this.load(true)
         return
       }
 
-      uni.showToast({
-        title: result.message || 'Review failed.',
-        icon: 'none'
-      })
+      uni.showToast({ title: result.message || 'Review failed.', icon: 'none' })
     },
     async cancelLeave(item) {
       const result = await callAiemsFunction('cancel-leave', {
@@ -219,14 +204,11 @@ export default {
 
       if (result.ok) {
         uni.showToast({ title: 'Cancelled', icon: 'success' })
-        this.load()
+        this.load(true)
         return
       }
 
-      uni.showToast({
-        title: result.message || 'Cancel failed.',
-        icon: 'none'
-      })
+      uni.showToast({ title: result.message || 'Cancel failed.', icon: 'none' })
     },
     backHome() {
       uni.reLaunch({ url: dashboardUrl(this.session.role) })
@@ -235,46 +217,14 @@ export default {
       if (!course) {
         return 'Unnamed course'
       }
-      const code = course.code || course.course_code || course.courseCode || ''
-      const name = course.name || course.course_name || course.title || ''
-      return [code, name].filter(Boolean).join(' ').trim() || name || code || 'Unnamed course'
+      return [course.code, course.name].filter(Boolean).join(' ').trim() || 'Unnamed course'
     },
-    normalizeCourse(course) {
-      if (!course) {
-        return course
-      }
-      const code = course.code || course.course_code || course.courseCode || ''
-      const name = course.name || course.course_name || course.title || ''
-      return {
-        ...course,
-        code,
-        course_code: course.course_code || code,
-        name,
-        course_name: course.course_name || name
-      }
+    leaveTitle(item) {
+      return [item.studentName || this.session.displayName, item.courseName].filter(Boolean).join(' - ')
     },
-    normalizeLeave(item) {
-      if (!item) {
-        return item
-      }
-      return {
-        ...item,
-        studentId: item.studentId || item.student_id,
-        student_id: item.student_id || item.studentId,
-        studentName: item.studentName || item.student_name,
-        student_name: item.student_name || item.studentName,
-        courseName: item.courseName || item.course_name,
-        course_name: item.course_name || item.courseName,
-        leaveDate: item.leaveDate || item.leave_date,
-        leave_date: item.leave_date || item.leaveDate,
-        reasonType: item.reasonType || item.reason_type,
-        reason_type: item.reason_type || item.reasonType,
-        reasonDetail: item.reasonDetail || item.reason_detail,
-        reason_detail: item.reason_detail || item.reasonDetail,
-        reason: item.reason || item.reason_detail || item.reasonDetail,
-        reviewComment: item.reviewComment || item.review_comment,
-        review_comment: item.review_comment || item.reviewComment
-      }
+    reasonTypeLabel(value) {
+      const type = this.reasonTypes.find(item => item.value === value)
+      return type ? type.label : value
     }
   }
 }
@@ -295,5 +245,9 @@ export default {
 
 .full-btn {
   width: 100%;
+}
+
+.top-actions {
+  margin-top: 0;
 }
 </style>
