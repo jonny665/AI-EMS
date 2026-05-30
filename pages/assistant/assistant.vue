@@ -100,12 +100,32 @@
         </view>
 
         <view class="field">
-          <text class="label">Model</text>
+          <view class="row">
+            <text class="label">Model</text>
+            <button
+              class="secondary-btn compact-btn"
+              :loading="fetchingModels"
+              @click="fetchModels"
+              style="margin:0"
+            >
+              Refresh
+            </button>
+          </view>
+          <picker
+            :value="modelIndex"
+            :range="modelOptions"
+            class="picker-value"
+            @change="onModelChange"
+          >
+            <text v-if="apiSettings.model">{{ apiSettings.model }}</text>
+            <text v-else class="muted">Select or search…</text>
+          </picker>
           <input
             :value="apiSettings.model"
-            placeholder="deepseek-chat"
+            placeholder="Or type any model name…"
             class="api-key-input"
-            @input="onModelInput"
+            style="margin-top:12rpx"
+            @input="e => apiSettings.model = e.detail.value"
           />
         </view>
 
@@ -175,12 +195,25 @@ export default {
       showKey: false,
       apiSettings: { ...DEFAULT_SETTINGS },
       providers: ['deepseek', 'openai'],
+      fetchedModels: [],
+      fetchingModels: false,
     }
   },
   computed: {
     providerIndex() {
       const idx = this.providers.indexOf(this.apiSettings.provider)
       return idx >= 0 ? idx : 0
+    },
+    modelOptions() {
+      const defaults = this.apiSettings.provider === 'openai'
+        ? ['gpt-4.1', 'gpt-4o', 'gpt-4o-mini', 'o3-mini', 'o1']
+        : ['deepseek-chat', 'deepseek-reasoner']
+      const merged = [...new Set([...defaults, ...this.fetchedModels])]
+      return merged
+    },
+    modelIndex() {
+      const idx = this.modelOptions.indexOf(this.apiSettings.model)
+      return idx >= 0 ? idx : -1
     },
   },
   onShow() {
@@ -215,8 +248,35 @@ export default {
     onKeyInput(e) {
       this.apiSettings.apiKey = e.detail.value
     },
-    onModelInput(e) {
-      this.apiSettings.model = e.detail.value
+    onModelChange(e) {
+      const val = this.modelOptions[e.detail.value]
+      if (val) this.apiSettings.model = val
+    },
+    async fetchModels() {
+      if (!this.apiSettings.apiKey) {
+        uni.showToast({ title: 'Set API key first.', icon: 'none' })
+        return
+      }
+      this.fetchingModels = true
+      try {
+        const result = await callAiemsFunction('ask-assistant', {
+          session: getSession(),
+          query: '__list_models__',
+          apiSettings: {
+            provider: this.apiSettings.provider,
+            apiKey: this.apiSettings.apiKey,
+          },
+        })
+        if (result.ok && result.data && Array.isArray(result.data.models)) {
+          this.fetchedModels = result.data.models
+          uni.showToast({ title: `Found ${this.fetchedModels.length} models.`, icon: 'success' })
+        } else {
+          uni.showToast({ title: result.message || 'Failed to fetch models.', icon: 'none' })
+        }
+      } catch (_) {
+        uni.showToast({ title: 'Failed to fetch models.', icon: 'none' })
+      }
+      this.fetchingModels = false
     },
     onTempChange(e) {
       this.apiSettings.temperature = e.detail.value

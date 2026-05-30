@@ -19,6 +19,11 @@ exports.main = async (event = {}) => {
     return { ok: false, message: "Question is required." };
   }
 
+  // Handle model listing request
+  if (query === "__list_models__") {
+    return listModels(event);
+  }
+
   const startedAt = Date.now();
   await purgeExpiredAiHistory(startedAt);
   const conversation = await resolveConversation(session, event, query, startedAt);
@@ -269,6 +274,40 @@ async function enrichContext(session) {
   }
 
   return result;
+}
+
+async function listModels(event) {
+  const userSettings = event.apiSettings || {};
+  const apiKey = userSettings.apiKey || process.env.DEEPSEEK_API_KEY;
+  const provider = userSettings.provider || "deepseek";
+  const baseUrl = provider === "openai"
+    ? "https://api.openai.com/v1"
+    : "https://api.deepseek.com/v1";
+
+  if (!apiKey) {
+    return { ok: false, message: "API key not configured." };
+  }
+
+  // Try live API first
+  for (const path of ["/models", "/model/list"]) {
+    try {
+      const result = await uniCloud.httpclient.request(`${baseUrl}${path}`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${apiKey}` },
+        dataType: "json",
+        timeout: 10000,
+      });
+      const ids = (result.data.data || result.data || []).map((m) => m.id).filter(Boolean).sort();
+      if (ids.length > 0) return { ok: true, data: { models: ids, provider, source: "live" } };
+    } catch (_) { /* try next */ }
+  }
+
+  // Fallback: known models per provider
+  const fallback = {
+    deepseek: ["deepseek-chat", "deepseek-reasoner"],
+    openai: ["gpt-4.1", "gpt-4o", "gpt-4o-mini", "o3-mini", "o1", "o1-mini", "o3", "o4-mini"],
+  };
+  return { ok: true, data: { models: fallback[provider] || fallback.deepseek, provider, source: "fallback" } };
 }
 
 function buildHistoryMessages(history) {
