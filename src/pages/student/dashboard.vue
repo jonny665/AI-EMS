@@ -123,24 +123,46 @@
     </view>
 
     <view class="section">
-      <text class="section-title">Location Check-in</text>
-      <view class="field">
-        <text class="label">Course</text>
-        <picker :range="courseLabels" :value="checkinCourseIndex" @change="changeCheckinCourse">
-          <view class="picker-value">{{ courseLabels[checkinCourseIndex] || 'No courses available' }}</view>
-        </picker>
-      </view>
-      <button class="primary-btn full-btn" :loading="checkingIn" @click="checkIn">Check In</button>
-    </view>
-
-    <view class="section">
       <text class="section-title">My Courses</text>
       <DataCard
         v-for="course in data.courses"
         :key="course.courseOfferingId || course._id"
         :title="course.code + ' ' + course.name"
         :subtitle="courseSubtitle(course)"
-      />
+      >
+        <view v-if="course.teacherOptions && course.teacherOptions.length > 1" class="teacher-select-panel" :class="{ locked: course.teacherSelected }">
+          <view class="teacher-select-head">
+            <view>
+              <text class="label">Selected Teacher</text>
+              <text class="teacher-select-note">
+                {{ course.teacherSelected ? 'Selection is locked after one choice.' : 'Choose once. You cannot change it later.' }}
+              </text>
+            </view>
+            <text class="teacher-lock-pill" :class="{ locked: course.teacherSelected }">
+              {{ course.teacherSelected ? 'Locked' : 'One-time' }}
+            </text>
+          </view>
+          <view v-if="course.teacherSelected" class="teacher-final-choice">
+            <text class="teacher-final-name">{{ course.selectedTeacherName || 'Teacher selected' }}</text>
+            <text class="teacher-final-meta">Final choice saved</text>
+          </view>
+          <view v-else class="teacher-choice-grid">
+            <view
+              v-for="option in course.teacherOptions"
+              :key="option.teacherId"
+              class="teacher-choice-card"
+              @click="selectTeacher(course, option.teacherId)"
+            >
+              <view class="teacher-choice-copy">
+                <text class="teacher-choice-name">{{ option.name }}</text>
+                <text class="teacher-choice-no">{{ option.teacherNo || option.teacherId }}</text>
+              </view>
+              <text class="teacher-choice-action">Choose</text>
+            </view>
+          </view>
+          <text v-if="isCourseFull(course) && !course.teacherSelected" class="teacher-select-note warning">Course is full.</text>
+        </view>
+      </DataCard>
     </view>
 
     <view class="section">
@@ -205,8 +227,6 @@ export default {
       session: {},
       loading: false,
       savingProfile: false,
-      checkingIn: false,
-      checkinCourseIndex: 0,
       lastUpdatedAt: 0,
       profile: {
         major: '',
@@ -236,6 +256,9 @@ export default {
   },
   computed: {
     attendanceRate() {
+      if (this.profile.attendanceStats || this.profile.attendanceRate !== undefined) {
+        return Number(this.profile.attendanceRate || 0)
+      }
       const records = this.data.attendance
       if (!records.length) return 0
       const present = records.filter(r => ['present', 'on_leave', 'excused'].includes(r.status)).length
@@ -261,9 +284,6 @@ export default {
     },
     interestText() {
       return (this.profile.interestTags || []).join(', ') || 'Not selected'
-    },
-    courseLabels() {
-      return this.data.courses.map(item => this.formatCourseLabel(item))
     },
     lastUpdatedText() {
       return this.lastUpdatedAt ? 'Updated ' + this.formatTime(this.lastUpdatedAt) : ''
@@ -328,7 +348,6 @@ export default {
             guardianPhone: this.profile.familyInfo && this.profile.familyInfo.guardianPhone || ''
           }
         }
-        if (this.checkinCourseIndex >= this.data.courses.length) this.checkinCourseIndex = 0
         if (!this.data.courses.length) {
           console.warn('[AI-EMS] No courses returned for student dashboard.', {
             session: getSession(),
@@ -360,57 +379,41 @@ export default {
       }
       uni.showToast({ title: result.message || 'Submit failed.', icon: 'none' })
     },
-    async checkIn() {
-      const course = this.data.courses[this.checkinCourseIndex]
-      if (!course) {
-        uni.showToast({ title: 'No course selected.', icon: 'none' })
-        return
-      }
-      this.checkingIn = true
-      const location = await this.resolveLocation(course)
-      const result = await callAiemsFunction('submit-attendance-checkin', {
-        session: getSession(),
-        courseOfferingId: course.courseOfferingId,
-        latitude: location.latitude,
-        longitude: location.longitude
-      })
-      this.checkingIn = false
-      if (result.ok) {
-        const data = result.data || {}
-        uni.showToast({
-          title: data.withinGeofence === false ? 'Outside geofence' : 'Checked in',
-          icon: data.withinGeofence === false ? 'none' : 'success'
-        })
-        this.load(true)
-        return
-      }
-      uni.showToast({ title: result.message || 'Check-in failed.', icon: 'none' })
-    },
-    resolveLocation(course) {
-      return new Promise(resolve => {
-        uni.getLocation({
-          type: 'gcj02',
-          success: location => resolve(location),
-          fail: () => {
-            const classroom = course.classroom || {}
-            resolve({
-              latitude: Number(classroom.latitude || 31.230416),
-              longitude: Number(classroom.longitude || 121.473701)
-            })
-          }
-        })
-      })
-    },
-    changeCheckinCourse(event) {
-      this.checkinCourseIndex = Number(event.detail.value)
-    },
     courseLabel(courseId) {
       const course = this.data.courses.find(c => c.courseOfferingId === courseId)
       return course ? course.code + ' ' + course.name : courseId
     },
     courseSubtitle(course) {
       const teachers = Array.isArray(course.teacherNames) ? course.teacherNames.join(', ') : ''
-      return [teachers ? 'Teacher: ' + teachers : '', course.schedule, course.credits ? course.credits + ' credits' : ''].filter(Boolean).join(' - ')
+      const selected = course.selectedTeacherName ? 'Selected: ' + course.selectedTeacherName : ''
+      const capacity = course.capacity ? `${Number(course.enrolledCount || 0)} / ${Number(course.capacity || 0)} seats` : ''
+      const status = course.completed ? 'completed' : course.teacherSelected ? 'teacher locked' : this.isCourseFull(course) ? 'full' : course.teacherSelectionRequired ? 'teacher pending' : ''
+      return [selected || (teachers ? 'Teachers: ' + teachers : ''), course.schedule, course.credits ? course.credits + ' credits' : '', capacity, status].filter(Boolean).join(' - ')
+    },
+    async selectTeacher(course, teacherId) {
+      if (course.teacherSelected) {
+        uni.showToast({ title: 'Teacher choice is locked and cannot be changed.', icon: 'none' })
+        return
+      }
+      if (this.isCourseFull(course)) {
+        uni.showToast({ title: 'This course has reached capacity.', icon: 'none' })
+        return
+      }
+      const result = await callAiemsFunction('select-course-teacher', {
+        session: getSession(),
+        courseOfferingId: course.courseOfferingId,
+        teacherId
+      })
+      if (result.ok) {
+        uni.showToast({ title: 'Teacher selected', icon: 'success' })
+        this.load(true)
+        return
+      }
+      uni.showToast({ title: result.message || 'Selection failed.', icon: 'none' })
+    },
+    isCourseFull(course) {
+      const capacity = Number(course && course.capacity || 0)
+      return Boolean(capacity && Number(course.enrolledCount || 0) >= capacity)
     },
     attendanceSubtitle(item) {
       return [item.source, item.distanceToClassroomM ? item.distanceToClassroomM + 'm' : ''].filter(Boolean).join(' - ')
@@ -456,14 +459,6 @@ export default {
   margin-bottom: 18rpx;
 }
 
-.picker-value {
-  padding: 18rpx;
-  background: #ffffff;
-  border: 1rpx solid #cbd5e1;
-  border-radius: 8rpx;
-  font-size: 28rpx;
-}
-
 .full-btn {
   width: 100%;
   margin-top: 10rpx;
@@ -481,5 +476,140 @@ export default {
   background: #f8fafc;
   border: 1rpx solid #e2e8f0;
   border-radius: 8rpx;
+}
+
+.teacher-select {
+  min-width: 260rpx;
+}
+
+.teacher-select-panel {
+  margin-top: 16rpx;
+  padding: 20rpx;
+  border: 1rpx solid #dbeafe;
+  border-radius: 18rpx;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  box-shadow: 0 10rpx 24rpx rgba(15, 23, 42, 0.05);
+}
+
+.teacher-select-panel.locked {
+  border-color: #bbf7d0;
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+.teacher-select-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.teacher-select-note {
+  display: block;
+  margin-top: 6rpx;
+  color: #64748b;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.teacher-select-note.warning {
+  margin-top: 12rpx;
+  color: #b45309;
+}
+
+.teacher-lock-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 22rpx;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.teacher-lock-pill.locked {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.teacher-final-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  padding: 18rpx;
+  border: 1rpx solid #e2e8f0;
+  border-radius: 16rpx;
+  background: #f8fafc;
+}
+
+.teacher-final-name {
+  color: #0f172a;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.teacher-final-meta {
+  color: #64748b;
+  font-size: 24rpx;
+}
+
+.teacher-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12rpx;
+}
+
+.teacher-choice-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+  min-height: 82rpx;
+  padding: 16rpx;
+  border: 1rpx solid #cbd5e1;
+  border-radius: 16rpx;
+  background: #ffffff;
+}
+
+.teacher-choice-card:active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.teacher-choice-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.teacher-choice-name {
+  color: #0f172a;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.teacher-choice-no {
+  color: #64748b;
+  font-size: 24rpx;
+}
+
+.teacher-choice-action {
+  flex-shrink: 0;
+  padding: 8rpx 12rpx;
+  border-radius: 999rpx;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .teacher-choice-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

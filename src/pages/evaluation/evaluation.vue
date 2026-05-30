@@ -15,23 +15,28 @@
 
     <view v-if="session.role === 'student'" class="section">
       <text class="section-title">Submit Anonymous Feedback</text>
-      <view class="field">
-        <text class="label">Course</text>
-        <picker :range="courseNames" :value="courseIndex" @change="changeCourse">
-          <view class="picker-value">{{ selectedCourseName }}</view>
-        </picker>
-      </view>
-      <view class="score-grid">
-        <view v-for="field in scoreFields" :key="field.key" class="field">
-          <text class="label">{{ field.label }}</text>
-          <input v-model="scores[field.key]" type="number" />
+      <template v-if="courses.length">
+        <view class="field">
+          <text class="label">Course</text>
+          <picker :range="courseNames" :value="courseIndex" @change="changeCourse">
+            <view class="picker-value">{{ selectedCourseName }}</view>
+          </picker>
         </view>
+        <view class="score-grid">
+          <view v-for="field in scoreFields" :key="field.key" class="field">
+            <text class="label">{{ field.label }}</text>
+            <input v-model="scores[field.key]" type="number" />
+          </view>
+        </view>
+        <view class="field">
+          <text class="label">Feedback</text>
+          <textarea v-model="feedback" maxlength="500" placeholder="Your feedback will be stored anonymously." />
+        </view>
+        <button class="primary-btn full-btn" :loading="submitting" @click="submitEvaluation">Submit</button>
+      </template>
+      <view v-else class="empty-note">
+        <text class="muted">No completed courses available for evaluation.</text>
       </view>
-      <view class="field">
-        <text class="label">Feedback</text>
-        <textarea v-model="feedback" maxlength="500" placeholder="Your feedback will be stored anonymously." />
-      </view>
-      <button class="primary-btn full-btn" :loading="submitting" @click="submitEvaluation">Submit</button>
     </view>
 
     <view class="section">
@@ -132,7 +137,7 @@ export default {
         forceRefresh
       })
       if (dashboard.ok) {
-        this.courses = dashboard.data.courses || []
+        this.courses = this.filterEvaluableCourses(dashboard.data.courses || [])
       }
 
       const result = await callAiemsFunction('get-evaluation-summary', {
@@ -154,6 +159,10 @@ export default {
       const scores = this.normalizedScores()
       if (!course || !scores || !this.feedback.trim()) {
         uni.showToast({ title: 'Valid course, scores and feedback are required.', icon: 'none' })
+        return
+      }
+      if (!this.canEvaluateCourse(course)) {
+        uni.showToast({ title: 'Course evaluations open only after the course has ended.', icon: 'none' })
         return
       }
 
@@ -190,6 +199,13 @@ export default {
     },
     changeCourse(event) {
       this.courseIndex = Number(event.detail.value)
+    },
+    filterEvaluableCourses(courses) {
+      if (this.session.role !== 'student') return courses
+      return courses.filter(course => this.canEvaluateCourse(course))
+    },
+    canEvaluateCourse(course) {
+      return Boolean(course && (course.completed === true || course.enrollmentStatus === 'completed'))
     },
     formatCourseLabel(course) {
       return [course.code, course.name].filter(Boolean).join(' ').trim()
@@ -245,6 +261,10 @@ export default {
 
 .full-btn {
   width: 100%;
+}
+
+.empty-note {
+  padding-top: 12rpx;
 }
 
 .comment {

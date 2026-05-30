@@ -25,6 +25,12 @@
       }
     },
     {
+      "path": "pages/admin/management",
+      "style": {
+        "navigationBarTitleText": "Admin Management"
+      }
+    },
+    {
       "path": "pages/leave/leave",
       "style": {
         "navigationBarTitleText": "Leave Workflow"

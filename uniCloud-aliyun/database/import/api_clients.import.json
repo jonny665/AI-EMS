@@ -1,1 +1,0 @@
-{"_id":"api_client_demo","client_name":"Demo Integration Client","client_key":"ai_ems_demo_client","secret_hash":"sha256$demo","allowed_scopes":["dashboard.read","evaluation.read"],"status":"active","created_at":1779595200000,"updated_at":1779595200000}

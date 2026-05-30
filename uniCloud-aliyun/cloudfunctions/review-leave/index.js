@@ -66,7 +66,14 @@ async function canReviewLeave(session, leave) {
   }
 
   const offering = await findById("course_offerings", leave.course_offering_id);
-  return Boolean(offering && Array.isArray(offering.teacher_ids) && offering.teacher_ids.includes(teacher._id));
+  if (!offering || !Array.isArray(offering.teacher_ids) || !offering.teacher_ids.includes(teacher._id)) {
+    return false;
+  }
+  const enrollment = await findEnrollment(leave.student_id, leave.course_offering_id);
+  if (!enrollment || (!enrollment.selected_teacher_id && !enrollment.selected_teacher_user_id)) {
+    return true;
+  }
+  return enrollment.selected_teacher_id === teacher._id || enrollment.selected_teacher_user_id === teacher.user_id;
 }
 
 async function syncAttendance(leave, now) {
@@ -158,6 +165,15 @@ async function findAttendance(studentId, courseOfferingId, attendanceDate) {
       course_offering_id: courseOfferingId,
       attendance_date: attendanceDate,
     })
+    .limit(1)
+    .get();
+  return result.data && result.data[0] ? result.data[0] : null;
+}
+
+async function findEnrollment(studentId, courseOfferingId) {
+  const result = await db
+    .collection("enrollments")
+    .where({ student_id: studentId, course_offering_id: courseOfferingId })
     .limit(1)
     .get();
   return result.data && result.data[0] ? result.data[0] : null;

@@ -24,6 +24,7 @@ export default {
       const roleDashboard = `/pages/${this.role}/dashboard`
       const tabs = [
         { key: 'dashboard', url: roleDashboard, label: 'Dashboard' },
+        ...(this.role === 'admin' ? [{ key: 'management', url: '/pages/admin/management', label: 'Management' }] : []),
         { key: 'leave', url: '/pages/leave/leave', label: 'Leave' },
         { key: 'evaluation', url: '/pages/evaluation/evaluation', label: 'Evaluation' },
         { key: 'materials', url: '/pages/materials/materials', label: 'Materials' },

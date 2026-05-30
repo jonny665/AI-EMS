@@ -14,7 +14,7 @@ exports.main = async (event = {}) => {
     return { ok: false, message: "Username, display name, role, and password are required for new accounts." };
   }
 
-  const [roles, users, students, teachers, majors, departments, adminClasses] = await Promise.all([
+  const [roles, users, students, teachers, majors, departments, adminClasses, offerings, enrollments] = await Promise.all([
     readCollection("roles"),
     readCollection("users"),
     readCollection("students"),
@@ -22,6 +22,8 @@ exports.main = async (event = {}) => {
     readCollection("majors"),
     readCollection("departments"),
     readCollection("admin_classes"),
+    readCollection("course_offerings"),
+    readCollection("enrollments"),
   ]);
 
   const roleMap = mapRolesByCode(roles);
@@ -111,17 +113,24 @@ exports.main = async (event = {}) => {
   }
 
   if (studentDoc) {
+    let savedStudentId = studentDoc._id;
     if (studentDoc._exists) {
       const studentId = studentDoc._id;
       delete studentDoc._exists;
       delete studentDoc._id;
       await db.collection("students").doc(studentId).update(studentDoc);
+      savedStudentId = studentId;
+      studentDoc._id = studentId;
+      studentDoc._exists = true;
     } else {
       const addStudent = clone(studentDoc);
       delete addStudent._exists;
       delete addStudent._id;
-      await db.collection("students").add(addStudent);
+      const addResult = await db.collection("students").add(addStudent);
+      savedStudentId = addResult.id;
+      studentDoc._id = savedStudentId;
     }
+    await enrollStudentInCohortOfferings({ student: { ...studentDoc, _id: savedStudentId }, offerings, enrollments, now });
   }
 
   if (teacherDoc) {
@@ -130,6 +139,8 @@ exports.main = async (event = {}) => {
       delete teacherDoc._exists;
       delete teacherDoc._id;
       await db.collection("teachers").doc(teacherId).update(teacherDoc);
+      teacherDoc._id = teacherId;
+      teacherDoc._exists = true;
     } else {
       const addTeacher = clone(teacherDoc);
       delete addTeacher._exists;
@@ -166,6 +177,40 @@ async function readCollection(name, limit = 1000) {
     console.warn(`[save-admin-account] failed to read ${name}.`, error);
     return [];
   }
+}
+
+async function enrollStudentInCohortOfferings({ student, offerings, enrollments, now }) {
+  if (!student || !student._id) return;
+  const matchedOfferings = (offerings || []).filter((offering) => studentMatchesOffering(student, offering));
+  for (const offering of matchedOfferings) {
+    const exists = (enrollments || []).some((item) =>
+      item.student_id === student._id &&
+      item.course_offering_id === offering._id &&
+      item.status !== "dropped",
+    );
+    if (exists) continue;
+    await db.collection("enrollments").add({
+      student_id: student._id,
+      course_offering_id: offering._id,
+      status: "selected",
+      selected_at: now,
+      created_at: now,
+      updated_at: now,
+    });
+  }
+}
+
+function studentMatchesOffering(student, offering) {
+  if (!student || !offering) return false;
+  const sameYear = student.enrollment_year && Number(offering.grade_year || 0) === Number(student.enrollment_year);
+  const sameMajor = offering.major_id && student.major_id === offering.major_id;
+  if (offering.major_id) {
+    return Boolean(sameYear && sameMajor);
+  }
+  return Boolean(
+    (student.training_plan_id && offering.training_plan_id === student.training_plan_id) ||
+    sameYear,
+  );
 }
 
 function normalizePayload(event) {

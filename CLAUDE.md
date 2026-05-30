@@ -21,13 +21,7 @@ This is a HBuilderX project. There is no CLI build tooling.
 - Import database schemas from `uniCloud-aliyun/database/` via HBuilderX's uniCloud console
 - Seed data: `uniCloud-aliyun/database/demo-seed-data.json`
 
-Demo accounts (password for all: `demo123`):
-
-| Role | Username |
-|---|---|
-| Student | `student001` |
-| Teacher | `teacher001` |
-| Admin | `admin001` |
+Login accounts are loaded from the `users` collection and validated against `users.password_hash`. If `uniCloud` is unavailable, only non-auth local fallback data remains; login should use the database.
 
 ## Architecture
 
@@ -56,11 +50,11 @@ Seven cloud functions, each with its own `index.js` and `package.json`:
 
 ### Dual-mode fallback pattern
 
-Every cloud function call goes through `callAiemsFunction(name, data)` in `common/api.js`. If `uniCloud` is undefined (H5 preview) or the cloud call fails, it falls back to `fallbackResult()` which operates entirely on in-memory demo state. This means:
+Every cloud function call goes through `callAiemsFunction(name, data)` in `common/api.js`. If `uniCloud` is undefined (H5 preview) or the cloud call fails, it falls back to `fallbackResult()` for non-auth data. This means:
 
 - The entire PoC is runnable in H5 preview without any cloud setup
 - Adding a new cloud function should include a corresponding fallback case in `fallbackResult()`
-- Demo data is hardcoded in both the cloud functions and `common/api.js` — keep them consistent
+- Sample data is hardcoded in both the cloud functions and `common/api.js` — keep them consistent
 
 ### Session & auth
 

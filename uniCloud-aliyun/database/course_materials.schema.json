@@ -27,6 +27,10 @@
       "bsonType": "string",
       "description": "References users._id"
     },
+    "teacher_id": {
+      "bsonType": "string",
+      "description": "References teachers._id when a teacher uploads the material."
+    },
     "title": {
       "bsonType": "string"
     },
@@ -43,6 +47,10 @@
     "knowledge_document_id": {
       "bsonType": "string",
       "description": "References knowledge_documents._id"
+    },
+    "available_at": {
+      "bsonType": "number",
+      "description": "Optional timeline timestamp when the material should appear."
     },
     "created_at": {
       "bsonType": "number"
@@ -64,6 +72,14 @@
       "name": "public_course_idx",
       "key": {
         "is_public_to_students": 1,
+        "course_offering_id": 1
+      },
+      "unique": false
+    },
+    {
+      "name": "teacher_course_idx",
+      "key": {
+        "teacher_id": 1,
         "course_offering_id": 1
       },
       "unique": false

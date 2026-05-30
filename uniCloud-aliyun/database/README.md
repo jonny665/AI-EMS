@@ -4,7 +4,7 @@ This folder contains UniCloud collection schemas and demo import data for the AI
 
 ## Import Data
 
-Demo data lives in `uniCloud-aliyun/database/import/`.
+Import data lives in `uniCloud-aliyun/database/import/`.
 
 - Files ending in `.import.json` are JSONL import files: one JSON object per line.
 - Files ending in `.raw.DO_NOT_IMPORT.json` are source/reference files and should not be imported directly.
@@ -21,7 +21,7 @@ The relationship is defined by `course_offerings.teacher_ids`, which references 
 | Alice Chen (`T1001`) | `t1001` | `offering_da_2026s` | `DA3506 Educational Data Analysis` | 2026 Spring | 01 | open | 22 / 40 |
 | Brian Li (`T1002`) | `t1002` | `offering_db_2026s` | `DB2501 Database Principles` | 2026 Spring | 02 | closed | 35 / 55 |
 
-Note: H5 local fallback data in `common/api.js` uses the lightweight demo account `teacher001` / `Dr. Zhang`, who manages the three fallback courses `JC3506`, `PM3506`, and `DA3506`. The table above reflects the database import files.
+Note: H5 local fallback data in `common/api.js` uses local test fixtures; the table above reflects the database import files.
 
 ## Collections
 
@@ -61,14 +61,14 @@ Note: H5 local fallback data in `common/api.js` uses the lightweight demo accoun
   Fields: `_id`, `course_code`, `name`, `department_id`, `credits`, `course_type`, `difficulty_level`, `description`, `status`, `created_at`, `updated_at`.
 - `course_prerequisites`: prerequisite graph used by course recommendation.
   Fields: `_id`, `course_id`, `prerequisite_course_id`, `rule_type`, `min_score`, `created_at`.
-- `course_offerings`: actual semester course sections; `teacher_ids` controls teacher ownership.
-  Fields: `_id`, `course_id`, `semester_id`, `section_no`, `teacher_ids`, `capacity`, `enrolled_count`, `selection_status`, `syllabus_url`, `created_at`, `updated_at`.
+- `course_offerings`: actual cohort/semester course sections; `teacher_ids` controls teacher ownership and schedule fields generate concrete class sessions.
+  Fields: `_id`, `course_id`, `semester_id`, `major_id`, `training_plan_id` (optional), `grade_year`, `classroom_id`, `section_no`, `teacher_ids`, `capacity`, `enrolled_count`, `selection_status`, `syllabus_url`, `course_start_date`, `course_end_date`, `class_weekday`, `class_start_time`, `class_end_time`, `total_sessions`, `material_upload_deadline_at`, `created_at`, `updated_at`.
 - `class_sessions`: concrete class time/location rows used by timetable, attendance, and leave sync.
   Fields: `_id`, `course_offering_id`, `classroom_id`, `weekday`, `start_time`, `end_time`, `week_start`, `week_end`, `session_date`, `status`, `created_at`, `updated_at`.
-- `course_materials`: teacher/admin managed course resources.
-  Fields: `_id`, `course_offering_id`, `uploader_user_id`, `title`, `file_url`, `file_type`, `is_public_to_students`, `knowledge_document_id`, `created_at`, `updated_at`.
-- `enrollments`: student-course selection records.
-  Fields: `_id`, `student_id`, `course_offering_id`, `status`, `selected_at`, `dropped_at`, `created_at`, `updated_at`.
+- `course_materials`: teacher/admin managed course resources; `teacher_id` keeps each teacher's materials isolated within a shared course offering.
+  Fields: `_id`, `course_offering_id`, `teacher_id`, `uploader_user_id`, `title`, `file_url`, `file_type`, `is_public_to_students`, `knowledge_document_id`, `available_at`, `created_at`, `updated_at`.
+- `enrollments`: student-course selection records, including the teacher chosen by the student for multi-teacher cohort offerings.
+  Fields: `_id`, `student_id`, `course_offering_id`, `status`, `selected_teacher_id`, `selected_teacher_user_id`, `selected_teacher_name`, `teacher_selected_at`, `selected_at`, `dropped_at`, `created_at`, `updated_at`.
 - `grades`: course results, GPA point, earned credits, and percentile.
   Fields: `_id`, `enrollment_id`, `student_id`, `course_offering_id`, `score`, `grade_letter`, `gpa_point`, `credits_earned`, `percentile`, `status`, `published_at`, `created_at`, `updated_at`.
 

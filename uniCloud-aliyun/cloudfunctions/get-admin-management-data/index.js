@@ -8,7 +8,7 @@ exports.main = async (event = {}) => {
     return { ok: false, message: "Only administrators can manage accounts and courses." };
   }
 
-  const [users, roles, students, teachers, departments, majors, adminClasses, semesters, courses, offerings, materials] = await Promise.all([
+  const [users, roles, students, teachers, departments, majors, adminClasses, semesters, trainingPlans, courses, offerings, materials, classSessions, classrooms] = await Promise.all([
     readCollection("users"),
     readCollection("roles"),
     readCollection("students"),
@@ -17,9 +17,12 @@ exports.main = async (event = {}) => {
     readCollection("majors"),
     readCollection("admin_classes"),
     readCollection("semesters"),
+    readCollection("training_plans"),
     readCollection("courses"),
     readCollection("course_offerings"),
     readCollection("course_materials"),
+    readCollection("class_sessions"),
+    readCollection("classrooms"),
   ]);
 
   const roleMap = mapById(roles);
@@ -33,7 +36,9 @@ exports.main = async (event = {}) => {
   const coursesById = mapById(courses);
   const offeringsById = mapById(offerings);
   const teachersById = mapById(teachers);
+  const classroomsById = mapById(classrooms);
   const materialsByOfferingId = groupBy(materials, "course_offering_id");
+  const sessionsByOfferingId = groupBy(classSessions, "course_offering_id");
 
   const options = {
     roles: roles
@@ -67,6 +72,14 @@ exports.main = async (event = {}) => {
         label: item.name || item.term || item.code || item._id,
       }))
       .sort((left, right) => String(left.label).localeCompare(String(right.label))),
+    trainingPlans: trainingPlans
+      .map((item) => ({
+        value: item._id,
+        label: item.name || item._id,
+        majorId: item.major_id || "",
+        gradeYear: Number(item.grade_year || 0),
+      }))
+      .sort((left, right) => String(left.label).localeCompare(String(right.label))),
     teachers: teachers
       .map((item) => {
         const user = usersById.get(item.user_id) || {};
@@ -77,6 +90,13 @@ exports.main = async (event = {}) => {
           subtitle: [item.teacher_no || "", department ? department.name || department.code || department._id : ""].filter(Boolean).join(" - "),
         };
       })
+      .sort((left, right) => String(left.label).localeCompare(String(right.label))),
+    classrooms: classrooms
+      .map((item) => ({
+        value: item._id,
+        label: [item.name || "", item.building && item.room_no ? `${item.building}-${item.room_no}` : ""].filter(Boolean).join(" / ") || item._id,
+        capacity: Number(item.capacity || 0),
+      }))
       .sort((left, right) => String(left.label).localeCompare(String(right.label))),
   };
 
@@ -97,14 +117,18 @@ exports.main = async (event = {}) => {
       teachersById,
       usersById,
       departmentsById,
+      majorsById,
       semestersById,
       materialsByOfferingId,
+      sessionsByOfferingId,
+      classroomsById,
     }))
     .sort((left, right) => String(left.courseCode || left.courseName).localeCompare(String(right.courseCode || right.courseName)));
 
   const materialViews = materials
     .map((item) => buildMaterialView(item, {
       usersById,
+      teachersById,
       offeringsById,
       coursesById,
     }))
@@ -124,6 +148,8 @@ exports.main = async (event = {}) => {
         courses: courses.length,
         offerings: offerings.length,
         materials: materials.length,
+        trainingPlans: trainingPlans.length,
+        classrooms: classrooms.length,
       },
       meta: {
         source: "unicloud",
@@ -211,6 +237,7 @@ function buildTeacherProfile(teacher, indexes) {
 function buildCourseView(offering, indexes) {
   const course = indexes.coursesById.get(offering.course_id) || {};
   const department = course.department_id ? indexes.departmentsById.get(course.department_id) : null;
+  const major = offering.major_id ? indexes.majorsById.get(offering.major_id) : null;
   const semester = offering.semester_id ? indexes.semestersById.get(offering.semester_id) : null;
   const teacherNames = (offering.teacher_ids || [])
     .map((teacherId) => {
@@ -223,6 +250,10 @@ function buildCourseView(offering, indexes) {
     })
     .filter(Boolean);
   const materialCount = (indexes.materialsByOfferingId.get(offering._id) || []).length;
+  const sessions = indexes.sessionsByOfferingId.get(offering._id) || [];
+  const sessionCount = sessions.length;
+  const classroomId = offering.classroom_id || (sessions[0] && sessions[0].classroom_id) || "";
+  const classroom = classroomId ? indexes.classroomsById.get(classroomId) : null;
 
   return {
     _id: offering._id,
@@ -239,6 +270,12 @@ function buildCourseView(offering, indexes) {
     difficultyLevel: Number(course.difficulty_level || 0),
     semesterId: offering.semester_id || "",
     semesterName: semester ? semester.name || semester.term || semester.code || semester._id : "",
+    majorId: offering.major_id || "",
+    majorName: major ? major.name || major.code || major._id : "",
+    trainingPlanId: offering.training_plan_id || "",
+    gradeYear: Number(offering.grade_year || 0),
+    classroomId,
+    classroomName: classroom ? classroom.name || [classroom.building, classroom.room_no].filter(Boolean).join("-") || classroom._id : "",
     sectionNo: offering.section_no || "",
     teacherIds: Array.isArray(offering.teacher_ids) ? offering.teacher_ids.slice() : [],
     teacherNames,
@@ -246,7 +283,15 @@ function buildCourseView(offering, indexes) {
     enrolledCount: Number(offering.enrolled_count || 0),
     selectionStatus: offering.selection_status || "not_started",
     syllabusUrl: offering.syllabus_url || "",
+    startDate: offering.course_start_date || "",
+    endDate: offering.course_end_date || "",
+    classWeekday: Number(offering.class_weekday || 0),
+    classStartTime: offering.class_start_time || "",
+    classEndTime: offering.class_end_time || "",
+    totalSessions: Number(offering.total_sessions || sessionCount || 0),
+    materialUploadDeadlineAt: Number(offering.material_upload_deadline_at || 0),
     materialCount,
+    sessionCount,
     createdAt: Number(offering.created_at || 0),
     updatedAt: Number(offering.updated_at || 0),
   };
@@ -256,12 +301,15 @@ function buildMaterialView(item, indexes) {
   const offering = indexes.offeringsById.get(item.course_offering_id) || {};
   const course = indexes.coursesById.get(offering.course_id) || {};
   const uploader = indexes.usersById.get(item.uploader_user_id) || null;
+  const teacher = indexes.teachersById.get(item.teacher_id) || null;
   return {
     _id: item._id,
     courseOfferingId: item.course_offering_id || "",
     courseId: offering.course_id || "",
     courseCode: course.course_code || "",
     courseName: [course.course_code, course.name].filter(Boolean).join(" ").trim(),
+    teacherId: item.teacher_id || "",
+    teacherName: teacher ? teacher.name || teacher.teacher_no || teacher._id : "",
     uploaderUserId: item.uploader_user_id || "",
     uploaderName: uploader ? uploader.display_name || uploader.username || "" : "",
     title: item.title || "",

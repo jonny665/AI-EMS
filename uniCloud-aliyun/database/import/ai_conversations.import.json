@@ -1,2 +1,0 @@
-{"_id":"ai_conv_s1_grad","user_id":"user_s_001","title":"Graduation credit requirement","scenario":"graduation_check","context_summary":"What should I check before graduation?","message_count":2,"status":"active","created_at":1779508800000,"updated_at":1779508801000}
-{"_id":"ai_conv_t1_eval","user_id":"user_t_001","title":"Course evaluation summary","scenario":"course_selection","context_summary":"What feedback did students give?","message_count":2,"status":"active","created_at":1779508800000,"updated_at":1779508802000}

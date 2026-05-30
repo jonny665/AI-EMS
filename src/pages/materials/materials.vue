@@ -50,6 +50,18 @@
           <input v-model="form.knowledgeDocumentId" placeholder="Optional" />
         </view>
 
+        <view class="field">
+          <text class="label">Available Date</text>
+          <picker mode="date" :value="form.availableDate" @change="form.availableDate = $event.detail.value">
+            <view class="picker-value">{{ form.availableDate }}</view>
+          </picker>
+        </view>
+
+        <view class="field">
+          <text class="label">Available Time</text>
+          <input v-model="form.availableTime" placeholder="10:00" />
+        </view>
+
         <view class="switch-row">
           <view>
             <text class="label">Visible to Students</text>
@@ -77,12 +89,27 @@
         <view>
           <text class="value">{{ item.title }}</text>
           <text class="muted">{{ item.courseName || 'Course not found' }}</text>
-          <text class="muted">{{ item.fileType || 'link' }} - {{ item.isPublicToStudents ? 'public' : 'private' }}</text>
+          <text class="muted">{{ [item.fileType || 'link', item.isPublicToStudents ? 'public' : 'private', formatTimeline(item.timelineAt)].filter(Boolean).join(' - ') }}</text>
           <text class="link-text">{{ item.fileUrl }}</text>
         </view>
         <view class="btn-row">
           <button class="secondary-btn" @click="copyUrl(item)">Copy URL</button>
           <button v-if="session.role !== 'student'" class="primary-btn" @click="editMaterial(item)">Edit</button>
+        </view>
+      </view>
+    </view>
+
+    <view v-if="session.role === 'student'" class="section">
+      <text class="section-title">Course Timeline</text>
+      <template v-if="!timeline.length">
+        <text class="muted">No scheduled sessions yet.</text>
+      </template>
+      <view v-for="item in timeline" :key="item._id" class="card">
+        <text class="value">{{ item.courseName }}</text>
+        <text class="muted">{{ ['Session ' + item.sequenceNo, item.sessionDate, item.startTime + '-' + item.endTime].filter(Boolean).join(' - ') }}</text>
+        <view v-for="material in materialsForSession(item)" :key="material._id" class="timeline-material">
+          <text class="link-text">{{ material.title }}</text>
+          <text class="muted">{{ material.fileType || 'link' }}</text>
         </view>
       </view>
     </view>
@@ -99,6 +126,7 @@ export default {
       session: {},
       courses: [],
       materials: [],
+      timeline: [],
       courseIndex: 0,
       fileTypeIndex: 0,
       fileTypes: ['document', 'slide', 'video', 'link', 'other'],
@@ -111,6 +139,8 @@ export default {
         title: '',
         fileUrl: '',
         knowledgeDocumentId: '',
+        availableDate: new Date().toISOString().slice(0, 10),
+        availableTime: '10:00',
         isPublicToStudents: true
       }
     }
@@ -143,6 +173,8 @@ export default {
         title: '',
         fileUrl: '',
         knowledgeDocumentId: '',
+        availableDate: new Date().toISOString().slice(0, 10),
+        availableTime: '10:00',
         isPublicToStudents: true
       }
     },
@@ -160,6 +192,7 @@ export default {
 
       this.courses = result.data.courses || []
       this.materials = result.data.materials || []
+      this.timeline = result.data.timeline || []
       this.lastLoadedAt = Date.now()
       if (this.courseIndex >= this.courses.length) {
         this.courseIndex = 0
@@ -185,7 +218,8 @@ export default {
         fileUrl,
         fileType: this.fileTypes[this.fileTypeIndex] || 'link',
         isPublicToStudents: this.form.isPublicToStudents,
-        knowledgeDocumentId: this.form.knowledgeDocumentId.trim()
+        knowledgeDocumentId: this.form.knowledgeDocumentId.trim(),
+        availableAt: this.buildAvailableAt()
       })
       this.saving = false
 
@@ -208,6 +242,8 @@ export default {
         title: item.title || '',
         fileUrl: item.fileUrl || '',
         knowledgeDocumentId: item.knowledgeDocumentId || '',
+        availableDate: item.timelineAt ? new Date(item.timelineAt).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+        availableTime: item.timelineAt ? this.formatClock(item.timelineAt) : '10:00',
         isPublicToStudents: item.isPublicToStudents === true
       }
     },
@@ -223,6 +259,27 @@ export default {
     },
     togglePublic(event) {
       this.form.isPublicToStudents = event.detail.value === true
+    },
+    buildAvailableAt() {
+      const timestamp = Date.parse(`${this.form.availableDate}T${this.form.availableTime || '00:00'}:00`)
+      return Number.isFinite(timestamp) ? timestamp : 0
+    },
+    materialsForSession(session) {
+      const start = Number(session.sessionStartAt || 0)
+      const end = Number(session.sessionEndAt || 0)
+      return this.materials.filter(item =>
+        item.courseOfferingId === session.courseOfferingId &&
+        Number(item.timelineAt || 0) >= start &&
+        (!end || Number(item.timelineAt || 0) <= end)
+      )
+    },
+    formatTimeline(value) {
+      const timestamp = Number(value || 0)
+      return timestamp ? new Date(timestamp).toISOString().slice(0, 16).replace('T', ' ') : ''
+    },
+    formatClock(value) {
+      const date = new Date(Number(value || 0))
+      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
     },
     copyUrl(item) {
       if (!item.fileUrl) return
@@ -279,6 +336,14 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 14rpx;
+}
+
+.timeline-material {
+  margin-top: 10rpx;
+  padding: 10rpx 12rpx;
+  background: #f8fafc;
+  border: 1rpx solid #e2e8f0;
+  border-radius: 8rpx;
 }
 
 .primary-btn,

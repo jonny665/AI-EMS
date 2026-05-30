@@ -6,24 +6,30 @@ const db = uniCloud.database();
 exports.main = async (event = {}) => {
   const username = String(event.username || "").trim();
   const password = String(event.password || "");
-  const loginName = DEMO_ACCOUNT_ALIASES[username] || username;
 
   if (!username || !password) {
     return { ok: false, message: "Username and password are required." };
   }
 
-  const userResult = await db.collection("users").where({ username: loginName }).limit(1).get();
+  const userResult = await db.collection("users").where({ username }).limit(1).get();
   const user = userResult.data && userResult.data[0];
-  if (!user || user.status !== "active") {
-    return { ok: false, message: "Invalid account or password." };
+  if (!user) {
+    console.warn("[auth-login] user not found.", { username });
+    return { ok: false, message: "Account not found." };
   }
 
-  if (!verifyPassword(password, user.password_hash) && !isDemoAliasLogin(username, loginName, password)) {
+  if (user.status !== "active") {
+    console.warn("[auth-login] inactive account.", { username, status: user.status });
+    return { ok: false, message: "Account is inactive." };
+  }
+
+  if (!verifyPassword(password, user.password_hash)) {
+    console.warn("[auth-login] password mismatch.", { username, hasPasswordHash: Boolean(user.password_hash) });
     return { ok: false, message: "Invalid account or password." };
   }
 
   const roles = await loadRoles(user.role_ids);
-  const role = resolvePrimaryRole(roles);
+  const role = resolvePrimaryRole(roles) || resolvePrimaryRoleByCodes(user.role_ids) || resolvePrimaryRoleByCodes([user.role]);
   if (!role) {
     return { ok: false, message: "This account has no valid role." };
   }
@@ -44,16 +50,6 @@ exports.main = async (event = {}) => {
     },
   };
 };
-
-const DEMO_ACCOUNT_ALIASES = {
-  student001: "s2023001",
-  teacher001: "t1001",
-  admin001: "admin001",
-};
-
-function isDemoAliasLogin(username, loginName, password) {
-  return DEMO_ACCOUNT_ALIASES[username] === loginName && password === "demo123";
-}
 
 async function loadRoles(roleIds = []) {
   if (!Array.isArray(roleIds) || !roleIds.length) {
@@ -77,8 +73,15 @@ async function loadRoles(roleIds = []) {
 
 function resolvePrimaryRole(roles) {
   const codes = roles.map((item) => item.code);
+  return resolvePrimaryRoleByCodes(codes);
+}
+
+function resolvePrimaryRoleByCodes(codes) {
+  const list = Array.isArray(codes)
+    ? codes.map((item) => String(item || "").trim()).filter(Boolean)
+    : [];
   const priority = ["admin", "academic_staff", "teacher", "counselor", "student", "guardian"];
-  const code = priority.find((item) => codes.includes(item));
+  const code = priority.find((item) => list.includes(item));
 
   if (code === "academic_staff") {
     return "admin";

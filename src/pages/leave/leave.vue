@@ -230,7 +230,8 @@ export default {
         return 'Unnamed course'
       }
       const title = [course.code, course.name].filter(Boolean).join(' ').trim() || 'Unnamed course'
-      const teachers = Array.isArray(course.teacherNames) && course.teacherNames.length ? ` (${course.teacherNames.join(', ')})` : ''
+      const selected = course.selectedTeacherName || ''
+      const teachers = selected ? ` (${selected})` : Array.isArray(course.teacherNames) && course.teacherNames.length ? ` (${course.teacherNames.join(', ')})` : ''
       return title + teachers
     },
     leaveTitle(item) {

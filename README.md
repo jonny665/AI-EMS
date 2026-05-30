@@ -11,15 +11,9 @@ AI-EMS is a Uniapp + UniCloud proof-of-concept for an AI-enhanced educational ma
 
 ## Accounts
 
-Login accounts are loaded from the `users` collection and validated against `users.password_hash`. In H5 fallback mode, use:
+Login accounts are loaded from the `users` collection and validated against `users.password_hash`. If `uniCloud` is unavailable, only non-auth local fallback data remains; login should use the database.
 
-| Role | Username | Password |
-|---|---|---|
-| Student | `student001` | `demo123` |
-| Teacher | `teacher001` | `demo123` |
-| Admin | `admin001` | `demo123` |
-
-## Main Demo Flows
+## Main Workflows
 
 1. Login with different roles and open the corresponding dashboard.
 2. Student refreshes the dashboard, checks academic progress/recommendations/alerts, and reads visible course materials.
@@ -37,9 +31,9 @@ Login accounts are loaded from the `users` collection and validated against `use
 4. Create/import collections under `uniCloud-aliyun/database`.
 5. Import collection data from `uniCloud-aliyun/database/import/` or your own UniCloud export files.
 
-H5 preview can run without a linked UniCloud space. `common/api.js` uses short-lived read caching, in-flight read de-duplication, write-triggered cache invalidation, and a local fallback data set when `uniCloud` is unavailable or a cloud call fails.
+H5 preview can run without a linked UniCloud space. `common/api.js` uses short-lived read caching, in-flight read de-duplication, write-triggered cache invalidation, and a local fallback data set for non-auth features when `uniCloud` is unavailable or a cloud call fails.
 
-Import files use UniCloud JSONL format: one JSON document per line. Demo import files are provided for every schema except `users` and `password_reset_tokens`, which are managed separately.
+Import files use UniCloud JSONL format: one JSON document per line. Sample import files are provided for every schema except `users` and `password_reset_tokens`, which are managed separately.
 
 AI assistant history is stored in `ai_conversations` and `ai_messages`. Each conversation has `user_id`, so history is scoped to the logged-in person. `ask-assistant` and `get-ai-history` both remove records older than 60 days when called.
 

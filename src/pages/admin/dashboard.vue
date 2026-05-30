@@ -93,6 +93,7 @@
     <view class="section">
       <text class="section-title">Quick Actions</text>
       <view class="btn-row">
+        <button class="primary-btn" @click="go('/pages/admin/management')">Management</button>
         <button class="primary-btn" @click="go('/pages/leave/leave')">Leave Reviews</button>
         <button class="primary-btn" @click="go('/pages/evaluation/evaluation')">Evaluations</button>
         <button class="primary-btn" @click="go('/pages/materials/materials')">Materials</button>

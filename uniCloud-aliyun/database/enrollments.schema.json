@@ -31,6 +31,20 @@
       "enum": ["selected", "enrolled", "waitlisted", "dropped", "completed", "failed"],
       "defaultValue": "selected"
     },
+    "selected_teacher_id": {
+      "bsonType": "string",
+      "description": "Teacher chosen by the student for this cohort offering. References teachers._id."
+    },
+    "selected_teacher_user_id": {
+      "bsonType": "string",
+      "description": "Cached teachers.user_id for material and attendance ownership filtering."
+    },
+    "selected_teacher_name": {
+      "bsonType": "string"
+    },
+    "teacher_selected_at": {
+      "bsonType": "number"
+    },
     "selected_at": {
       "bsonType": "number"
     },
@@ -58,6 +72,14 @@
       "key": {
         "course_offering_id": 1,
         "status": 1
+      },
+      "unique": false
+    },
+    {
+      "name": "teacher_offering_idx",
+      "key": {
+        "selected_teacher_id": 1,
+        "course_offering_id": 1
       },
       "unique": false
     }

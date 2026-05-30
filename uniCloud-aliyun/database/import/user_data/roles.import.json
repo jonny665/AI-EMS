@@ -1,0 +1,6 @@
+{"_id":"admin","code":"admin","name":"Administrator","permissions":[],"created_at":1780099200000,"updated_at":1780099200000}
+{"_id":"academic_staff","code":"academic_staff","name":"Academic Staff","permissions":[],"created_at":1780099200000,"updated_at":1780099200000}
+{"_id":"counselor","code":"counselor","name":"Counselor","permissions":[],"created_at":1780099200000,"updated_at":1780099200000}
+{"_id":"teacher","code":"teacher","name":"Teacher","permissions":[],"created_at":1780099200000,"updated_at":1780099200000}
+{"_id":"student","code":"student","name":"Student","permissions":[],"created_at":1780099200000,"updated_at":1780099200000}
+{"_id":"guardian","code":"guardian","name":"Guardian","permissions":[],"created_at":1780099200000,"updated_at":1780099200000}

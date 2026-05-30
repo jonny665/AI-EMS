@@ -1,13 +1,18 @@
 const CACHE_TTL_MS = {
   "get-dashboard-data": 30000,
+  "get-admin-management-data": 30000,
   "get-evaluation-summary": 60000,
   "get-course-materials": 60000,
   "get-ai-history": 30000,
 };
 
-const CLIENT_CACHE_VERSION = "course-session-v2";
+const CLIENT_CACHE_VERSION = "course-session-v3";
 
 const WRITE_FUNCTIONS = new Set([
+  "save-admin-account",
+  "delete-admin-account",
+  "save-admin-course",
+  "select-course-teacher",
   "submit-leave",
   "review-leave",
   "cancel-leave",
@@ -16,16 +21,11 @@ const WRITE_FUNCTIONS = new Set([
   "submit-profile-change",
   "review-profile-change",
   "submit-attendance-checkin",
+  "save-attendance-records",
   "ask-assistant",
 ]);
 
-const CLOUD_STRICT_FUNCTIONS = new Set([
-  "get-dashboard-data",
-  "get-course-materials",
-  "save-course-material",
-  "ask-assistant",
-  "get-ai-history",
-]);
+const CLOUD_STRICT_FUNCTIONS = new Set([]);
 
 const responseCache = new Map();
 const inFlightReads = new Map();
@@ -34,44 +34,13 @@ const AI_HISTORY_RETENTION_MS = 60 * 24 * 60 * 60 * 1000;
 const fallbackState = {
   users: [
     {
-      _id: "u_student_001",
-      username: "student001",
-      password: "demo123",
-      role: "student",
-      displayName: "Alice Chen",
-      email: "alice.chen@ai-ems.demo",
-      phone: "13700001001",
-      major: "Software Engineering",
-    },
-    {
-      _id: "u_student_002",
-      username: "student002",
-      password: "demo123",
-      role: "student",
-      displayName: "Ben Zhang",
-      email: "ben.zhang@ai-ems.demo",
-      phone: "13700001002",
-      major: "Software Engineering",
-    },
-    {
-      _id: "u_teacher_001",
-      username: "teacher001",
-      password: "demo123",
-      role: "teacher",
-      displayName: "Dr. Zhang",
-      email: "teacher001@ai-ems.demo",
-      phone: "13900001001",
-      department: "Computer Science",
-    },
-    {
-      _id: "u_admin_001",
+      _id: "user_admin_001",
       username: "admin001",
-      password: "demo123",
+      password: "AiEms2026!",
       role: "admin",
       displayName: "Academic Admin",
-      email: "admin001@ai-ems.demo",
+      email: "admin001@ai-ems.test",
       phone: "13800000001",
-      department: "Academic Office",
     },
   ],
   students: [
@@ -81,11 +50,14 @@ const fallbackState = {
       studentNo: "S2026001",
       name: "Alice Chen",
       gender: "Female",
+      majorId: "major_se",
       major: "Software Engineering",
+      adminClassId: "class_se_2024_1",
       adminClass: "SE 2026-1",
       enrollmentYear: 2024,
+      trainingPlanId: "tp_se_2024",
       contact: {
-        email: "alice.chen@ai-ems.demo",
+        email: "alice.chen@ai-ems.test",
         phone: "13700001001",
         address: "Student Apartment A-501",
       },
@@ -120,11 +92,14 @@ const fallbackState = {
       studentNo: "S2026002",
       name: "Ben Zhang",
       gender: "Male",
+      majorId: "major_se",
       major: "Software Engineering",
+      adminClassId: "class_se_2024_1",
       adminClass: "SE 2026-1",
       enrollmentYear: 2024,
+      trainingPlanId: "tp_se_2024",
       contact: {
-        email: "ben.zhang@ai-ems.demo",
+        email: "ben.zhang@ai-ems.test",
         phone: "13700001002",
         address: "Student Apartment B-406",
       },
@@ -167,9 +142,43 @@ const fallbackState = {
         "Ten years of software engineering teaching and capstone mentoring.",
       publicProfile: {
         officeHours: "Tue 14:00-16:00",
-        homepage: "https://ai-ems.demo/teachers/zhang",
+        homepage: "https://ai-ems.test/teachers/zhang",
       },
     },
+    {
+      _id: "tea_002",
+      userId: "u_teacher_002",
+      teacherNo: "T1002",
+      name: "Prof. Li",
+      department: "Computer Science",
+      title: "Lecturer",
+      office: "Teaching Building 3-503",
+      researchFields: ["Database Systems", "Software Engineering"],
+      teachingExperience: "Project-based software engineering and database teaching.",
+      publicProfile: {
+        officeHours: "Thu 10:00-11:30",
+        homepage: "https://ai-ems.test/teachers/li",
+      },
+    },
+  ],
+  departments: [
+    { _id: "dept_cs", code: "CS", name: "Computer Science" },
+  ],
+  majors: [
+    { _id: "major_se", code: "SE", name: "Software Engineering", departmentId: "dept_cs" },
+  ],
+  adminClasses: [
+    { _id: "class_se_2024_1", code: "SE2024-1", name: "Software Engineering 2024 Class 1", majorId: "major_se", gradeYear: 2024 },
+  ],
+  semesters: [
+    { _id: "sem_2026_spring", name: "2026 Spring", startDate: "2026-02-23", endDate: "2026-06-26" },
+  ],
+  trainingPlans: [
+    { _id: "tp_se_2024", majorId: "major_se", gradeYear: 2024, name: "Software Engineering 2024 Training Plan", status: "active" },
+  ],
+  classrooms: [
+    { _id: "room_a101", building: "A", roomNo: "101", name: "A101", capacity: 60, latitude: 31.230416, longitude: 121.473701, geofenceRadiusM: 50 },
+    { _id: "room_b208", building: "B", roomNo: "208", name: "B208", capacity: 45, latitude: 31.2306, longitude: 121.4739, geofenceRadiusM: 50 },
   ],
   courses: [
     {
@@ -178,10 +187,25 @@ const fallbackState = {
       courseId: "c_software_design",
       code: "JC3506",
       name: "Software Design and Implementation",
+      departmentId: "dept_cs",
+      semesterId: "sem_2026_spring",
+      majorId: "major_se",
+      majorName: "Software Engineering",
+      trainingPlanId: "tp_se_2024",
+      gradeYear: 2024,
+      classroomId: "room_a101",
+      classroomName: "A101",
       teacherId: "u_teacher_001",
-      teacherIds: ["tea_001"],
-      teacherNames: ["Dr. Zhang"],
+      teacherIds: ["tea_001", "tea_002"],
+      teacherNames: ["Dr. Zhang", "Prof. Li"],
       schedule: "Mon 10:00-12:00",
+      startDate: "2026-05-25",
+      endDate: "2026-06-29",
+      classWeekday: 1,
+      classStartTime: "10:00",
+      classEndTime: "12:00",
+      totalSessions: 6,
+      materialUploadDeadlineAt: Date.parse("2026-06-29T23:59:59"),
       credits: 15,
       courseType: "major_required",
       difficultyLevel: 3,
@@ -201,10 +225,25 @@ const fallbackState = {
       courseId: "c_process_management",
       code: "PM3506",
       name: "Software Process Management",
+      departmentId: "dept_cs",
+      semesterId: "sem_2026_spring",
+      majorId: "major_se",
+      majorName: "Software Engineering",
+      trainingPlanId: "tp_se_2024",
+      gradeYear: 2024,
+      classroomId: "room_a101",
+      classroomName: "A101",
       teacherId: "u_teacher_001",
-      teacherIds: ["tea_001"],
-      teacherNames: ["Dr. Zhang"],
+      teacherIds: ["tea_001", "tea_002"],
+      teacherNames: ["Dr. Zhang", "Prof. Li"],
       schedule: "Wed 14:00-16:00",
+      startDate: "2026-05-27",
+      endDate: "2026-07-01",
+      classWeekday: 3,
+      classStartTime: "14:00",
+      classEndTime: "16:00",
+      totalSessions: 6,
+      materialUploadDeadlineAt: Date.parse("2026-07-01T23:59:59"),
       credits: 15,
       courseType: "major_elective",
       difficultyLevel: 2,
@@ -224,10 +263,25 @@ const fallbackState = {
       courseId: "c_data_analysis",
       code: "DA3506",
       name: "Educational Data Analysis",
+      departmentId: "dept_cs",
+      semesterId: "sem_2026_spring",
+      majorId: "major_se",
+      majorName: "Software Engineering",
+      trainingPlanId: "tp_se_2024",
+      gradeYear: 2024,
+      classroomId: "room_b208",
+      classroomName: "B208",
       teacherId: "u_teacher_001",
-      teacherIds: ["tea_001"],
-      teacherNames: ["Dr. Zhang"],
+      teacherIds: ["tea_001", "tea_002"],
+      teacherNames: ["Dr. Zhang", "Prof. Li"],
       schedule: "Fri 09:00-11:00",
+      startDate: "2026-05-29",
+      endDate: "2026-07-03",
+      classWeekday: 5,
+      classStartTime: "09:00",
+      classEndTime: "11:00",
+      totalSessions: 6,
+      materialUploadDeadlineAt: Date.parse("2026-07-03T23:59:59"),
       credits: 12,
       courseType: "major_elective",
       difficultyLevel: 3,
@@ -243,10 +297,15 @@ const fallbackState = {
     },
   ],
   enrollments: [
-    { studentId: "u_student_001", courseOfferingId: "co_software_design", status: "enrolled" },
-    { studentId: "u_student_001", courseOfferingId: "co_process_management", status: "enrolled" },
-    { studentId: "u_student_002", courseOfferingId: "co_software_design", status: "enrolled" },
-    { studentId: "u_student_002", courseOfferingId: "co_process_management", status: "enrolled" },
+    { studentId: "u_student_001", courseOfferingId: "co_software_design", status: "enrolled", selectedTeacherId: "tea_001", selectedTeacherUserId: "u_teacher_001", selectedTeacherName: "Dr. Zhang" },
+    { studentId: "u_student_001", courseOfferingId: "co_process_management", status: "enrolled", selectedTeacherId: "tea_001", selectedTeacherUserId: "u_teacher_001", selectedTeacherName: "Dr. Zhang" },
+    { studentId: "u_student_002", courseOfferingId: "co_software_design", status: "enrolled", selectedTeacherId: "tea_002", selectedTeacherUserId: "u_teacher_002", selectedTeacherName: "Prof. Li" },
+    { studentId: "u_student_002", courseOfferingId: "co_process_management", status: "enrolled", selectedTeacherId: "tea_002", selectedTeacherUserId: "u_teacher_002", selectedTeacherName: "Prof. Li" },
+  ],
+  classSessions: [
+    ...buildDemoSessions("co_software_design", "2026-05-25", 1, "10:00", "12:00", 6, "room_a101"),
+    ...buildDemoSessions("co_process_management", "2026-05-27", 3, "14:00", "16:00", 6, "room_a101"),
+    ...buildDemoSessions("co_data_analysis", "2026-05-29", 5, "09:00", "11:00", 6, "room_b208"),
   ],
   attendance: [
     {
@@ -356,6 +415,7 @@ const fallbackState = {
     {
       _id: "mat_001",
       courseOfferingId: "co_software_design",
+      teacherId: "tea_001",
       uploaderUserId: "u_teacher_001",
       title: "Syllabus and Project Rubric",
       fileUrl: "https://example.com/ai-ems/software-design-syllabus.pdf",
@@ -452,6 +512,39 @@ const fallbackState = {
   ],
 };
 
+function buildDemoSessions(courseOfferingId, firstDate, weekday, startTime, endTime, totalSessions, classroomId = "") {
+  const first = new Date(`${firstDate}T00:00:00`);
+  return Array.from({ length: totalSessions }, (_, index) => {
+    const date = new Date(first.getTime() + index * 7 * 24 * 60 * 60 * 1000);
+    const sessionDate = date.toISOString().slice(0, 10);
+    return {
+      _id: `${courseOfferingId}_session_${index + 1}`,
+      courseOfferingId,
+      course_offering_id: courseOfferingId,
+      classroomId,
+      classroom_id: classroomId,
+      sessionDate,
+      session_date: sessionDate,
+      weekday,
+      startTime,
+      start_time: startTime,
+      endTime,
+      end_time: endTime,
+      sequenceNo: index + 1,
+      sequence_no: index + 1,
+      status: "scheduled",
+      sessionStartAt: Date.parse(`${sessionDate}T${startTime}:00`),
+      session_start_at: Date.parse(`${sessionDate}T${startTime}:00`),
+      sessionEndAt: Date.parse(`${sessionDate}T${endTime}:00`),
+      session_end_at: Date.parse(`${sessionDate}T${endTime}:00`),
+      createdAt: Date.parse(`${firstDate}T00:00:00`),
+      created_at: Date.parse(`${firstDate}T00:00:00`),
+      updatedAt: Date.parse(`${firstDate}T00:00:00`),
+      updated_at: Date.parse(`${firstDate}T00:00:00`),
+    };
+  });
+}
+
 export async function callAiemsFunction(name, data = {}, options = {}) {
   const request = stripClientOnlyFields(data);
   const forceRefresh = Boolean(options.forceRefresh || data.forceRefresh || data.__forceRefresh);
@@ -536,6 +629,26 @@ function fallbackResult(name, data = {}) {
     return dashboardFallback(session);
   }
 
+  if (name === "get-admin-management-data") {
+    return getAdminManagementFallback(session);
+  }
+
+  if (name === "save-admin-account") {
+    return saveAdminAccountFallback(session, data);
+  }
+
+  if (name === "delete-admin-account") {
+    return deleteAdminAccountFallback(session, data);
+  }
+
+  if (name === "save-admin-course") {
+    return saveAdminCourseFallback(session, data);
+  }
+
+  if (name === "select-course-teacher") {
+    return selectCourseTeacherFallback(session, data);
+  }
+
   if (name === "submit-leave") {
     return submitLeaveFallback(session, data);
   }
@@ -550,6 +663,10 @@ function fallbackResult(name, data = {}) {
 
   if (name === "submit-attendance-checkin") {
     return submitAttendanceCheckinFallback(session, data);
+  }
+
+  if (name === "save-attendance-records") {
+    return saveAttendanceRecordsFallback(session, data);
   }
 
   if (name === "submit-evaluation") {
@@ -588,11 +705,19 @@ function fallbackResult(name, data = {}) {
 }
 
 function loginFallback(data) {
-  const user = fallbackState.users.find(
-    (item) => item.username === data.username && item.password === data.password,
-  );
+  if (!fallbackState.users.length) {
+    return { ok: false, message: "Local fallback login is disabled. Connect to the database to sign in." };
+  }
+
+  const user = fallbackState.users.find((item) => item.username === data.username);
   if (!user) {
-    return { ok: false, message: "Invalid demo account or password." };
+    return { ok: false, message: "Account not found." };
+  }
+  if (user.status && user.status !== "active") {
+    return { ok: false, message: "Account is inactive." };
+  }
+  if (user.password !== data.password) {
+    return { ok: false, message: "Invalid account or password." };
   }
   recordAudit("login", user._id, "users", user._id, null, null);
   return {
@@ -616,6 +741,8 @@ function dashboardFallback(session) {
   const courses = resolveCoursesForSession(session);
   const attendance = resolveAttendanceForSession(session);
   const leaveRequests = resolveLeavesForSession(session);
+  const classSessions = resolveClassSessionsForSession(session);
+  const courseStudents = resolveCourseStudentsForSession(session);
   const profileChangeRequests = resolveProfileChangeRequests(session);
   const evaluationSummary = buildEvaluationSummary(session);
   const atRiskStudents = buildAtRiskStudents();
@@ -636,6 +763,8 @@ function dashboardFallback(session) {
       },
       courses,
       attendance,
+      classSessions,
+      courseStudents,
       leaveRequests,
       evaluationSummary,
       materials: resolveMaterialsForSession(session).slice(0, 3),
@@ -678,12 +807,26 @@ function submitLeaveFallback(session, data) {
   if (!course || !canStudentAccessCourse(session.userId, courseOfferingId)) {
     return { ok: false, message: "You are not enrolled in this course offering." };
   }
+  const enrollment = findEnrollmentForStudentCourse(session.userId, courseOfferingId);
+  if ((course.teacherIds || []).length > 1 && !(enrollment && (enrollment.selectedTeacherId || enrollment.selected_teacher_id))) {
+    return { ok: false, message: "Please select a teacher for this course before submitting leave." };
+  }
 
   let range = null;
   try {
     range = buildLeaveRange(leaveDate);
   } catch (error) {
     return { ok: false, message: error.message || "Invalid leave date." };
+  }
+
+  const classSession = findClassSessionForDate(courseOfferingId, leaveDate);
+  if (classSession) {
+    const sessionStartAt = getSessionStartAt(classSession);
+    if (Date.now() >= sessionStartAt) {
+      return { ok: false, message: "Leave requests must be submitted before the class starts." };
+    }
+  } else if (fallbackState.classSessions.some((item) => item.courseOfferingId === courseOfferingId || item.course_offering_id === courseOfferingId)) {
+    return { ok: false, message: "Leave can only be submitted for a scheduled class date." };
   }
 
   const now = Date.now();
@@ -750,8 +893,12 @@ function reviewLeaveFallback(session, data) {
     return { ok: false, message: "Leave request has already been processed." };
   }
 
-  if (session.role === "teacher" && !canTeacherAccessCourse(session.userId, leave.courseOfferingId)) {
-    return { ok: false, message: "You do not have permission to review this leave request." };
+  if (session.role === "teacher") {
+    const enrollment = findEnrollmentForStudentCourse(leave.studentId || leave.student_id, leave.courseOfferingId);
+    const teacher = findTeacherBySession(session);
+    if (!canTeacherAccessCourse(session.userId, leave.courseOfferingId) || !enrollmentBelongsToTeacherFallback(enrollment, teacher, session.userId)) {
+      return { ok: false, message: "You do not have permission to review this leave request." };
+    }
   }
 
   const now = Date.now();
@@ -815,8 +962,8 @@ function cancelLeaveFallback(session, data) {
 }
 
 function submitAttendanceCheckinFallback(session, data) {
-  if (session.role !== "student") {
-    return { ok: false, message: "Only students can check in." };
+  if (session.role === "student") {
+    return { ok: false, message: "Location check-in is not available to students." };
   }
 
   const courseOfferingId = String(data.courseOfferingId || data.courseId || "").trim();
@@ -890,6 +1037,429 @@ function submitAttendanceCheckinFallback(session, data) {
   };
 }
 
+function getAdminManagementFallback(session) {
+  if (session.role !== "admin" || !session.userId) {
+    return { ok: false, message: "Only administrators can manage accounts and courses." };
+  }
+  return {
+    ok: true,
+    data: {
+      accounts: fallbackState.users.map(buildAdminAccountView),
+      courses: fallbackState.courses.map(buildAdminCourseView),
+      materials: fallbackState.materials.map(buildMaterialView),
+      options: {
+        roles: [
+          { value: "student", label: "Student" },
+          { value: "teacher", label: "Teacher" },
+          { value: "admin", label: "Administrator" },
+        ],
+        departments: fallbackState.departments.map((item) => ({ value: item._id, label: item.name || item.code || item._id })),
+        majors: fallbackState.majors.map((item) => ({ value: item._id, label: item.name || item.code || item._id })),
+        adminClasses: fallbackState.adminClasses.map((item) => ({ value: item._id, label: item.name || item.code || item._id, gradeYear: item.gradeYear })),
+        semesters: fallbackState.semesters.map((item) => ({ value: item._id, label: item.name || item._id })),
+        trainingPlans: fallbackState.trainingPlans.map((item) => ({ value: item._id, label: item.name || item._id, gradeYear: item.gradeYear, majorId: item.majorId })),
+        classrooms: fallbackState.classrooms.map((item) => ({
+          value: item._id,
+          label: [item.name || "", item.building && item.roomNo ? `${item.building}-${item.roomNo}` : ""].filter(Boolean).join(" / ") || item._id,
+          capacity: Number(item.capacity || 0),
+        })),
+        teachers: fallbackState.teachers.map((item) => ({ value: item._id, label: item.name || item.teacherNo || item._id, subtitle: item.teacherNo || "" })),
+      },
+      summary: {
+        users: fallbackState.users.length,
+        students: fallbackState.students.length,
+        teachers: fallbackState.teachers.length,
+        courses: fallbackState.courses.length,
+        offerings: fallbackState.courses.length,
+        materials: fallbackState.materials.length,
+      },
+      meta: { source: "local-fallback", generatedAt: Date.now() },
+    },
+  };
+}
+
+function saveAdminAccountFallback(session, data) {
+  if (session.role !== "admin" || !session.userId) {
+    return { ok: false, message: "Only administrators can manage accounts." };
+  }
+  const userId = String(data.userId || data.accountId || "").trim();
+  const existing = userId ? fallbackState.users.find((item) => item._id === userId) : null;
+  const roleCode = String(data.roleCode || data.role || existing && existing.role || "student").trim();
+  const username = String(data.username || existing && existing.username || "").trim();
+  const displayName = String(data.displayName || existing && existing.displayName || "").trim();
+  const password = String(data.password || data.newPassword || "").trim();
+  if (!existing && (!username || !displayName || !password)) {
+    return { ok: false, message: "Username, display name, and password are required." };
+  }
+  if (username && fallbackState.users.some((item) => item.username === username && item._id !== (existing && existing._id))) {
+    return { ok: false, message: "Username already exists." };
+  }
+
+  const now = Date.now();
+  const user = existing || {
+    _id: `u_${roleCode}_${now}`,
+    password: password || "",
+    createdAt: now,
+  };
+  Object.assign(user, {
+    username: username || user.username,
+    displayName: displayName || user.displayName,
+    email: String(data.email || user.email || "").trim(),
+    phone: String(data.phone || user.phone || "").trim(),
+    role: roleCode,
+    status: String(data.status || user.status || "active").trim(),
+    updatedAt: now,
+  });
+  if (password) {
+    user.password = password;
+  }
+  if (!existing) {
+    fallbackState.users.unshift(user);
+  }
+
+  if (roleCode === "student") {
+    const payload = data.studentProfile || {};
+    const student = fallbackState.students.find((item) => item.userId === user._id) || {
+      _id: `stu_${now}`,
+      userId: user._id,
+      grades: [],
+      gpaTrend: [],
+      interestTags: [],
+      percentileRank: 0,
+      gpa: "0.0",
+    };
+    const major = fallbackState.majors.find((item) => item._id === payload.majorId) || {};
+    const adminClass = fallbackState.adminClasses.find((item) => item._id === payload.adminClassId) || {};
+    Object.assign(student, {
+      studentNo: String(payload.studentNo || student.studentNo || "").trim(),
+      name: user.displayName,
+      gender: String(payload.gender || student.gender || "").trim(),
+      majorId: payload.majorId || student.majorId || "",
+      major: major.name || student.major || "",
+      adminClassId: payload.adminClassId || student.adminClassId || "",
+      adminClass: adminClass.name || student.adminClass || "",
+      enrollmentYear: Number(payload.enrollmentYear || student.enrollmentYear || adminClass.gradeYear || 0),
+      trainingPlanId: payload.trainingPlanId || student.trainingPlanId || "",
+      contact: { ...(student.contact || {}), email: user.email || "", phone: user.phone || "", address: payload.address || student.contact && student.contact.address || "" },
+      familyInfo: { ...(student.familyInfo || {}), guardianName: payload.guardianName || "", guardianPhone: payload.guardianPhone || "" },
+      status: String(payload.status || student.status || "active").trim(),
+    });
+    if (!student.studentNo || !student.majorId || !student.enrollmentYear) {
+      return { ok: false, message: "Student number, major, and enrollment year are required." };
+    }
+    if (!fallbackState.students.includes(student)) {
+      fallbackState.students.unshift(student);
+    }
+    enrollCohortStudentsForStudentFallback(student, now);
+  }
+
+  if (roleCode === "teacher") {
+    const payload = data.teacherProfile || {};
+    const teacher = fallbackState.teachers.find((item) => item.userId === user._id) || {
+      _id: `tea_${now}`,
+      userId: user._id,
+      researchFields: [],
+      teachingExperience: "",
+      publicProfile: {},
+    };
+    const department = fallbackState.departments.find((item) => item._id === payload.departmentId) || {};
+    Object.assign(teacher, {
+      teacherNo: String(payload.teacherNo || teacher.teacherNo || "").trim(),
+      name: user.displayName,
+      departmentId: payload.departmentId || teacher.departmentId || "",
+      department: department.name || teacher.department || "",
+      title: String(payload.title || teacher.title || "").trim(),
+      office: String(payload.office || teacher.office || "").trim(),
+      status: String(payload.status || teacher.status || "active").trim(),
+    });
+    if (!teacher.teacherNo || !teacher.departmentId) {
+      return { ok: false, message: "Teacher number and department are required." };
+    }
+    if (!fallbackState.teachers.includes(teacher)) {
+      fallbackState.teachers.unshift(teacher);
+    }
+  }
+
+  return { ok: true, data: { account: buildAdminAccountView(user) } };
+}
+
+function deleteAdminAccountFallback(session, data) {
+  if (session.role !== "admin" || !session.userId) {
+    return { ok: false, message: "Only administrators can delete accounts." };
+  }
+  const userId = String(data.userId || data.accountId || "").trim();
+  if (!userId) {
+    return { ok: false, message: "Account id is required." };
+  }
+  if (userId === session.userId) {
+    return { ok: false, message: "You cannot delete the current admin account." };
+  }
+  const user = fallbackState.users.find((item) => item._id === userId);
+  if (!user) {
+    return { ok: false, message: "Account was not found." };
+  }
+
+  const student = fallbackState.students.find((item) => item.userId === userId) || null;
+  const teacher = fallbackState.teachers.find((item) => item.userId === userId) || null;
+  const studentKeys = student ? new Set([student._id, student.userId].filter(Boolean)) : new Set();
+
+  fallbackState.users = fallbackState.users.filter((item) => item._id !== userId);
+  fallbackState.students = fallbackState.students.filter((item) => item.userId !== userId);
+  fallbackState.teachers = fallbackState.teachers.filter((item) => item.userId !== userId);
+  if (studentKeys.size) {
+    fallbackState.enrollments = fallbackState.enrollments.filter((item) => !studentKeys.has(item.studentId || item.student_id));
+    fallbackState.leaves = fallbackState.leaves.filter((item) => !studentKeys.has(item.studentId || item.student_id));
+    fallbackState.attendance = fallbackState.attendance.filter((item) => !studentKeys.has(item.studentId || item.student_id));
+    fallbackState.evaluations = fallbackState.evaluations.filter((item) => !studentKeys.has(item.studentId || item.student_id));
+  }
+  if (teacher) {
+    fallbackState.materials = fallbackState.materials.filter((item) => item.teacherId !== teacher._id && item.uploaderUserId !== userId);
+    fallbackState.courses.forEach((course) => {
+      course.teacherIds = (course.teacherIds || []).filter((id) => id !== teacher._id && id !== userId);
+      course.teacherNames = (course.teacherIds || [])
+        .map((id) => fallbackState.teachers.find((item) => item._id === id || item.userId === id))
+        .filter(Boolean)
+        .map((item) => item.name || item.teacherNo || item._id);
+    });
+  }
+
+  return { ok: true, data: { deletedAccountId: userId } };
+}
+
+function saveAdminCourseFallback(session, data) {
+  if (session.role !== "admin" || !session.userId) {
+    return { ok: false, message: "Only administrators can manage courses." };
+  }
+  const payload = normalizeAdminCoursePayload(data);
+  if (!payload.courseCode || !payload.courseName || !payload.majorId || !payload.gradeYear || !payload.classroomId || !payload.teacherIds.length || !payload.startDate || !payload.endDate || !payload.classStartTime || !payload.classEndTime || !payload.totalSessions) {
+    return { ok: false, message: "Course, major, cohort year, classroom, teacher, dates, class time, and total sessions are required." };
+  }
+
+  const now = Date.now();
+  const existing = payload.courseOfferingId ? findCourse(payload.courseOfferingId) : null;
+  const course = existing || { _id: `c_${now}`, courseId: `c_${now}`, courseOfferingId: `co_${now}`, createdAt: now };
+  const major = fallbackState.majors.find((item) => item._id === payload.majorId) || null;
+  if (!major) {
+    return { ok: false, message: "Major was not found." };
+  }
+  const departmentId = String((existing && existing.departmentId) || major.departmentId || major.department_id || data.departmentId || "").trim();
+  if (!departmentId) {
+    return { ok: false, message: "Selected major is missing a department." };
+  }
+  const semester = resolveFallbackSemester(fallbackState.semesters, existing ? existing.semesterId : payload.semesterId);
+  const semesterId = semester ? semester._id : "";
+  if (!semesterId) {
+    return { ok: false, message: "No semester is available to assign the course." };
+  }
+  const inferredPlan = fallbackState.trainingPlans.find((item) =>
+    item.majorId === payload.majorId &&
+    Number(item.gradeYear || 0) === Number(payload.gradeYear || 0) &&
+    (!item.status || item.status === "active"),
+  ) || null;
+  const plan = payload.trainingPlanId
+    ? fallbackState.trainingPlans.find((item) => item._id === payload.trainingPlanId) || null
+    : inferredPlan;
+  if (payload.trainingPlanId && (!plan || plan.majorId !== payload.majorId || Number(plan.gradeYear || 0) !== Number(payload.gradeYear || 0))) {
+    return { ok: false, message: "Training plan must match the selected major and cohort year." };
+  }
+  const classroom = fallbackState.classrooms.find((item) => item._id === payload.classroomId) || null;
+  if (!classroom) {
+    return { ok: false, message: "Classroom was not found." };
+  }
+  const teacherNames = payload.teacherIds
+    .map((id) => fallbackState.teachers.find((item) => item._id === id))
+    .filter(Boolean)
+    .map((item) => item.name || item.teacherNo || item._id);
+  Object.assign(course, {
+    courseId: course.courseId || course._id,
+    code: payload.courseCode,
+    name: payload.courseName,
+    departmentId,
+    semesterId,
+    majorId: payload.majorId,
+    majorName: major.name || major.code || major._id,
+    trainingPlanId: plan ? plan._id : "",
+    gradeYear: Number(payload.gradeYear || plan.gradeYear || 0),
+    classroomId: payload.classroomId,
+    classroomName: classroom.name || [classroom.building, classroom.roomNo].filter(Boolean).join("-") || classroom._id,
+    teacherIds: payload.teacherIds,
+    teacherNames,
+    schedule: `${weekdayLabel(payload.classWeekday)} ${payload.classStartTime}-${payload.classEndTime}`,
+    startDate: payload.startDate,
+    endDate: payload.endDate,
+    classWeekday: payload.classWeekday,
+    classStartTime: payload.classStartTime,
+    classEndTime: payload.classEndTime,
+    totalSessions: payload.totalSessions,
+    materialUploadDeadlineAt: Date.parse(`${payload.endDate}T23:59:59`),
+    credits: payload.credits,
+    courseType: payload.courseType,
+    difficultyLevel: payload.difficultyLevel,
+    capacity: payload.capacity,
+    classroom: {
+      name: classroom.name || classroom._id,
+      latitude: Number(classroom.latitude || 0),
+      longitude: Number(classroom.longitude || 0),
+      radius: Number(classroom.geofenceRadiusM || classroom.geofence_radius_m || 50),
+    },
+    status: payload.status,
+    updatedAt: now,
+  });
+  if (!existing) {
+    fallbackState.courses.unshift(course);
+  }
+
+  fallbackState.classSessions = fallbackState.classSessions.filter((item) => item.courseOfferingId !== course.courseOfferingId);
+  fallbackState.classSessions.unshift(...generateFallbackClassSessions(course, now));
+  enrollCohortStudentsFallback(course, now);
+  return { ok: true, data: { course: buildAdminCourseView(course) } };
+}
+
+function selectCourseTeacherFallback(session, data) {
+  if (session.role !== "student" || !session.userId) {
+    return { ok: false, message: "Only students can select a course teacher." };
+  }
+  const courseOfferingId = String(data.courseOfferingId || "").trim();
+  const teacherId = String(data.teacherId || data.selectedTeacherId || "").trim();
+  const student = findStudentBySession(session);
+  const course = findCourse(courseOfferingId);
+  const teacher = fallbackState.teachers.find((item) => item._id === teacherId);
+  if (!student || !course || !teacher) {
+    return { ok: false, message: "Student, course, or teacher was not found." };
+  }
+  if (!(course.teacherIds || []).includes(teacherId)) {
+    return { ok: false, message: "This teacher is not assigned to the selected course." };
+  }
+  if (["closed", "cancelled"].includes(String(course.selectionStatus || ""))) {
+    return { ok: false, message: "Teacher selection is closed for this course." };
+  }
+  const keys = buildUserKeySet(session.userId, student.userId, student._id);
+  const enrollment = fallbackState.enrollments.find((item) =>
+    keys.has(String(item.studentId || item.student_id || "").trim()) &&
+    item.courseOfferingId === courseOfferingId &&
+    item.status !== "dropped",
+  );
+  if (!enrollment) {
+    return { ok: false, message: "You are not in the cohort for this course offering." };
+  }
+  if (enrollmentHasSelectedTeacherFallback(enrollment)) {
+    return { ok: false, message: "Teacher selection is locked after you choose once." };
+  }
+  const alreadyCounted = enrollment.status === "enrolled";
+  const selectedCount = countSelectedEnrollmentsForCourseFallback(courseOfferingId);
+  if (!alreadyCounted && Number(course.capacity || 0) > 0 && selectedCount >= Number(course.capacity || 0)) {
+    return { ok: false, message: "This course has reached capacity and can no longer be selected." };
+  }
+  const now = Date.now();
+  Object.assign(enrollment, {
+    selectedTeacherId: teacher._id,
+    selected_teacher_id: teacher._id,
+    selectedTeacherUserId: teacher.userId || "",
+    selected_teacher_user_id: teacher.userId || "",
+    selectedTeacherName: teacher.name || teacher.teacherNo || teacher._id,
+    selected_teacher_name: teacher.name || teacher.teacherNo || teacher._id,
+    teacherSelectedAt: now,
+    teacher_selected_at: now,
+    selectedAt: enrollment.selectedAt || now,
+    selected_at: enrollment.selected_at || enrollment.selectedAt || now,
+    status: "enrolled",
+    updatedAt: now,
+    updated_at: now,
+  });
+  if (!alreadyCounted) {
+    course.enrolledCount = selectedCount + 1;
+  }
+  recordAudit("course.teacher.select", session.userId, "enrollments", enrollment._id || courseOfferingId, null, enrollment);
+  return { ok: true, data: { enrollment: clone(enrollment) } };
+}
+
+function saveAttendanceRecordsFallback(session, data) {
+  if (!["teacher", "admin"].includes(session.role)) {
+    return { ok: false, message: "Only teachers or administrators can edit attendance." };
+  }
+
+  const courseOfferingId = String(data.courseOfferingId || "").trim();
+  const attendanceDate = String(data.attendanceDate || data.date || "").trim();
+  const records = Array.isArray(data.records) ? data.records : [];
+  if (!courseOfferingId || !attendanceDate || !records.length) {
+    return { ok: false, message: "Course, class date, and attendance records are required." };
+  }
+  if (session.role === "teacher" && !canTeacherAccessCourse(session.userId, courseOfferingId)) {
+    return { ok: false, message: "You do not have permission to edit this course attendance." };
+  }
+  const teacher = session.role === "teacher" ? findTeacherBySession(session) : null;
+
+  const classSession = findClassSessionForDate(courseOfferingId, attendanceDate);
+  if (!classSession) {
+    return { ok: false, message: "Class session was not found for this date." };
+  }
+  const now = Date.now();
+  const startAt = getSessionStartAt(classSession);
+  const endAt = getSessionEndAt(classSession);
+  if (session.role === "teacher" && (now < startAt || now > endAt)) {
+    return { ok: false, message: "Teachers can edit attendance only during the class time." };
+  }
+
+  const saved = [];
+  for (const row of records) {
+    const studentId = String(row.studentId || row.student_id || "").trim();
+    const status = normalizeAttendanceStatus(row.status);
+    if (!studentId || !status) {
+      continue;
+    }
+    const enrollment = findEnrollmentForStudentCourse(studentId, courseOfferingId);
+    if (session.role === "teacher" && !enrollmentBelongsToTeacherFallback(enrollment, teacher, session.userId)) {
+      return { ok: false, message: "Teachers can edit attendance only for students who selected them." };
+    }
+    const existing = fallbackState.attendance.find(
+      (item) =>
+        item.studentId === studentId &&
+        item.courseOfferingId === courseOfferingId &&
+        item.date === attendanceDate,
+    );
+    if (existing && existing.status === "on_leave") {
+      saved.push(normalizeAttendanceView(existing));
+      continue;
+    }
+    const student = fallbackState.students.find((item) => item._id === studentId || item.userId === studentId) || {};
+    const record = existing || {
+      _id: `att_${now}_${studentId}`,
+      studentId,
+      student_id: studentId,
+      studentName: student.name || studentId,
+      courseOfferingId,
+      course_offering_id: courseOfferingId,
+      classSessionId: classSession._id,
+      class_session_id: classSession._id,
+      attendanceDate,
+      attendance_date: attendanceDate,
+      date: attendanceDate,
+      leaveRequestId: "",
+      leave_request_id: "",
+      createdAt: now,
+      created_at: now,
+    };
+    Object.assign(record, {
+      status,
+      source: "teacher_manual",
+      remark: String(row.remark || "").trim(),
+      updatedAt: now,
+      updated_at: now,
+    });
+    if (!existing) {
+      fallbackState.attendance.unshift(record);
+    }
+    saved.push(normalizeAttendanceView(record));
+  }
+
+  recordAudit("attendance.manual_update", session.userId, "attendance_records", courseOfferingId, null, {
+    courseOfferingId,
+    attendanceDate,
+    count: saved.length,
+  });
+  return { ok: true, data: { attendance: saved } };
+}
+
 function submitEvaluationFallback(session, data) {
   if (session.role !== "student") {
     return { ok: false, code: 403, message: "Only students can submit course evaluations.", data: null };
@@ -897,11 +1467,20 @@ function submitEvaluationFallback(session, data) {
 
   const courseOfferingId = String(data.courseOfferingId || data.courseId || "").trim();
   const course = findCourse(courseOfferingId);
+  const enrollment = findEnrollmentForStudentCourse(session.userId, courseOfferingId);
   const feedback = String(data.feedbackText || data.feedback_text || data.feedback || "").trim();
   const rating = Number(data.rating || (data.scores && data.scores.overall));
 
-  if (!course || !canStudentAccessCourse(session.userId, courseOfferingId)) {
-    return { ok: false, message: "You are not enrolled in this course offering." };
+  if (!course || !enrollment) {
+    return { ok: false, message: "You can evaluate only courses you have taken." };
+  }
+  if (!isCourseCompleted(course)) {
+    return { ok: false, message: "Course evaluations open only after the course has ended." };
+  }
+  const selectedTeacherId = enrollment.selectedTeacherId || enrollment.selected_teacher_id || "";
+  const selectedTeacherUserId = enrollment.selectedTeacherUserId || enrollment.selected_teacher_user_id || "";
+  if ((course.teacherIds || []).length > 1 && !selectedTeacherId && !selectedTeacherUserId) {
+    return { ok: false, message: "Please select a teacher for this course before submitting an evaluation." };
   }
   if (!feedback || !Number.isFinite(rating) || rating < 1 || rating > 5) {
     return { ok: false, message: "Valid course, rating and feedback are required." };
@@ -918,7 +1497,9 @@ function submitEvaluationFallback(session, data) {
     _id: `eval_${now}`,
     courseId: course.courseId || course._id,
     courseOfferingId,
-    teacherIds: course.teacherIds || [],
+    teacherIds: selectedTeacherId
+      ? [selectedTeacherId]
+      : course.teacherIds || [],
     tokenHash,
     rating,
     scores,
@@ -950,6 +1531,7 @@ function getCourseMaterialsFallback(session) {
     data: {
       courses: resolveCoursesForSession(session),
       materials: resolveMaterialsForSession(session),
+      timeline: resolveClassSessionsForSession(session),
     },
   };
 }
@@ -968,18 +1550,28 @@ function saveCourseMaterialFallback(session, data) {
   if (session.role === "teacher" && !canTeacherAccessCourse(session.userId, courseOfferingId)) {
     return { ok: false, message: "You do not have permission to manage this course offering." };
   }
+  const course = findCourse(courseOfferingId);
+  const deadlineAt = Number(course && course.materialUploadDeadlineAt || 0);
+  if (session.role === "teacher" && deadlineAt && Date.now() > deadlineAt) {
+    return { ok: false, message: "The material upload deadline for this course has passed." };
+  }
 
   const now = Date.now();
   const before = fallbackState.materials.find((item) => item._id === data.materialId) || null;
+  if (before && session.role === "teacher" && !materialBelongsToTeacherFallback(before, findTeacherBySession(session), session.userId)) {
+    return { ok: false, message: "Teachers can edit only their own course materials." };
+  }
   const material = before || { _id: `mat_${now}`, createdAt: now };
   Object.assign(material, {
     courseOfferingId,
+    teacherId: session.role === "teacher" ? (findTeacherBySession(session) || {})._id || "" : String(data.teacherId || before && before.teacherId || "").trim(),
     uploaderUserId: session.userId,
     title,
     fileUrl,
     fileType: String(data.fileType || "link").trim(),
     isPublicToStudents: data.isPublicToStudents !== false,
     knowledgeDocumentId: String(data.knowledgeDocumentId || "").trim(),
+    availableAt: Number(data.availableAt || 0) || now,
     updatedAt: now,
   });
   if (!before) {
@@ -1235,12 +1827,247 @@ function resolveAiScenario(query) {
   return "other";
 }
 
+function buildAdminAccountView(user) {
+  const student = fallbackState.students.find((item) => item.userId === user._id) || null;
+  const teacher = fallbackState.teachers.find((item) => item.userId === user._id) || null;
+  return {
+    _id: user._id,
+    username: user.username || "",
+    displayName: user.displayName || user.username || "",
+    email: user.email || "",
+    phone: user.phone || "",
+    status: user.status || "active",
+    primaryRole: user.role || "",
+    linkedProfileType: student ? "student" : teacher ? "teacher" : "",
+    studentProfile: student ? {
+      _id: student._id,
+      userId: student.userId,
+      studentNo: student.studentNo,
+      name: student.name,
+      majorId: student.majorId || "",
+      majorName: student.major || "",
+      adminClassId: student.adminClassId || "",
+      adminClassName: student.adminClass || "",
+      enrollmentYear: Number(student.enrollmentYear || 0),
+      trainingPlanId: student.trainingPlanId || "",
+      status: student.status || "active",
+      contact: clone(student.contact || {}),
+      familyInfo: clone(student.familyInfo || {}),
+    } : null,
+    teacherProfile: teacher ? {
+      _id: teacher._id,
+      userId: teacher.userId,
+      teacherNo: teacher.teacherNo,
+      name: teacher.name,
+      departmentName: teacher.department,
+      title: teacher.title,
+      status: teacher.status || "active",
+    } : null,
+  };
+}
+
+function buildAdminCourseView(course) {
+  return {
+    _id: course.courseOfferingId || course._id,
+    courseId: course.courseId || course._id,
+    courseOfferingId: course.courseOfferingId,
+    courseCode: course.code || "",
+    courseName: course.name || "",
+    departmentId: course.departmentId || "",
+    credits: Number(course.credits || 0),
+    courseType: course.courseType || "",
+    difficultyLevel: Number(course.difficultyLevel || 0),
+    semesterId: course.semesterId || "",
+    sectionNo: course.sectionNo || "01",
+    teacherIds: Array.isArray(course.teacherIds) ? course.teacherIds.slice() : [],
+    teacherNames: Array.isArray(course.teacherNames) ? course.teacherNames.slice() : [],
+    capacity: Number(course.capacity || 0),
+    enrolledCount: countSelectedEnrollmentsForCourseFallback(course.courseOfferingId),
+    trainingPlanId: course.trainingPlanId || "",
+    majorId: course.majorId || "",
+    majorName: course.majorName || "",
+    gradeYear: Number(course.gradeYear || 0),
+    classroomId: course.classroomId || "",
+    classroomName: course.classroomName || course.classroom && course.classroom.name || "",
+    startDate: course.startDate || "",
+    endDate: course.endDate || "",
+    classWeekday: Number(course.classWeekday || 0),
+    classStartTime: course.classStartTime || "",
+    classEndTime: course.classEndTime || "",
+    totalSessions: Number(course.totalSessions || 0),
+    materialUploadDeadlineAt: Number(course.materialUploadDeadlineAt || 0),
+    schedule: course.schedule || "",
+    materialCount: fallbackState.materials.filter((item) => item.courseOfferingId === course.courseOfferingId).length,
+    status: course.status || "active",
+  };
+}
+
+function normalizeAdminCoursePayload(data) {
+  return {
+    courseId: String(data.courseId || "").trim(),
+    courseOfferingId: String(data.courseOfferingId || "").trim(),
+    courseCode: String(data.courseCode || data.code || "").trim(),
+    courseName: String(data.courseName || data.name || "").trim(),
+    departmentId: String(data.departmentId || "").trim(),
+    majorId: String(data.majorId || data.major_id || "").trim(),
+    semesterId: String(data.semesterId || "").trim(),
+    trainingPlanId: String(data.trainingPlanId || data.training_plan_id || "").trim(),
+    gradeYear: Number(data.gradeYear || data.grade_year || 0),
+    classroomId: String(data.classroomId || data.classroom_id || "").trim(),
+    sectionNo: String(data.sectionNo || "01").trim(),
+    teacherIds: normalizeIdList(data.teacherIds),
+    startDate: String(data.startDate || data.courseStartDate || "").trim(),
+    endDate: String(data.endDate || data.courseEndDate || "").trim(),
+    classWeekday: Number(data.classWeekday || data.weekday || 1),
+    classStartTime: String(data.classStartTime || data.startTime || "").trim(),
+    classEndTime: String(data.classEndTime || data.endTime || "").trim(),
+    totalSessions: Number(data.totalSessions || 0),
+    credits: Number(data.credits || 0),
+    courseType: String(data.courseType || "major_required").trim(),
+    difficultyLevel: Number(data.difficultyLevel || 3),
+    capacity: Number(data.capacity || 50),
+    status: String(data.status || "active").trim(),
+  };
+}
+
+function normalizeIdList(value) {
+  if (Array.isArray(value)) {
+    return Array.from(new Set(value.map((item) => String(item || "").trim()).filter(Boolean)));
+  }
+  return Array.from(new Set(String(value || "").split(/[;,\s]+/).map((item) => item.trim()).filter(Boolean)));
+}
+
+function weekdayLabel(value) {
+  return ["", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][Number(value)] || "Mon";
+}
+
+function resolveFallbackSemester(semesters, preferredSemesterId) {
+  const preferredId = String(preferredSemesterId || "").trim();
+  if (preferredId) {
+    const preferredSemester = semesters.find((item) => String(item._id || "") === preferredId);
+    if (preferredSemester) {
+      return preferredSemester;
+    }
+  }
+
+  const currentSemester = semesters.find((item) => item.is_current || item.isCurrent);
+  if (currentSemester) {
+    return currentSemester;
+  }
+
+  const now = Date.now();
+  const activeSemester = semesters.find((item) => {
+    const start = Date.parse(`${item.startDate || item.start_date || ""}T00:00:00`);
+    const end = Date.parse(`${item.endDate || item.end_date || ""}T23:59:59`);
+    return Number.isFinite(start) && Number.isFinite(end) && start <= now && now <= end;
+  });
+  if (activeSemester) {
+    return activeSemester;
+  }
+
+  return semesters[0] || null;
+}
+
+function generateFallbackClassSessions(course, now) {
+  const first = new Date(`${course.startDate}T00:00:00`);
+  const targetWeekday = Number(course.classWeekday || 1);
+  const jsTarget = targetWeekday % 7;
+  while (first.getDay() !== jsTarget) {
+    first.setDate(first.getDate() + 1);
+  }
+  const end = new Date(`${course.endDate}T23:59:59`);
+  const sessions = [];
+  for (let index = 0; index < Number(course.totalSessions || 0); index += 1) {
+    const date = new Date(first.getTime() + index * 7 * 24 * 60 * 60 * 1000);
+    if (date.getTime() > end.getTime()) {
+      break;
+    }
+    const sessionDate = date.toISOString().slice(0, 10);
+    sessions.push({
+      _id: `${course.courseOfferingId}_session_${index + 1}`,
+      courseOfferingId: course.courseOfferingId,
+      course_offering_id: course.courseOfferingId,
+      classroomId: course.classroomId || "",
+      classroom_id: course.classroomId || "",
+      sessionDate,
+      session_date: sessionDate,
+      weekday: targetWeekday,
+      startTime: course.classStartTime,
+      start_time: course.classStartTime,
+      endTime: course.classEndTime,
+      end_time: course.classEndTime,
+      sequenceNo: index + 1,
+      sequence_no: index + 1,
+      status: "scheduled",
+      sessionStartAt: Date.parse(`${sessionDate}T${course.classStartTime}:00`),
+      session_start_at: Date.parse(`${sessionDate}T${course.classStartTime}:00`),
+      sessionEndAt: Date.parse(`${sessionDate}T${course.classEndTime}:00`),
+      session_end_at: Date.parse(`${sessionDate}T${course.classEndTime}:00`),
+      createdAt: now,
+      created_at: now,
+      updatedAt: now,
+      updated_at: now,
+    });
+  }
+  return sessions;
+}
+
+function enrollCohortStudentsFallback(course, now) {
+  const students = fallbackState.students.filter((student) => studentMatchesCourseCohortFallback(student, course));
+  for (const student of students) {
+    const studentKey = student.userId || student._id;
+    const existing = fallbackState.enrollments.find((item) => item.studentId === studentKey && item.courseOfferingId === course.courseOfferingId);
+    if (existing) {
+      existing.status = existing.status === "dropped" ? "selected" : existing.status;
+      continue;
+    }
+    fallbackState.enrollments.push({
+      _id: `enroll_${student._id}_${course.courseOfferingId}`,
+      studentId: studentKey,
+      courseOfferingId: course.courseOfferingId,
+      status: "selected",
+      selectedAt: now,
+    });
+  }
+}
+
+function enrollCohortStudentsForStudentFallback(student, now) {
+  for (const course of fallbackState.courses) {
+    if (!studentMatchesCourseCohortFallback(student, course)) continue;
+    const studentKey = student.userId || student._id;
+    const existing = fallbackState.enrollments.find((item) => item.studentId === studentKey && item.courseOfferingId === course.courseOfferingId);
+    if (existing) continue;
+    fallbackState.enrollments.push({
+      _id: `enroll_${student._id}_${course.courseOfferingId}`,
+      studentId: studentKey,
+      courseOfferingId: course.courseOfferingId,
+      status: "selected",
+      selectedAt: now,
+    });
+  }
+}
+
+function studentMatchesCourseCohortFallback(student, course) {
+  if (!student || !course) return false;
+  const sameYear = course.gradeYear && Number(student.enrollmentYear || 0) === Number(course.gradeYear);
+  const sameMajor = course.majorId && student.majorId === course.majorId;
+  if (course.majorId) {
+    return Boolean(sameYear && sameMajor);
+  }
+  return Boolean(
+    (course.trainingPlanId && student.trainingPlanId === course.trainingPlanId) ||
+    sameYear,
+  );
+}
+
 function resolveCoursesForSession(session) {
   if (session.role === "admin") {
-    return fallbackState.courses.map(clone);
+    return fallbackState.courses.map((course) => buildCourseRuntimeView(course));
   }
   if (session.role === "teacher") {
-    return fallbackState.courses.filter((item) => canTeacherAccessCourse(session.userId, item.courseOfferingId)).map(clone);
+    return fallbackState.courses
+      .filter((item) => canTeacherAccessCourse(session.userId, item.courseOfferingId))
+      .map((course) => buildCourseRuntimeView(course));
   }
   const student = findStudentBySession(session);
   const studentKeys = buildUserKeySet(session.userId, student ? student.userId || student.user_id || student._id : "");
@@ -1253,21 +2080,25 @@ function resolveCoursesForSession(session) {
       const enrollmentStudentId = String(item.studentId || item.student_id || "").trim();
       return studentKeys.has(enrollmentStudentId) && item.status !== "dropped";
     })
-    .map((item) => findCourse(item.courseOfferingId))
-    .filter(Boolean)
-    .map(clone);
+    .map((item) => {
+      const course = findCourse(item.courseOfferingId);
+      return course ? buildCourseRuntimeView(course, item) : null;
+    })
+    .filter(Boolean);
 
-  return courses.length ? courses : fallbackState.courses.map(clone);
+  return courses.length ? courses : fallbackState.courses.map((course) => buildCourseRuntimeView(course));
 }
 
 function resolveAttendanceForSession(session) {
+  const teacher = session.role === "teacher" ? findTeacherBySession(session) : null;
   return fallbackState.attendance
     .filter((item) => {
       if (session.role === "student") {
         return item.studentId === session.userId;
       }
       if (session.role === "teacher") {
-        return canTeacherAccessCourse(session.userId, item.courseOfferingId);
+        const enrollment = findEnrollmentForStudentCourse(item.studentId, item.courseOfferingId);
+        return canTeacherAccessCourse(session.userId, item.courseOfferingId) && enrollmentBelongsToTeacherFallback(enrollment, teacher, session.userId);
       }
       return true;
     })
@@ -1278,6 +2109,39 @@ function resolveAttendanceForSession(session) {
     .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 }
 
+function resolveClassSessionsForSession(session) {
+  const offeringIds = new Set(resolveCoursesForSession(session).map((item) => item.courseOfferingId));
+  return fallbackState.classSessions
+    .filter((item) => offeringIds.has(item.courseOfferingId || item.course_offering_id))
+    .map(normalizeClassSessionView)
+    .sort((a, b) => Number(a.sessionStartAt || 0) - Number(b.sessionStartAt || 0));
+}
+
+function resolveCourseStudentsForSession(session) {
+  if (!["teacher", "admin"].includes(session.role)) {
+    return [];
+  }
+  const offeringIds = new Set(resolveCoursesForSession(session).map((item) => item.courseOfferingId));
+  const teacher = session.role === "teacher" ? findTeacherBySession(session) : null;
+  return fallbackState.enrollments
+    .filter((item) => offeringIds.has(item.courseOfferingId) && item.status !== "dropped")
+    .filter((item) => session.role !== "teacher" || enrollmentBelongsToTeacherFallback(item, teacher, session.userId))
+    .map((enrollment) => {
+      const student = fallbackState.students.find((item) => item.userId === enrollment.studentId || item._id === enrollment.studentId) || {};
+      return {
+        studentId: student._id || enrollment.studentId,
+        userId: student.userId || enrollment.studentId,
+        studentName: student.name || enrollment.studentId,
+        studentNo: student.studentNo || "",
+        courseOfferingId: enrollment.courseOfferingId,
+        enrollmentStatus: enrollment.status || "enrolled",
+        selectedTeacherId: enrollment.selectedTeacherId || enrollment.selected_teacher_id || "",
+        selectedTeacherUserId: enrollment.selectedTeacherUserId || enrollment.selected_teacher_user_id || "",
+        selectedTeacherName: enrollment.selectedTeacherName || enrollment.selected_teacher_name || "",
+      };
+    });
+}
+
 function resolveLeavesForSession(session) {
   return fallbackState.leaves
     .filter((item) => {
@@ -1285,7 +2149,9 @@ function resolveLeavesForSession(session) {
         return item.studentId === session.userId;
       }
       if (session.role === "teacher") {
-        return item.status === "pending" && canTeacherAccessCourse(session.userId, item.courseOfferingId);
+        const teacher = findTeacherBySession(session);
+        const enrollment = findEnrollmentForStudentCourse(item.studentId, item.courseOfferingId);
+        return item.status === "pending" && canTeacherAccessCourse(session.userId, item.courseOfferingId) && enrollmentBelongsToTeacherFallback(enrollment, teacher, session.userId);
       }
       return item.status === "pending";
     })
@@ -1293,18 +2159,26 @@ function resolveLeavesForSession(session) {
 }
 
 function resolveMaterialsForSession(session) {
+  const now = Date.now();
+  const teacher = session.role === "teacher" ? findTeacherBySession(session) : null;
   return fallbackState.materials
     .filter((item) => {
       if (session.role === "student") {
-        return item.isPublicToStudents && canStudentAccessCourse(session.userId, item.courseOfferingId);
+        const course = findCourse(item.courseOfferingId);
+        const enrollment = findEnrollmentForStudentCourse(session.userId, item.courseOfferingId);
+        return item.isPublicToStudents && canStudentAccessCourse(session.userId, item.courseOfferingId) && isCourseStarted(course, now) && materialMatchesEnrollmentTeacherFallback(item, enrollment, course);
       }
       if (session.role === "teacher") {
-        return canTeacherAccessCourse(session.userId, item.courseOfferingId);
+        return canTeacherAccessCourse(session.userId, item.courseOfferingId) && materialBelongsToTeacherFallback(item, teacher, session.userId);
       }
       return true;
     })
     .map(buildMaterialView)
-    .sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0));
+    .sort((a, b) =>
+      session.role === "student"
+        ? Number(a.timelineAt || a.updatedAt || 0) - Number(b.timelineAt || b.updatedAt || 0)
+        : Number(b.updatedAt || 0) - Number(a.updatedAt || 0),
+    );
 }
 
 function resolveProfileChangeRequests(session) {
@@ -1320,7 +2194,7 @@ function resolveProfileChangeRequests(session) {
 }
 
 function buildStudentProfile(session) {
-  const student = fallbackState.students.find((item) => item.userId === session.userId);
+  const student = findStudentBySession(session);
   if (!student) {
     return {
       major: "",
@@ -1330,6 +2204,8 @@ function buildStudentProfile(session) {
       enrollmentYear: "",
     };
   }
+  const progress = calculateStudentProgress(student);
+  const attendanceStats = calculateAttendanceStatsForStudent(student);
   return clone({
     studentId: student._id,
     studentNo: student.studentNo,
@@ -1338,12 +2214,15 @@ function buildStudentProfile(session) {
     major: student.major,
     adminClass: student.adminClass,
     gpa: student.gpa,
-    creditsEarned: student.creditsEarned,
-    totalCredits: student.totalCredits,
+    creditsEarned: progress.creditsEarned,
+    totalCredits: progress.totalCredits,
+    completedCourseCount: progress.completedCourseCount,
+    attendanceRate: attendanceStats.attendanceRate,
+    attendanceStats,
     enrollmentYear: student.enrollmentYear,
     contact: student.contact,
     familyInfo: student.familyInfo,
-    moduleCredits: student.moduleCredits,
+    moduleCredits: progress.moduleCredits,
     gpaTrend: student.gpaTrend,
     percentileRank: student.percentileRank,
     interestTags: student.interestTags,
@@ -1770,17 +2649,22 @@ function findStudentBySession(session) {
 
 function buildMaterialView(item) {
   const course = findCourse(item.courseOfferingId);
+  const firstSession = fallbackState.classSessions
+    .filter((session) => (session.courseOfferingId || session.course_offering_id) === item.courseOfferingId)
+    .sort((a, b) => getSessionStartAt(a) - getSessionStartAt(b))[0];
   return {
     _id: item._id,
     courseOfferingId: item.courseOfferingId,
     courseId: course ? course.courseId : "",
     courseName: buildCourseName(course, item.courseOfferingId),
+    teacherId: item.teacherId || item.teacher_id || "",
     uploaderUserId: item.uploaderUserId,
     title: item.title,
     fileUrl: item.fileUrl,
     fileType: item.fileType,
     isPublicToStudents: item.isPublicToStudents === true,
     knowledgeDocumentId: item.knowledgeDocumentId || "",
+    timelineAt: Number(item.availableAt || item.available_at || 0) || (firstSession ? getSessionStartAt(firstSession) : Number(item.updatedAt || 0)),
     createdAt: Number(item.createdAt || 0),
     updatedAt: Number(item.updatedAt || 0),
   };
@@ -1852,15 +2736,100 @@ function buildScores(payload) {
 }
 
 function canStudentAccessCourse(userId, courseOfferingId) {
-  return fallbackState.enrollments.some(
-    (item) => item.studentId === userId && item.courseOfferingId === courseOfferingId && item.status !== "dropped",
-  );
+  return Boolean(findEnrollmentForStudentCourse(userId, courseOfferingId));
 }
 
 function canTeacherAccessCourse(userId, courseOfferingId) {
   const teacher = fallbackState.teachers.find((item) => item.userId === userId);
   const course = findCourse(courseOfferingId);
   return Boolean(teacher && course && (course.teacherIds || []).includes(teacher._id));
+}
+
+function findTeacherBySession(session) {
+  const keys = buildUserKeySet(session.userId);
+  return fallbackState.teachers.find((item) => keys.has(String(item.userId || item.user_id || "").trim())) || null;
+}
+
+function findEnrollmentForStudentCourse(studentId, courseOfferingId) {
+  const keys = buildUserKeySet(studentId);
+  return fallbackState.enrollments.find((item) =>
+    keys.has(String(item.studentId || item.student_id || "").trim()) &&
+    item.courseOfferingId === courseOfferingId &&
+    item.status !== "dropped",
+  ) || null;
+}
+
+function enrollmentHasSelectedTeacherFallback(enrollment) {
+  return Boolean(
+    String(enrollment && (enrollment.selectedTeacherId || enrollment.selected_teacher_id) || "").trim() ||
+    String(enrollment && (enrollment.selectedTeacherUserId || enrollment.selected_teacher_user_id) || "").trim()
+  );
+}
+
+function countSelectedEnrollmentsForCourseFallback(courseOfferingId) {
+  return fallbackState.enrollments.filter((item) =>
+    item.courseOfferingId === courseOfferingId &&
+    item.status !== "dropped" &&
+    (item.status === "enrolled" || enrollmentHasSelectedTeacherFallback(item)),
+  ).length;
+}
+
+function enrollmentBelongsToTeacherFallback(enrollment, teacher, sessionUserId) {
+  if (!enrollment) return true;
+  const selectedTeacherId = String(enrollment.selectedTeacherId || enrollment.selected_teacher_id || "").trim();
+  const selectedTeacherUserId = String(enrollment.selectedTeacherUserId || enrollment.selected_teacher_user_id || "").trim();
+  if (!selectedTeacherId && !selectedTeacherUserId) return true;
+  return Boolean(
+    (teacher && selectedTeacherId && selectedTeacherId === teacher._id) ||
+    (selectedTeacherUserId && selectedTeacherUserId === sessionUserId),
+  );
+}
+
+function materialBelongsToTeacherFallback(material, teacher, sessionUserId) {
+  const teacherId = String(material.teacherId || material.teacher_id || "").trim();
+  const uploaderUserId = String(material.uploaderUserId || material.uploader_user_id || "").trim();
+  return Boolean(
+    (teacher && teacherId && teacherId === teacher._id) ||
+    (uploaderUserId && uploaderUserId === sessionUserId),
+  );
+}
+
+function materialMatchesEnrollmentTeacherFallback(material, enrollment, course) {
+  const teacherIds = course && Array.isArray(course.teacherIds) ? course.teacherIds : [];
+  const selectedTeacherId = String(enrollment && (enrollment.selectedTeacherId || enrollment.selected_teacher_id) || "").trim() || (teacherIds.length === 1 ? teacherIds[0] : "");
+  const selectedTeacherUserId = String(enrollment && (enrollment.selectedTeacherUserId || enrollment.selected_teacher_user_id) || "").trim();
+  if (!selectedTeacherId && !selectedTeacherUserId) return false;
+  const materialTeacherId = String(material.teacherId || material.teacher_id || "").trim();
+  const uploaderUserId = String(material.uploaderUserId || material.uploader_user_id || "").trim();
+  return Boolean(
+    (selectedTeacherId && materialTeacherId && selectedTeacherId === materialTeacherId) ||
+    (selectedTeacherUserId && uploaderUserId && selectedTeacherUserId === uploaderUserId) ||
+    (!materialTeacherId && !selectedTeacherUserId && teacherIds.length === 1),
+  );
+}
+
+function buildCourseRuntimeView(course, enrollment = null) {
+  const view = clone(course);
+  const teacherOptions = (course.teacherIds || [])
+    .map((teacherId) => fallbackState.teachers.find((item) => item._id === teacherId))
+    .filter(Boolean)
+    .map((teacher) => ({
+      teacherId: teacher._id,
+      userId: teacher.userId || "",
+      name: teacher.name || teacher.teacherNo || teacher._id,
+      teacherNo: teacher.teacherNo || "",
+    }));
+  view.teacherOptions = teacherOptions;
+  view.teacherNames = teacherOptions.map((item) => item.name);
+  view.selectedTeacherId = enrollment && (enrollment.selectedTeacherId || enrollment.selected_teacher_id) || "";
+  view.selectedTeacherUserId = enrollment && (enrollment.selectedTeacherUserId || enrollment.selected_teacher_user_id) || "";
+  view.selectedTeacherName = enrollment && (enrollment.selectedTeacherName || enrollment.selected_teacher_name) || "";
+  view.teacherSelectedAt = Number(enrollment && (enrollment.teacherSelectedAt || enrollment.teacher_selected_at) || 0);
+  view.teacherSelectionRequired = teacherOptions.length > 1;
+  view.teacherSelected = teacherOptions.length <= 1 || Boolean(view.selectedTeacherId);
+  view.completed = isCourseCompleted(course);
+  view.enrollmentStatus = view.completed ? "completed" : enrollment && enrollment.status || "";
+  return view;
 }
 
 function findCourse(courseOfferingId) {
@@ -1954,6 +2923,161 @@ function normalizeAttendanceView(attendance) {
     updatedAt: attendance.updatedAt || attendance.updated_at,
     updated_at: attendance.updated_at || attendance.updatedAt,
   };
+}
+
+function normalizeClassSessionView(session) {
+  const courseOfferingId = session.courseOfferingId || session.course_offering_id;
+  const course = findCourse(courseOfferingId);
+  const sessionDate = session.sessionDate || session.session_date || "";
+  const startTime = session.startTime || session.start_time || "";
+  const endTime = session.endTime || session.end_time || "";
+  return {
+    ...session,
+    courseOfferingId,
+    course_offering_id: courseOfferingId,
+    courseName: buildCourseName(course, courseOfferingId),
+    sessionDate,
+    session_date: sessionDate,
+    startTime,
+    start_time: startTime,
+    endTime,
+    end_time: endTime,
+    sequenceNo: Number(session.sequenceNo || session.sequence_no || 0),
+    sequence_no: Number(session.sequence_no || session.sequenceNo || 0),
+    sessionStartAt: getSessionStartAt(session),
+    session_start_at: getSessionStartAt(session),
+    sessionEndAt: getSessionEndAt(session),
+    session_end_at: getSessionEndAt(session),
+  };
+}
+
+function findClassSessionForDate(courseOfferingId, date) {
+  return fallbackState.classSessions.find(
+    (item) =>
+      (item.courseOfferingId === courseOfferingId || item.course_offering_id === courseOfferingId) &&
+      (item.sessionDate === date || item.session_date === date),
+  ) || null;
+}
+
+function getSessionStartAt(session) {
+  const explicit = Number(session.sessionStartAt || session.session_start_at || 0);
+  if (explicit) return explicit;
+  const date = session.sessionDate || session.session_date || "";
+  const time = session.startTime || session.start_time || "00:00";
+  return Date.parse(`${date}T${time}:00`) || 0;
+}
+
+function getSessionEndAt(session) {
+  const explicit = Number(session.sessionEndAt || session.session_end_at || 0);
+  if (explicit) return explicit;
+  const date = session.sessionDate || session.session_date || "";
+  const time = session.endTime || session.end_time || "23:59";
+  return Date.parse(`${date}T${time}:00`) || 0;
+}
+
+function isCourseStarted(course, now = Date.now()) {
+  if (!course) return false;
+  const startAt = Date.parse(`${course.startDate || ""}T${course.classStartTime || "00:00"}:00`);
+  return !startAt || now >= startAt;
+}
+
+function isCourseCompleted(course, now = Date.now()) {
+  if (!course) return false;
+  const sessions = fallbackState.classSessions.filter((item) => (item.courseOfferingId || item.course_offering_id) === course.courseOfferingId);
+  if (sessions.length) {
+    return sessions.every((item) => getSessionEndAt(item) && getSessionEndAt(item) < now);
+  }
+  const endAt = Date.parse(`${course.endDate || ""}T${course.classEndTime || "23:59"}:00`);
+  return Boolean(endAt && endAt < now);
+}
+
+function calculateStudentProgress(student) {
+  const planCourses = fallbackState.courses.filter((course) =>
+    (student.trainingPlanId && course.trainingPlanId === student.trainingPlanId) ||
+    (student.enrollmentYear && Number(course.gradeYear || 0) === Number(student.enrollmentYear)),
+  );
+  const enrollments = fallbackState.enrollments.filter((item) =>
+    item.status !== "dropped" &&
+    (item.studentId === student.userId || item.studentId === student._id),
+  );
+  const completedCourseIds = new Set();
+  const completedCourses = enrollments
+    .map((item) => findCourse(item.courseOfferingId))
+    .filter((course) => course && isCourseCompleted(course))
+    .filter((course) => {
+      const key = course.courseId || course._id;
+      if (completedCourseIds.has(key)) return false;
+      completedCourseIds.add(key);
+      return true;
+    });
+  const planCourseIds = new Set();
+  const uniquePlanCourses = planCourses.filter((course) => {
+    const key = course.courseId || course._id;
+    if (planCourseIds.has(key)) return false;
+    planCourseIds.add(key);
+    return true;
+  });
+  const moduleCredits = {};
+  for (const key of ["general", "major_required", "major_elective", "practice"]) {
+    const camel = key.replace(/_([a-z])/g, (_, char) => char.toUpperCase());
+    moduleCredits[camel] = { current: 0, total: 0 };
+  }
+  for (const course of uniquePlanCourses) {
+    const key = String(course.courseType || "major_required");
+    const camel = key.replace(/_([a-z])/g, (_, char) => char.toUpperCase());
+    if (!moduleCredits[camel]) moduleCredits[camel] = { current: 0, total: 0 };
+    moduleCredits[camel].total += Number(course.credits || 0);
+  }
+  for (const course of completedCourses) {
+    const key = String(course.courseType || "major_required");
+    const camel = key.replace(/_([a-z])/g, (_, char) => char.toUpperCase());
+    if (!moduleCredits[camel]) moduleCredits[camel] = { current: 0, total: 0 };
+    moduleCredits[camel].current += Number(course.credits || 0);
+  }
+  return {
+    creditsEarned: completedCourses.reduce((sum, course) => sum + Number(course.credits || 0), 0),
+    totalCredits: uniquePlanCourses.reduce((sum, course) => sum + Number(course.credits || 0), 0),
+    completedCourseCount: completedCourses.length,
+    moduleCredits,
+  };
+}
+
+function calculateAttendanceStatsForStudent(student, now = Date.now()) {
+  const enrollments = fallbackState.enrollments.filter((item) =>
+    item.status !== "dropped" &&
+    (item.studentId === student.userId || item.studentId === student._id),
+  );
+  const offeringIds = new Set(enrollments.map((item) => item.courseOfferingId));
+  const pastSessions = fallbackState.classSessions.filter((item) => offeringIds.has(item.courseOfferingId || item.course_offering_id) && getSessionEndAt(item) < now);
+  let attended = 0;
+  let leave = 0;
+  for (const classSession of pastSessions) {
+    const date = classSession.sessionDate || classSession.session_date;
+    const record = fallbackState.attendance.find((item) =>
+      (item.studentId === student.userId || item.studentId === student._id) &&
+      item.courseOfferingId === (classSession.courseOfferingId || classSession.course_offering_id) &&
+      item.date === date,
+    );
+    if (record && record.status === "on_leave") {
+      leave += 1;
+    } else if (record && ["present", "late", "excused"].includes(record.status)) {
+      attended += 1;
+    }
+  }
+  const denominator = Math.max(pastSessions.length - leave, 0);
+  return {
+    attendedSessions: attended,
+    leaveSessions: leave,
+    pastSessions: pastSessions.length,
+    countedSessions: denominator,
+    attendanceRate: denominator ? Math.round((attended / denominator) * 100) : 0,
+  };
+}
+
+function normalizeAttendanceStatus(status) {
+  const value = String(status || "").trim();
+  const allowed = ["present", "late", "absent", "excused"];
+  return allowed.includes(value) ? value : "";
 }
 
 function normalizeResult(result) {

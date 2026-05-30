@@ -31,6 +31,20 @@ exports.main = async (event = {}) => {
   if (!enrollment) {
     return { ok: false, message: "You are not enrolled in this course offering." };
   }
+  const teacherIds = Array.isArray(offering.teacher_ids) ? offering.teacher_ids.filter(Boolean) : [];
+  if (teacherIds.length > 1 && !enrollment.selected_teacher_id) {
+    return { ok: false, message: "Please select a teacher for this course before submitting leave." };
+  }
+
+  const classSession = await findClassSession(courseOfferingId, leaveDate);
+  if (classSession) {
+    const sessionStartAt = getSessionStartAt(classSession);
+    if (Date.now() >= sessionStartAt) {
+      return { ok: false, message: "Leave requests must be submitted before the class starts." };
+    }
+  } else if (await hasAnyClassSessions(courseOfferingId)) {
+    return { ok: false, message: "Leave can only be submitted for a scheduled class date." };
+  }
 
   let range;
   try {
@@ -117,6 +131,39 @@ async function findEnrollment(studentId, courseOfferingId) {
     console.warn("[submit-leave] enrollment lookup failed.", error);
     return null;
   }
+}
+
+async function findClassSession(courseOfferingId, leaveDate) {
+  try {
+    const result = await db
+      .collection("class_sessions")
+      .where({ course_offering_id: courseOfferingId, session_date: leaveDate })
+      .limit(1)
+      .get();
+    return result.data && result.data[0] ? result.data[0] : null;
+  } catch (error) {
+    console.warn("[submit-leave] class session lookup failed.", error);
+    return null;
+  }
+}
+
+async function hasAnyClassSessions(courseOfferingId) {
+  try {
+    const result = await db.collection("class_sessions").where({ course_offering_id: courseOfferingId }).limit(1).get();
+    return Boolean(result.data && result.data[0]);
+  } catch (error) {
+    console.warn("[submit-leave] class session existence lookup failed.", error);
+    return false;
+  }
+}
+
+function getSessionStartAt(classSession) {
+  const explicit = Number(classSession.session_start_at || 0);
+  if (explicit) {
+    return explicit;
+  }
+  const timestamp = Date.parse(`${classSession.session_date}T${classSession.start_time || "00:00"}:00`);
+  return Number.isFinite(timestamp) ? timestamp : 0;
 }
 
 function normalizeReasonType(reasonType) {

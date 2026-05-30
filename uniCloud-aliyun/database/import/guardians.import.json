@@ -1,2 +1,0 @@
-{"_id":"guardian_001","student_id":"student_001","user_id":"","name":"Mary Liu","relationship":"mother","phone":"1360000201","email":"guardian001@ai-ems.demo","receive_alerts":true,"created_at":1779595200000,"updated_at":1779595200000}
-{"_id":"guardian_002","student_id":"student_002","user_id":"","name":"Wei Zhang","relationship":"father","phone":"1360000202","email":"guardian002@ai-ems.demo","receive_alerts":true,"created_at":1779595200000,"updated_at":1779595200000}

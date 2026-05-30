@@ -41,17 +41,17 @@ const data = {
     { _id: "pr_practice", training_plan_id: "tp_se_2024", module_code: "practice", module_name: "Practice", required_credits: 15, course_ids: ["course_capstone"], rule: {}, created_at: now, updated_at: now },
   ],
   students: [
-    { _id: "student_001", user_id: "user_s_001", student_no: "S2023001", name: "Amy Liu", gender: "female", major_id: "major_se", admin_class_id: "class_se_2024_1", enrollment_year: 2024, training_plan_id: "tp_se_2024", photo_url: "", contact: { email: "s2023001@ai-ems.demo", phone: "1370000201", address: "Dorm A-501" }, family_info: { guardianName: "Mary Liu", guardianPhone: "1360000201" }, status: "active", percentile_rank: 82, created_at: now, updated_at: now },
-    { _id: "student_002", user_id: "user_s_002", student_no: "S2023002", name: "Ben Zhang", gender: "male", major_id: "major_se", admin_class_id: "class_se_2024_1", enrollment_year: 2024, training_plan_id: "tp_se_2024", photo_url: "", contact: { email: "s2023002@ai-ems.demo", phone: "1370000202", address: "Dorm B-406" }, family_info: { guardianName: "Wei Zhang", guardianPhone: "1360000202" }, status: "active", percentile_rank: 35, created_at: now, updated_at: now },
-    { _id: "student_003", user_id: "user_s_003", student_no: "S2023003", name: "Chloe Wang", gender: "female", major_id: "major_se", admin_class_id: "class_se_2024_1", enrollment_year: 2024, training_plan_id: "tp_se_2024", photo_url: "", contact: { email: "s2023003@ai-ems.demo", phone: "1370000203", address: "Dorm C-301" }, family_info: { guardianName: "Jing Wang", guardianPhone: "1360000203" }, status: "active", percentile_rank: 68, created_at: now, updated_at: now },
+    { _id: "student_001", user_id: "user_s_001", student_no: "S2023001", name: "Amy Liu", gender: "female", major_id: "major_se", admin_class_id: "class_se_2024_1", enrollment_year: 2024, training_plan_id: "tp_se_2024", photo_url: "", contact: { email: "s2023001@ai-ems.test", phone: "1370000201", address: "Dorm A-501" }, family_info: { guardianName: "Mary Liu", guardianPhone: "1360000201" }, status: "active", percentile_rank: 82, created_at: now, updated_at: now },
+    { _id: "student_002", user_id: "user_s_002", student_no: "S2023002", name: "Ben Zhang", gender: "male", major_id: "major_se", admin_class_id: "class_se_2024_1", enrollment_year: 2024, training_plan_id: "tp_se_2024", photo_url: "", contact: { email: "s2023002@ai-ems.test", phone: "1370000202", address: "Dorm B-406" }, family_info: { guardianName: "Wei Zhang", guardianPhone: "1360000202" }, status: "active", percentile_rank: 35, created_at: now, updated_at: now },
+    { _id: "student_003", user_id: "user_s_003", student_no: "S2023003", name: "Chloe Wang", gender: "female", major_id: "major_se", admin_class_id: "class_se_2024_1", enrollment_year: 2024, training_plan_id: "tp_se_2024", photo_url: "", contact: { email: "s2023003@ai-ems.test", phone: "1370000203", address: "Dorm C-301" }, family_info: { guardianName: "Jing Wang", guardianPhone: "1360000203" }, status: "active", percentile_rank: 68, created_at: now, updated_at: now },
   ],
   teachers: [
-    { _id: "teacher_001", user_id: "user_t_001", teacher_no: "T1001", name: "Alice Chen", department_id: "dept_cs", title: "Associate Professor", research_fields: ["Software Engineering", "Learning Analytics"], teaching_experience: "10 years of software engineering teaching.", office: "Teaching Building 3-502", public_profile: { officeHours: "Tue 14:00-16:00", homepage: "https://ai-ems.demo/teachers/t1001" }, status: "active", created_at: now, updated_at: now },
+    { _id: "teacher_001", user_id: "user_t_001", teacher_no: "T1001", name: "Alice Chen", department_id: "dept_cs", title: "Associate Professor", research_fields: ["Software Engineering", "Learning Analytics"], teaching_experience: "10 years of software engineering teaching.", office: "Teaching Building 3-502", public_profile: { officeHours: "Tue 14:00-16:00", homepage: "https://ai-ems.test/teachers/t1001" }, status: "active", created_at: now, updated_at: now },
     { _id: "teacher_002", user_id: "user_t_002", teacher_no: "T1002", name: "Brian Li", department_id: "dept_cs", title: "Lecturer", research_fields: ["Database Systems"], teaching_experience: "Database and data management courses.", office: "Teaching Building 3-503", public_profile: { officeHours: "Thu 10:00-11:30" }, status: "active", created_at: now, updated_at: now },
   ],
   guardians: [
-    { _id: "guardian_001", student_id: "student_001", user_id: "", name: "Mary Liu", relationship: "mother", phone: "1360000201", email: "guardian001@ai-ems.demo", receive_alerts: true, created_at: now, updated_at: now },
-    { _id: "guardian_002", student_id: "student_002", user_id: "", name: "Wei Zhang", relationship: "father", phone: "1360000202", email: "guardian002@ai-ems.demo", receive_alerts: true, created_at: now, updated_at: now },
+    { _id: "guardian_001", student_id: "student_001", user_id: "", name: "Mary Liu", relationship: "mother", phone: "1360000201", email: "guardian001@ai-ems.test", receive_alerts: true, created_at: now, updated_at: now },
+    { _id: "guardian_002", student_id: "student_002", user_id: "", name: "Wei Zhang", relationship: "father", phone: "1360000202", email: "guardian002@ai-ems.test", receive_alerts: true, created_at: now, updated_at: now },
   ],
   courses: [
     { _id: "course_software_design", course_code: "JC3506", name: "Software Design and Implementation", name_en: "Software Design and Implementation", credits: 15, course_type: "major_required", department_id: "dept_cs", difficulty_level: 3, status: "active", created_at: now, updated_at: now },
@@ -70,10 +70,10 @@ const data = {
     { _id: "room_b208", building: "B", room_no: "208", name: "B208", capacity: 45, latitude: 31.2306, longitude: 121.4739, geofence_radius_m: 50, created_at: now, updated_at: now },
   ],
   course_offerings: [
-    { _id: "offering_sd_2026s", course_id: "course_software_design", semester_id: "sem_2026_spring", section_no: "01", teacher_ids: ["teacher_001"], capacity: 50, enrolled_count: 32, selection_status: "open", syllabus_url: "https://example.com/sd-syllabus.pdf", created_at: now, updated_at: now },
-    { _id: "offering_pm_2026s", course_id: "course_process", semester_id: "sem_2026_spring", section_no: "01", teacher_ids: ["teacher_001"], capacity: 45, enrolled_count: 28, selection_status: "open", syllabus_url: "https://example.com/pm-syllabus.pdf", created_at: now, updated_at: now },
-    { _id: "offering_da_2026s", course_id: "course_data_analysis", semester_id: "sem_2026_spring", section_no: "01", teacher_ids: ["teacher_001"], capacity: 40, enrolled_count: 22, selection_status: "open", syllabus_url: "https://example.com/da-syllabus.pdf", created_at: now, updated_at: now },
-    { _id: "offering_db_2026s", course_id: "course_database", semester_id: "sem_2026_spring", section_no: "02", teacher_ids: ["teacher_002"], capacity: 55, enrolled_count: 35, selection_status: "closed", syllabus_url: "https://example.com/db-syllabus.pdf", created_at: now, updated_at: now },
+    { _id: "offering_sd_2026s", course_id: "course_software_design", semester_id: "sem_2026_spring", major_id: "major_se", training_plan_id: "tp_se_2024", grade_year: 2024, classroom_id: "room_a101", section_no: "01", teacher_ids: ["teacher_001"], capacity: 50, enrolled_count: 32, selection_status: "open", syllabus_url: "https://example.com/sd-syllabus.pdf", course_start_date: "2026-05-25", course_end_date: "2026-06-29", class_weekday: 1, class_start_time: "10:00", class_end_time: "12:00", total_sessions: 6, material_upload_deadline_at: Date.parse("2026-06-29T23:59:59"), created_at: now, updated_at: now },
+    { _id: "offering_pm_2026s", course_id: "course_process", semester_id: "sem_2026_spring", major_id: "major_se", training_plan_id: "tp_se_2024", grade_year: 2024, classroom_id: "room_a101", section_no: "01", teacher_ids: ["teacher_001"], capacity: 45, enrolled_count: 28, selection_status: "open", syllabus_url: "https://example.com/pm-syllabus.pdf", course_start_date: "2026-05-27", course_end_date: "2026-07-01", class_weekday: 3, class_start_time: "14:00", class_end_time: "16:00", total_sessions: 6, material_upload_deadline_at: Date.parse("2026-07-01T23:59:59"), created_at: now, updated_at: now },
+    { _id: "offering_da_2026s", course_id: "course_data_analysis", semester_id: "sem_2026_spring", major_id: "major_se", training_plan_id: "tp_se_2024", grade_year: 2024, classroom_id: "room_b208", section_no: "01", teacher_ids: ["teacher_001"], capacity: 40, enrolled_count: 22, selection_status: "open", syllabus_url: "https://example.com/da-syllabus.pdf", course_start_date: "2026-05-29", course_end_date: "2026-07-03", class_weekday: 5, class_start_time: "09:00", class_end_time: "11:00", total_sessions: 6, material_upload_deadline_at: Date.parse("2026-07-03T23:59:59"), created_at: now, updated_at: now },
+    { _id: "offering_db_2026s", course_id: "course_database", semester_id: "sem_2026_spring", major_id: "major_se", training_plan_id: "tp_se_2024", grade_year: 2024, classroom_id: "room_b208", section_no: "02", teacher_ids: ["teacher_002"], capacity: 55, enrolled_count: 35, selection_status: "closed", syllabus_url: "https://example.com/db-syllabus.pdf", course_start_date: "2026-05-28", course_end_date: "2026-07-02", class_weekday: 4, class_start_time: "10:00", class_end_time: "12:00", total_sessions: 6, material_upload_deadline_at: Date.parse("2026-07-02T23:59:59"), created_at: now, updated_at: now },
   ],
   class_sessions: [
     { _id: "session_sd_0525", course_offering_id: "offering_sd_2026s", classroom_id: "room_a101", weekday: 1, start_time: "10:00", end_time: "12:00", week_start: 1, week_end: 16, session_date: "2026-05-25", status: "scheduled", created_at: now, updated_at: now },
@@ -166,17 +166,17 @@ const data = {
     { _id: "ai_msg_t1_002", conversation_id: "ai_conv_t1_eval", role: "assistant", content: "Students describe Software Design as practical and helpful for project architecture.", model: "local-keyword-kb", citations: [{ knowledge_base_id: "kb_course_selection", title: "Course selection from evaluations" }], fallback_used: false, latency_ms: 42, created_at: now - day + 2000 },
   ],
   sso_identities: [
-    { _id: "sso_s1_demo", user_id: "user_s_001", provider: "demo-sso", provider_uid: "demo-sso-s2023001", created_at: now, updated_at: now },
-    { _id: "sso_t1_demo", user_id: "user_t_001", provider: "demo-sso", provider_uid: "demo-sso-t1001", created_at: now, updated_at: now },
+    { _id: "sso_s1_local", user_id: "user_s_001", provider: "local-sso", provider_uid: "local-sso-s2023001", created_at: now, updated_at: now },
+    { _id: "sso_t1_local", user_id: "user_t_001", provider: "local-sso", provider_uid: "local-sso-t1001", created_at: now, updated_at: now },
   ],
   api_clients: [
-    { _id: "api_client_demo", client_name: "Demo Integration Client", client_key: "ai_ems_demo_client", secret_hash: "sha256$demo", allowed_scopes: ["dashboard.read", "evaluation.read"], status: "active", created_at: now, updated_at: now },
+    { _id: "api_client_seed", client_name: "Integration Client", client_key: "ai_ems_integration_client", secret_hash: "sha256$local", allowed_scopes: ["dashboard.read", "evaluation.read"], status: "active", created_at: now, updated_at: now },
   ],
   api_request_logs: [
     { _id: "api_log_demo_001", client_id: "api_client_demo", user_id: "user_admin_001", method: "GET", path: "/dashboard", status_code: 200, latency_ms: 96, created_at: now },
   ],
   audit_logs: [
-    { _id: "audit_seed_login", actor_user_id: "user_admin_001", action: "seed.import", target_collection: "demo_seed", target_id: "import_20260529", before: {}, after: { note: "Demo import data generated." }, ip: "", user_agent: "seed-script", created_at: now },
+    { _id: "audit_seed_login", actor_user_id: "user_admin_001", action: "seed.import", target_collection: "seed_import", target_id: "import_20260529", before: {}, after: { note: "Seed import data generated." }, ip: "", user_agent: "seed-script", created_at: now },
   ],
 };
 

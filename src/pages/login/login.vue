@@ -12,8 +12,13 @@
         <input v-model="username" placeholder="Enter username" />
       </view>
       <view class="field">
-        <text class="label">Password</text>
-        <input v-model="password" password placeholder="Enter password" />
+        <view class="field-head">
+          <text class="label">Password</text>
+          <text class="toggle-link" @click="togglePassword">{{ showPassword ? 'Hide' : 'Show' }}</text>
+        </view>
+        <view class="password-row">
+          <input v-model="password" class="password-input" :password="!showPassword" placeholder="Enter password" />
+        </view>
       </view>
       <button class="primary-btn full-btn" :loading="loading" @click="login">Login</button>
       <text v-if="message" class="error">{{ message }}</text>
@@ -30,11 +35,15 @@ export default {
     return {
       username: '',
       password: '',
+      showPassword: false,
       loading: false,
       message: ''
     }
   },
   methods: {
+    togglePassword() {
+      this.showPassword = !this.showPassword
+    },
     async login() {
       this.loading = true
       this.message = ''
@@ -82,6 +91,29 @@ export default {
 
 .field {
   margin-bottom: 18rpx;
+}
+
+.field-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-bottom: 10rpx;
+}
+
+.password-row {
+  display: flex;
+  align-items: center;
+}
+
+.password-input {
+  flex: 1;
+  width: auto;
+}
+
+.toggle-link {
+  color: #2563eb;
+  font-size: 24rpx;
 }
 
 .full-btn {

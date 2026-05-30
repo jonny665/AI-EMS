@@ -21,16 +21,23 @@ exports.main = async (event = {}) => {
   if (!(await canManageOffering(session, offering))) {
     return { ok: false, message: "You do not have permission to manage this course offering." };
   }
+  const teacher = session.role === "teacher" ? await findByField("teachers", "user_id", session.userId) : null;
+  const uploadDeadlineAt = Number(offering.material_upload_deadline_at || 0);
+  if (session.role === "teacher" && uploadDeadlineAt && Date.now() > uploadDeadlineAt) {
+    return { ok: false, message: "The material upload deadline for this course has passed." };
+  }
 
   const now = Date.now();
   const materialData = {
     course_offering_id: payload.courseOfferingId,
     uploader_user_id: session.userId,
+    teacher_id: teacher ? teacher._id : payload.teacherId,
     title: payload.title,
     file_url: payload.fileUrl,
     file_type: payload.fileType,
     is_public_to_students: payload.isPublicToStudents,
     knowledge_document_id: payload.knowledgeDocumentId,
+    available_at: payload.availableAt || now,
     updated_at: now,
   };
 
@@ -41,6 +48,12 @@ exports.main = async (event = {}) => {
     before = await findById("course_materials", materialId);
     if (!before) {
       return { ok: false, message: "Course material was not found." };
+    }
+    if (session.role === "teacher" && !materialBelongsToTeacher(before, teacher, session.userId)) {
+      return { ok: false, message: "Teachers can edit only their own course materials." };
+    }
+    if (session.role === "admin" && !payload.teacherId && before.teacher_id) {
+      materialData.teacher_id = before.teacher_id;
     }
     const currentOffering = await findById("course_offerings", before.course_offering_id);
     if (!currentOffering || !(await canManageOffering(session, currentOffering))) {
@@ -75,6 +88,8 @@ function normalizePayload(event) {
     fileType: String(event.fileType || "").trim(),
     isPublicToStudents: event.isPublicToStudents !== false,
     knowledgeDocumentId: String(event.knowledgeDocumentId || "").trim(),
+    availableAt: Number(event.availableAt || 0),
+    teacherId: String(event.teacherId || event.teacher_id || "").trim(),
   };
 }
 
@@ -118,15 +133,26 @@ function buildMaterialView(item, offering) {
     _id: item._id,
     courseOfferingId: item.course_offering_id || "",
     courseId: offering.course_id || "",
+    teacherId: item.teacher_id || "",
     uploaderUserId: item.uploader_user_id || "",
     title: item.title || "",
     fileUrl: item.file_url || "",
     fileType: item.file_type || "",
     isPublicToStudents: item.is_public_to_students === true,
     knowledgeDocumentId: item.knowledge_document_id || "",
+    timelineAt: Number(item.available_at || item.updated_at || 0),
     createdAt: Number(item.created_at || 0),
     updatedAt: Number(item.updated_at || 0),
   };
+}
+
+function materialBelongsToTeacher(material, teacher, sessionUserId) {
+  const teacherId = String(material.teacher_id || "").trim();
+  const uploaderUserId = String(material.uploader_user_id || "").trim();
+  return Boolean(
+    (teacherId && teacher && teacherId === String(teacher._id || "").trim()) ||
+    (uploaderUserId && uploaderUserId === String(sessionUserId || "").trim()),
+  );
 }
 
 async function writeAudit(action, session, targetId, before, after) {

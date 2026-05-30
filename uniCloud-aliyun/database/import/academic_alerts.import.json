@@ -1,1 +1,0 @@
-{"_id":"alert_s2_absence","student_id":"student_002","course_offering_id":"offering_sd_2026s","alert_type":"absence","severity":"high","trigger_rule":{"absentGreaterOrEqual":3},"message":"Ben Zhang has 3 absence records and needs counselor follow-up.","assigned_to_user_id":"user_t_008","status":"open","created_at":1779595200000,"resolved_at":0}

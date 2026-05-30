@@ -1,2 +1,0 @@
-{"_id":"pre_da_db","course_id":"course_data_analysis","prerequisite_course_id":"course_database","rule_type":"recommended","min_score":60,"created_at":1779595200000}
-{"_id":"pre_capstone_sd","course_id":"course_capstone","prerequisite_course_id":"course_software_design","rule_type":"must_complete","min_score":60,"created_at":1779595200000}

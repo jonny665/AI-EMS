@@ -1,1 +1,34 @@
-{"bsonType":"object","required":["course_id","semester_id","section_no","teacher_ids","capacity","enrolled_count","selection_status","created_at","updated_at"],"permission":{"read":false,"create":false,"update":false,"delete":false},"properties":{"_id":{"description":"course_offerings primary key"},"course_id":{"bsonType":"string","description":"References courses._id"},"semester_id":{"bsonType":"string","description":"References semesters._id"},"section_no":{"bsonType":"string"},"teacher_ids":{"bsonType":"array","description":"References teachers._id"},"capacity":{"bsonType":"int"},"enrolled_count":{"bsonType":"int","defaultValue":0},"selection_status":{"bsonType":"string","enum":["not_started","open","closed","cancelled"],"defaultValue":"not_started"},"syllabus_url":{"bsonType":"string"},"created_at":{"bsonType":"number"},"updated_at":{"bsonType":"number"}}}
+{
+  "bsonType": "object",
+  "required": ["course_id", "semester_id", "major_id", "grade_year", "classroom_id", "section_no", "teacher_ids", "capacity", "enrolled_count", "selection_status", "course_start_date", "course_end_date", "class_weekday", "class_start_time", "class_end_time", "total_sessions", "material_upload_deadline_at", "created_at", "updated_at"],
+  "permission": {
+    "read": false,
+    "create": false,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": { "description": "course_offerings primary key" },
+    "course_id": { "bsonType": "string", "description": "References courses._id" },
+    "semester_id": { "bsonType": "string", "description": "References semesters._id" },
+    "major_id": { "bsonType": "string", "description": "References majors._id; with grade_year defines the receiving cohort." },
+    "training_plan_id": { "bsonType": "string", "description": "Optional references training_plans._id for legacy/course-plan grouping." },
+    "grade_year": { "bsonType": "int", "description": "Cohort/grade year receiving this offering." },
+    "classroom_id": { "bsonType": "string", "description": "References classrooms._id for the fixed course classroom." },
+    "section_no": { "bsonType": "string" },
+    "teacher_ids": { "bsonType": "array", "description": "References teachers._id" },
+    "capacity": { "bsonType": "int" },
+    "enrolled_count": { "bsonType": "int", "defaultValue": 0 },
+    "selection_status": { "bsonType": "string", "enum": ["not_started", "open", "closed", "cancelled"], "defaultValue": "not_started" },
+    "syllabus_url": { "bsonType": "string" },
+    "course_start_date": { "bsonType": "string", "description": "YYYY-MM-DD." },
+    "course_end_date": { "bsonType": "string", "description": "YYYY-MM-DD." },
+    "class_weekday": { "bsonType": "int", "description": "1-7, Monday as 1." },
+    "class_start_time": { "bsonType": "string", "description": "HH:mm." },
+    "class_end_time": { "bsonType": "string", "description": "HH:mm." },
+    "total_sessions": { "bsonType": "int" },
+    "material_upload_deadline_at": { "bsonType": "number" },
+    "created_at": { "bsonType": "number" },
+    "updated_at": { "bsonType": "number" }
+  }
+}

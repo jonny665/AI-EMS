@@ -5,10 +5,19 @@ const db = uniCloud.database();
 
 const SCORE_KEYS = ['content', 'teaching_method', 'difficulty', 'workload', 'achievement', 'overall'];
 
-exports.main = async (event = {}, context = {}) => {
+function normalizeSession(event, context) {
+  const session = event.session || {};
   const auth = context.auth || {};
-  const uid = String(auth.uid || auth.user_id || auth.userId || 'test_user');
-  const role = String(auth.role || 'student');
+  return {
+    userId: String(session.userId || session.uid || session.user_id || auth.uid || auth.user_id || auth.userId || 'test_user'),
+    role: String(session.role || auth.role || 'student')
+  };
+}
+
+exports.main = async (event = {}, context = {}) => {
+  const session = normalizeSession(event, context);
+  const uid = session.userId;
+  const role = session.role;
 
   if (role !== 'student') {
     return { code: 403, message: 'Only students can submit course evaluations', data: null };
@@ -32,6 +41,34 @@ exports.main = async (event = {}, context = {}) => {
   }
 
   try {
+    const [courseMeta, students, enrollments, classSessions] = await Promise.all([
+      loadCourseOffering(payload.courseOfferingId),
+      readCollection('students'),
+      readCollection('enrollments'),
+      loadClassSessions(payload.courseOfferingId)
+    ]);
+
+    if (!courseMeta) {
+      return { code: 404, message: 'Course offering was not found', data: null };
+    }
+
+    const student = findByUserId(students, uid);
+    if (!student) {
+      return { code: 400, message: 'Student profile was not found', data: null };
+    }
+
+    const enrollment = findEnrollmentForCourse(enrollments, student, uid, payload.courseOfferingId);
+    if (!enrollment) {
+      return { code: 400, message: 'You can evaluate only courses you have taken', data: null };
+    }
+
+    if (!isCourseCompleted(courseMeta, classSessions)) {
+      return { code: 400, message: 'Course evaluations open only after the course has ended', data: null };
+    }
+    if (Array.isArray(courseMeta.teacher_ids) && courseMeta.teacher_ids.length > 1 && !hasSelectedTeacher(enrollment)) {
+      return { code: 400, message: 'Please select a teacher for this course before submitting an evaluation', data: null };
+    }
+
     const tokenHash = crypto
       .createHash('md5')
       .update(`${uid}:${payload.courseOfferingId}`)
@@ -47,10 +84,9 @@ exports.main = async (event = {}, context = {}) => {
       return { code: 400, message: 'You have already submitted an evaluation for this course', data: null };
     }
 
-    const courseMeta = await loadCourseOffering(payload.courseOfferingId);
     const resolvedCourseId = payload.courseId || (courseMeta && courseMeta.course_id) || payload.courseOfferingId;
     const resolvedCourseName = payload.courseName || (courseMeta && (courseMeta.name || courseMeta.course_name)) || resolvedCourseId;
-    const teacherIds = normalizeTeacherIds(payload.teacherIds, courseMeta);
+    const teacherIds = normalizeTeacherIds(payload.teacherIds, courseMeta, enrollment);
     const now = Date.now();
 
     const evaluation = {
@@ -167,7 +203,127 @@ async function loadCourseOffering(courseOfferingId) {
   }
 }
 
-function normalizeTeacherIds(explicitTeacherIds, courseMeta) {
+async function readCollection(name, limit = 1000) {
+  try {
+    const result = await db.collection(name).limit(limit).get();
+    return result.data || [];
+  } catch (error) {
+    console.warn(`[submit-evaluation] failed to read ${name}.`, error);
+    return [];
+  }
+}
+
+async function loadClassSessions(courseOfferingId) {
+  try {
+    const result = await db
+      .collection('class_sessions')
+      .where({ course_offering_id: courseOfferingId })
+      .limit(500)
+      .get();
+    return result.data || [];
+  } catch (error) {
+    console.warn('[submit-evaluation] class session lookup failed.', error);
+    return [];
+  }
+}
+
+function findByUserId(rows, userId) {
+  const keys = buildUserKeys(userId);
+  return (
+    rows.find((item) => {
+      const candidate = String(item.user_id || item.userId || '').trim();
+      return keys.has(candidate);
+    }) || null
+  );
+}
+
+function findEnrollmentForCourse(enrollments, student, userId, courseOfferingId) {
+  const studentIds = buildStudentIdSet(student, userId);
+  return (
+    enrollments.find((item) => {
+      const itemStudentId = String(item.student_id || item.studentId || '').trim();
+      const itemOfferingId = String(item.course_offering_id || item.courseOfferingId || '').trim();
+      return item.status !== 'dropped' && studentIds.has(itemStudentId) && itemOfferingId === courseOfferingId;
+    }) || null
+  );
+}
+
+function buildStudentIdSet(student, userId) {
+  const ids = buildUserKeys(userId);
+  if (student) {
+    for (const key of ['_id', 'user_id', 'userId', 'student_no', 'studentNo']) {
+      const value = String(student[key] || '').trim();
+      if (value) ids.add(value);
+    }
+  }
+  return ids;
+}
+
+function buildUserKeys(userId) {
+  const value = String(userId || '').trim();
+  const keys = new Set(value ? [value] : []);
+  addRoleAliases(keys, value, 'student', 's');
+  return keys;
+}
+
+function addRoleAliases(keys, value, roleName, roleCode) {
+  const legacyPrefix = `u_${roleName}_`;
+  const userPrefix = `user_${roleCode}_`;
+  const entityPrefix = `${roleName}_`;
+  const lower = value.toLowerCase();
+  let suffix = '';
+
+  if (lower.startsWith(legacyPrefix)) {
+    suffix = value.slice(legacyPrefix.length);
+  } else if (lower.startsWith(userPrefix)) {
+    suffix = value.slice(userPrefix.length);
+  } else if (lower.startsWith(entityPrefix)) {
+    suffix = value.slice(entityPrefix.length);
+  }
+
+  if (!suffix) {
+    return;
+  }
+  keys.add(`${legacyPrefix}${suffix}`);
+  keys.add(`${userPrefix}${suffix}`);
+  keys.add(`${entityPrefix}${suffix}`);
+}
+
+function isCourseCompleted(courseMeta, sessions = [], now = Date.now()) {
+  const activeSessions = (sessions || []).filter((item) => item.status !== 'cancelled');
+  if (activeSessions.length) {
+    return activeSessions.every((item) => {
+      const sessionEndAt = getSessionEndAt(item);
+      return Boolean(sessionEndAt && sessionEndAt < now);
+    });
+  }
+  const endAt = buildDateTime(courseMeta.course_end_date || courseMeta.endDate || '', courseMeta.class_end_time || courseMeta.classEndTime || '23:59');
+  return Boolean(endAt && endAt < now);
+}
+
+function hasSelectedTeacher(enrollment) {
+  return Boolean(
+    String(enrollment && (enrollment.selected_teacher_id || enrollment.selectedTeacherId) || '').trim() ||
+    String(enrollment && (enrollment.selected_teacher_user_id || enrollment.selectedTeacherUserId) || '').trim()
+  );
+}
+
+function getSessionEndAt(item) {
+  const explicit = Number(item.session_end_at || item.sessionEndAt || 0);
+  if (explicit) return explicit;
+  return buildDateTime(item.session_date || item.sessionDate || '', item.end_time || item.endTime || '23:59');
+}
+
+function buildDateTime(date, time) {
+  const timestamp = Date.parse(`${date}T${time}:00`);
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
+function normalizeTeacherIds(explicitTeacherIds, courseMeta, enrollment) {
+  const selectedTeacherId = String(enrollment && (enrollment.selected_teacher_id || enrollment.selectedTeacherId) || '').trim();
+  if (selectedTeacherId) {
+    return [selectedTeacherId];
+  }
   if (Array.isArray(explicitTeacherIds) && explicitTeacherIds.length > 0) {
     return explicitTeacherIds;
   }

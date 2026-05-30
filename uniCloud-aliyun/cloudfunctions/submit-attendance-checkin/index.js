@@ -4,8 +4,8 @@ const db = uniCloud.database();
 
 exports.main = async (event = {}) => {
   const session = event.session || {};
-  if (session.role !== "student" || !session.userId) {
-    return { ok: false, message: "Only students can check in." };
+  if (session.role === "student") {
+    return { ok: false, message: "Location check-in is not available to students." };
   }
 
   const courseOfferingId = String(event.courseOfferingId || event.courseId || "").trim();
