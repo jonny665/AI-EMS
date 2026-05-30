@@ -53,9 +53,7 @@
     {
       "path": "pages/assistant/assistant",
       "style": {
-        "navigationBarTitleText": "AI Assistant",
-        "navigationBarBackgroundColor": "#141414",
-        "navigationBarTextStyle": "white"
+        "navigationBarTitleText": "AI Assistant"
       }
     },
     {

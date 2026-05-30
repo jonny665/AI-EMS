@@ -70,13 +70,26 @@ export default {
   flex-shrink: 0;
 }
 
+.page-header :global(uni-button),
+.page-header :global(button),
+.header-right :slotted(button),
 .logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin: 0;
-  padding: 0 20rpx;
-  background: #fee2e2;
-  color: #991b1b;
+  width: 136rpx !important;
+  min-width: 136rpx !important;
+  height: 64rpx;
+  padding: 0 22rpx;
   border-radius: 8rpx;
   font-size: 24rpx;
-  line-height: 2.2;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.logout-btn {
+  background: #fee2e2;
+  color: #991b1b;
 }
 </style>

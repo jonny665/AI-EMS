@@ -78,32 +78,39 @@
         <text class="muted">No assigned courses available.</text>
       </template>
       <template v-else>
-        <view class="field">
-          <text class="label">Course</text>
-          <picker :range="attendanceCourseLabels" :value="attendanceCourseIndex" @change="changeAttendanceCourse">
-            <view class="picker-value">{{ attendanceCourseLabels[attendanceCourseIndex] || 'Select course' }}</view>
-          </picker>
-        </view>
-        <view class="field">
-          <text class="label">Class Session</text>
-          <picker :range="attendanceSessionLabels" :value="attendanceSessionIndex" @change="changeAttendanceSession">
-            <view class="picker-value">{{ attendanceSessionLabels[attendanceSessionIndex] || 'No sessions' }}</view>
-          </picker>
-        </view>
-        <view v-for="student in attendanceStudents" :key="student.studentId" class="attendance-row">
-          <view>
-            <text class="value">{{ student.studentName }}</text>
-            <text class="muted">{{ student.studentNo }}</text>
+        <view class="attendance-controls">
+          <view class="field">
+            <text class="label">Course</text>
+            <picker class="picker-shell" :range="attendanceCourseLabels" :value="attendanceCourseIndex" @change="changeAttendanceCourse">
+              <view class="picker-value">{{ attendanceCourseLabels[attendanceCourseIndex] || 'Select course' }}</view>
+            </picker>
           </view>
-          <picker
-            v-if="attendanceStatus(student) !== 'on_leave'"
-            :range="attendanceStatusLabels"
-            :value="attendanceStatusIndex(student)"
-            @change="changeAttendanceStatus(student, $event)"
-          >
-            <view class="picker-value compact-picker">{{ attendanceStatusLabel(attendanceStatus(student)) }}</view>
-          </picker>
-          <StatusBadge v-else status="on_leave" />
+          <view class="field">
+            <text class="label">Class Session</text>
+            <picker class="picker-shell" :range="attendanceSessionLabels" :value="attendanceSessionIndex" @change="changeAttendanceSession">
+              <view class="picker-value">{{ attendanceSessionLabels[attendanceSessionIndex] || 'No sessions' }}</view>
+            </picker>
+          </view>
+        </view>
+        <view class="attendance-list">
+          <view v-for="student in attendanceStudents" :key="student.studentId" class="attendance-row">
+            <view class="student-meta">
+              <text class="value">{{ student.studentName }}</text>
+              <text class="muted">{{ student.studentNo }}</text>
+            </view>
+            <view v-if="attendanceStatus(student) !== 'on_leave'" class="status-options">
+              <button
+                v-for="status in attendanceStatuses"
+                :key="status.value"
+                class="status-option"
+                :class="{ active: attendanceStatus(student) === status.value }"
+                @click="changeAttendanceStatusValue(student, status.value)"
+              >
+                {{ status.label }}
+              </button>
+            </view>
+            <StatusBadge v-else status="on_leave" />
+          </view>
         </view>
         <button class="primary-btn full-btn" :loading="savingAttendance" @click="saveAttendance">Save Attendance</button>
       </template>
@@ -384,7 +391,10 @@ export default {
     },
     changeAttendanceStatus(student, event) {
       const option = this.attendanceStatuses[Number(event.detail.value)] || this.attendanceStatuses[0]
-      this.attendanceDrafts = { ...this.attendanceDrafts, [student.studentId]: option.value }
+      this.changeAttendanceStatusValue(student, option.value)
+    },
+    changeAttendanceStatusValue(student, status) {
+      this.attendanceDrafts = { ...this.attendanceDrafts, [student.studentId]: status }
     },
     async saveAttendance() {
       const course = this.selectedAttendanceCourse
@@ -496,24 +506,95 @@ export default {
 }
 
 .picker-value {
+  min-height: 44rpx;
   padding: 18rpx;
   background: #ffffff;
   border: 1rpx solid #cbd5e1;
   border-radius: 8rpx;
+  color: #0f172a;
   font-size: 28rpx;
+  line-height: 1.5;
+}
+
+.picker-shell {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.attendance-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18rpx;
+  margin-bottom: 16rpx;
+}
+
+.attendance-list {
+  display: grid;
+  gap: 12rpx;
 }
 
 .attendance-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14rpx;
-  padding: 14rpx 0;
-  border-bottom: 1rpx solid #e2e8f0;
+  gap: 18rpx;
+  padding: 16rpx;
+  background: #f8fafc;
+  border: 1rpx solid #e2e8f0;
+  border-radius: 8rpx;
+}
+
+.student-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 180rpx;
+}
+
+.status-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8rpx;
+}
+
+.status-option {
+  width: auto !important;
+  min-width: 126rpx !important;
+  margin: 0 !important;
+  padding: 0 18rpx !important;
+  border: 1rpx solid #cbd5e1;
+  border-radius: 8rpx;
+  background: #ffffff;
+  color: #334155;
+  font-size: 24rpx;
+  line-height: 2.2;
+}
+
+.status-option.active {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
 }
 
 .compact-picker {
   min-width: 170rpx;
   text-align: center;
+}
+
+@media (max-width: 700px) {
+  .attendance-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .attendance-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .status-options {
+    justify-content: flex-start;
+  }
 }
 </style>
